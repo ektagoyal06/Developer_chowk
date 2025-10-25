@@ -1,8 +1,15 @@
 import React from "react";
-// import LandingPage from "./pages/LandingPage";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // ✅ Import routing components
+import LandingPage from "./pages/LandingPage";
 import DeveloperSignup from "./pages/DeveloperSignup";
 
-export default function App() {
-  // return <LandingPage />;
-  return <DeveloperSignup />
-}
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/signup" element={<DeveloperSignup />} />
+    </Routes>
+  </Router>
+);
+
+export default App;

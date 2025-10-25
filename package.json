@@ -15,6 +15,10 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-parallax-tilt": "^1.7.304",
+<<<<<<< HEAD
+=======
+    "react-router-dom": "^7.9.4",
+>>>>>>> ebaa875 (Initial commit with dc folder)
     "react-scroll": "^1.9.3",
     "react-type-animation": "^3.2.0"
   },

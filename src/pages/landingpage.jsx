@@ -90,7 +90,7 @@ export default function LandingPage() {
 
               <div className="absolute left-0 top-full  hidden group-hover:block bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden z-20">
                 <a
-                  href="#"
+                  href="/signup"
                   className="block px-4 py-2 text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-gray-800"
                 >
                   As Developer

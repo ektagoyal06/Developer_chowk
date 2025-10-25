@@ -556,7 +556,7 @@ export default function DeveloperChowkAuth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50">
-      <header className="mx-auto max-w-5xl px-4 py-6">
+      <header className="mx-auto max-w-5xl px-4 py-6 mt-20 ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-2xl bg-indigo-600 grid place-content-center text-white font-bold">
