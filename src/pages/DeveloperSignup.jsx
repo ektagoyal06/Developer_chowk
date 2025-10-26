@@ -247,12 +247,29 @@ export default function DeveloperChowkAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+
   // OTP mock state
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpInput, setOtpInput] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
 
+  const calculateAge = (dob) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const handleDOBChange = (e) => {
+    const dob = e.target.value;
+    const age = calculateAge(dob);
+    setDev({ ...dev, dob, age });
+  };
   // Developer form state
   const [dev, setDev] = useState({
     name: "",
@@ -260,6 +277,7 @@ export default function DeveloperChowkAuth() {
     password: "",
     phone: "",
     dcPassword: "",
+    dob: "",
     age: "",
     location: "",
     tenth: "",
@@ -653,9 +671,9 @@ export default function DeveloperChowkAuth() {
                           type={showPassword ? "text" : "password"}
                           required
                           className={`w-full rounded-xl border px-3 py-2 pr-10 ${dev.password &&
-                              !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password)
-                              ? "border-red-500"
-                              : "border-indigo-200"
+                            !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password)
+                            ? "border-red-500"
+                            : "border-indigo-200"
                             }`}
                           value={dev.password}
                           onChange={(e) => setDev({ ...dev, password: e.target.value })}
@@ -755,17 +773,17 @@ export default function DeveloperChowkAuth() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
-                        Age
+                        Date of Birth
                       </label>
                       <input
-                        type="number"
-                        min="10"
+                        type="date"
                         className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.age}
-                        onChange={(e) =>
-                          setDev({ ...dev, age: e.target.value })
-                        }
+                        value={dev.dob}
+                        onChange={handleDOBChange}
                       />
+                      {dev.age && (
+                        <p className="mt-2 text-gray-700">Age: {dev.age} years</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
@@ -851,6 +869,7 @@ export default function DeveloperChowkAuth() {
                         ))}
                       </select>
                     </div>
+                    
                   </div>
                 </Section>
               )}
