@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { Menu, X, Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
 
 export default function LandingPage() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
@@ -84,11 +87,14 @@ export default function LandingPage() {
 
             {/* Sign Up / Login Dropdown */}
             <div className="relative group">
-              <button className="transition text-gray-900 dark:text-white hover:text-blue-500">
+              <button
+                onClick={() => navigate("/signup")}
+                className="transition text-gray-900 dark:text-white hover:text-blue-500"
+              >
                 Sign Up / Login
               </button>
 
-              <div className="absolute left-0 top-full  hidden group-hover:block bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden z-20">
+              {/* <div className="absolute left-0 top-full  hidden group-hover:block bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden z-20">
                 <a
                   href="/signup"
                   className="block px-4 py-2 text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-gray-800"
@@ -96,12 +102,12 @@ export default function LandingPage() {
                   As Developer
                 </a>
                 <a
-                  href="#"
+                  href="/signup"
                   className="block px-4 py-2 text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-gray-800"
                 >
                   As Industry Expert
                 </a>
-              </div>
+              </div> */}
             </div>
 
             {/* Theme Toggle */}

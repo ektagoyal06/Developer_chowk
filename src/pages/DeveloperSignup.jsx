@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Eye, EyeOff, Moon, Sun } from "lucide-react";
+// import { Eye, EyeOff } from "lucide-react";
 
 // --- Mock catalogs --- //
 const DEGREE_OPTIONS = [
@@ -243,6 +244,7 @@ export default function DeveloperChowkAuth() {
   const [role, setRole] = useState("developer");
   const [devStep, setDevStep] = useState(0);
   const [hrStep, setHrStep] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   // OTP mock state
@@ -572,11 +574,10 @@ export default function DeveloperChowkAuth() {
                 setRole("developer");
                 setOtpVerified(false);
               }}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium border ${
-                role === "developer"
-                  ? "bg-indigo-600 text-white border-indigo-600"
-                  : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-              }`}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium border ${role === "developer"
+                ? "bg-indigo-600 text-white border-indigo-600"
+                : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                }`}
             >
               Developer
             </button>
@@ -585,13 +586,12 @@ export default function DeveloperChowkAuth() {
                 setRole("hr");
                 setOtpVerified(false);
               }}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium border ${
-                role === "hr"
-                  ? "bg-indigo-600 text-white border-indigo-600"
-                  : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-              }`}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium border ${role === "hr"
+                ? "bg-indigo-600 text-white border-indigo-600"
+                : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                }`}
             >
-              HR / Organization
+              Industry Expert
             </button>
           </div>
         </div>
@@ -618,45 +618,88 @@ export default function DeveloperChowkAuth() {
                         onChange={(e) =>
                           setDev({ ...dev, name: e.target.value })
                         }
+                        placeholder="Enter your full name"
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
-                        Gmail
+                        Email
                       </label>
                       <input
                         type="email"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                        required
+                        className={`w-full rounded-xl border px-3 py-2 ${dev.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dev.email)
+                          ? "border-red-500"
+                          : "border-indigo-200"
+                          }`}
                         value={dev.email}
-                        onChange={(e) =>
-                          setDev({ ...dev, email: e.target.value })
-                        }
+                        onChange={(e) => setDev({ ...dev, email: e.target.value })}
+                        placeholder="Enter your email address"
                       />
+                      {dev.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dev.email) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Please enter a valid email address
+                        </p>
+                      )}
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
                         Password
                       </label>
-                      <input
-                        type="password"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.password}
-                        onChange={(e) =>
-                          setDev({ ...dev, password: e.target.value })
-                        }
-                      />
+
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          required
+                          className={`w-full rounded-xl border px-3 py-2 pr-10 ${dev.password &&
+                              !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password)
+                              ? "border-red-500"
+                              : "border-indigo-200"
+                            }`}
+                          value={dev.password}
+                          onChange={(e) => setDev({ ...dev, password: e.target.value })}
+                          placeholder="Enter your password"
+                        />
+
+                        {/* Eye icon button */}
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-indigo-600"
+                        >
+                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+
+                      {/* Validation message */}
+                      {dev.password &&
+                        !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password) && (
+                          <p className="text-red-500 text-sm mt-1">
+                            Password must be at least 8 characters long, include 1 uppercase
+                            letter, 1 lowercase letter, and 1 special character.
+                          </p>
+                        )}
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
                         Phone Number
                       </label>
                       <div className="flex gap-2">
                         <input
+                          type="tel"
                           className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                           value={dev.phone}
-                          onChange={(e) =>
-                            setDev({ ...dev, phone: e.target.value })
-                          }
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            // Allow only digits and up to 10 characters
+                            if (/^\d{0,10}$/.test(value)) {
+                              setDev({ ...dev, phone: value });
+                            }
+                          }}
+                          maxLength={10}
+                          placeholder="Enter 10-digit number"
                         />
                         <button
                           type="button"
@@ -700,6 +743,7 @@ export default function DeveloperChowkAuth() {
                         onChange={(e) =>
                           setDev({ ...dev, dcPassword: e.target.value })
                         }
+                        placeholder="Enter your DC password"
                       />
                     </div>
                   </div>
@@ -1113,11 +1157,10 @@ export default function DeveloperChowkAuth() {
                 <button
                   disabled={devStep === 0}
                   onClick={() => setDevStep((s) => Math.max(0, s - 1))}
-                  className={`rounded-xl px-4 py-2 font-medium border ${
-                    devStep === 0
-                      ? "opacity-50 cursor-not-allowed border-indigo-200 text-indigo-300"
-                      : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-                  }`}
+                  className={`rounded-xl px-4 py-2 font-medium border ${devStep === 0
+                    ? "opacity-50 cursor-not-allowed border-indigo-200 text-indigo-300"
+                    : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                    }`}
                 >
                   Back
                 </button>
@@ -1127,11 +1170,10 @@ export default function DeveloperChowkAuth() {
                     onClick={() =>
                       setDevStep((s) => Math.min(DEV_STEPS.length - 1, s + 1))
                     }
-                    className={`rounded-xl px-6 py-2 font-semibold text-white ${
-                      canContinue
-                        ? "bg-indigo-600 hover:bg-indigo-700"
-                        : "bg-indigo-300"
-                    }`}
+                    className={`rounded-xl px-6 py-2 font-semibold text-white ${canContinue
+                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      : "bg-indigo-300"
+                      }`}
                   >
                     Continue
                   </button>
@@ -1265,8 +1307,8 @@ export default function DeveloperChowkAuth() {
                           {p === "Hire"
                             ? "Want to Hire People"
                             : p === "Competition"
-                            ? "Want to Run a Competition"
-                            : "Both"}
+                              ? "Want to Run a Competition"
+                              : "Both"}
                         </span>
                       </label>
                     ))}
@@ -1545,11 +1587,10 @@ export default function DeveloperChowkAuth() {
                 <button
                   disabled={hrStep === 0}
                   onClick={() => setHrStep((s) => Math.max(0, s - 1))}
-                  className={`rounded-xl px-4 py-2 font-medium border ${
-                    hrStep === 0
-                      ? "opacity-50 cursor-not-allowed border-indigo-200 text-indigo-300"
-                      : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-                  }`}
+                  className={`rounded-xl px-4 py-2 font-medium border ${hrStep === 0
+                    ? "opacity-50 cursor-not-allowed border-indigo-200 text-indigo-300"
+                    : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                    }`}
                 >
                   Back
                 </button>
@@ -1559,11 +1600,10 @@ export default function DeveloperChowkAuth() {
                     onClick={() =>
                       setHrStep((s) => Math.min(HR_STEPS.length - 1, s + 1))
                     }
-                    className={`rounded-xl px-6 py-2 font-semibold text-white ${
-                      canContinue
-                        ? "bg-indigo-600 hover:bg-indigo-700"
-                        : "bg-indigo-300"
-                    }`}
+                    className={`rounded-xl px-6 py-2 font-semibold text-white ${canContinue
+                      ? "bg-indigo-600 hover:bg-indigo-700"
+                      : "bg-indigo-300"
+                      }`}
                   >
                     Continue
                   </button>
