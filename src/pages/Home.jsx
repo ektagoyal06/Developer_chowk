@@ -18,16 +18,19 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline";
 
+import { Link } from "react-router-dom";   // <-- ADDED
+
+// ✅ Added path field for navigation
 const sidebarLinks = [
-  { icon: HomeIcon, title: "Home", subtitle: "Your personalized feed" },
-  { icon: FolderIcon, title: "ProjectArena", subtitle: "Discover & collaborate" },
-  { icon: UserGroupIcon, title: "TeamsHive", subtitle: "Find your squad" },
-  { icon: BriefcaseIcon, title: "Prolance", subtitle: "Earn while you code" },
-  { icon: Cog6ToothIcon, title: "Bug Bounty", subtitle: "Fix & get rewards" },
-  { icon: ChatBubbleLeftRightIcon, title: "Let's Connect", subtitle: "Find mentors" },
-  { icon: BookOpenIcon, title: "MindMerge", subtitle: "Buy & sell notes" },
-  { icon: ArchiveBoxIcon, title: "StudyStack", subtitle: "Courses & materials" },
-  { icon: TrophyIcon, title: "Leaderboard", subtitle: "Compete & rank up" },
+  { icon: HomeIcon, title: "Home", subtitle: "Your personalized feed", path: "/" },
+  { icon: FolderIcon, title: "ProjectArena", subtitle: "Discover & collaborate", path: "/project" },
+  { icon: UserGroupIcon, title: "TeamsHive", subtitle: "Find your squad", path: "/teams" },
+  { icon: BriefcaseIcon, title: "Prolance", subtitle: "Earn while you code", path: "/prolance" },
+  { icon: Cog6ToothIcon, title: "Bug Bounty", subtitle: "Fix & get rewards", path: "/bug-bounty" },
+  { icon: ChatBubbleLeftRightIcon, title: "Let's Connect", subtitle: "Find mentors", path: "/connect" },
+  { icon: BookOpenIcon, title: "MindMerge", subtitle: "Buy & sell notes", path: "/mind-merge" },
+  { icon: ArchiveBoxIcon, title: "StudyStack", subtitle: "Courses & materials", path: "/study-stack" },
+  { icon: TrophyIcon, title: "Leaderboard", subtitle: "Compete & rank up", path: "/leaderboard" },
 ];
 
 const stats = [
@@ -135,9 +138,9 @@ export default function Dashboard() {
         </div>
 
         <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-          {sidebarLinks.map(({ icon: Icon, title, subtitle }) => (
-            <a
-              href="#"
+          {sidebarLinks.map(({ icon: Icon, title, subtitle, path }) => (
+            <Link
+              to={path}                // <-- ADDED NAVIGATION
               key={title}
               className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 cursor-pointer"
             >
@@ -146,7 +149,7 @@ export default function Dashboard() {
                 <p className="font-semibold text-gray-900">{title}</p>
                 <p className="text-xs text-gray-400">{subtitle}</p>
               </div>
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -329,7 +332,9 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-4 gap-6">
-              {/* Company Card 1 */}
+
+              {/* Company cards (unchanged) */}
+
               <div className="bg-white shadow-md rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xl">🏢</div>
@@ -352,7 +357,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Company Card 2 */}
               <div className="bg-white shadow-md rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xl">🏢</div>
@@ -375,7 +379,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Company Card 3 */}
               <div className="bg-white shadow-md rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xl">🏢</div>
@@ -398,7 +401,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Company Card 4 */}
               <div className="bg-white shadow-md rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xl">🏢</div>
@@ -420,6 +422,7 @@ export default function Dashboard() {
                   View Job
                 </button>
               </div>
+
             </div>
           </section>
         </div>
