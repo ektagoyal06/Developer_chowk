@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import PostProjectModal from "../components/PostProjectModal";
 import {
   HomeIcon,
   FolderIcon,
@@ -30,7 +30,7 @@ const sidebarLinks = [
   { icon: TrophyIcon, title: "Leaderboard", subtitle: "Compete & rank up", path: "/leaderboard" },
 ];
 
-// Sample projects/jobs
+// Sample jobs
 const jobs = [
   {
     title: "Mobile App UI/UX Design",
@@ -56,6 +56,14 @@ const jobs = [
       "Analyze sales data and create interactive dashboards using Python and visualization libraries. Need insights on customer behavior,...",
     tags: ["Python", "Pandas", "Matplotlib", "Data Analysis"],
   },
+  {
+    title: "AI Chatbot Integration",
+    level: "advanced",
+    price: "$75 / hr",
+    description:
+      "Integrate an AI chatbot into existing customer support system. Should handle common queries, escalate complex issues, and integration...",
+    tags: ["Machine Learning", "Natural Language Processing", "API Integration", "Python"],
+  },
 ];
 
 export default function ProlanceDashboard() {
@@ -64,6 +72,34 @@ export default function ProlanceDashboard() {
   const [filterType, setFilterType] = useState("All Types");
   const [filterBudget, setFilterBudget] = useState("All Budgets");
   const [filterLevel, setFilterLevel] = useState("All Levels");
+  const [openPostModal, setOpenPostModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("find");
+
+  // ✅ FILTER LOGIC (ADDED)
+  const filteredJobs = jobs.filter((job) => {
+    const matchesSearch =
+      job.title.toLowerCase().includes(search.toLowerCase()) ||
+      job.description.toLowerCase().includes(search.toLowerCase());
+
+    const matchesLevel =
+      filterLevel === "All Levels" ||
+      job.level.toLowerCase() === filterLevel.toLowerCase();
+
+    const isHourly = job.price.includes("/ hr");
+    const matchesType =
+      filterType === "All Types" ||
+      (filterType === "Hourly Rate" && isHourly) ||
+      (filterType === "Fixed Price" && !isHourly);
+
+    let numericPrice = parseInt(job.price.replace(/[^0-9]/g, ""));
+    const matchesBudget =
+      filterBudget === "All Budgets" ||
+      (filterBudget === "$0 - $500" && numericPrice <= 500) ||
+      (filterBudget === "$500 - $1000" && numericPrice > 500 && numericPrice <= 1000) ||
+      (filterBudget === "$1000+" && numericPrice > 1000);
+
+    return matchesSearch && matchesLevel && matchesType && matchesBudget;
+  });
 
   return (
     <div className="flex h-screen bg-blue-50 text-gray-900">
@@ -82,9 +118,9 @@ export default function ProlanceDashboard() {
         <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
           {sidebarLinks.map(({ icon: Icon, title, subtitle, path }) => (
             <Link
-              to={path}                // <-- ADDED NAVIGATION
+              to={path}
               key={title}
-              className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 cursor-pointer"
+              className="flex items-center space-x-3 text-gray-700 hover:text-gray-900"
             >
               <Icon className="w-5 h-5" />
               <div className="text-sm">
@@ -94,36 +130,6 @@ export default function ProlanceDashboard() {
             </Link>
           ))}
         </nav>
-
-        <div className="m-4 p-4 bg-white rounded-lg shadow text-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl">
-              <UserCircleIcon className="w-7 h-7" />
-            </div>
-            <div>
-              <h2 className="font-bold">Anjali Arora</h2>
-              <span className="text-xs px-2 py-1 bg-gray-200 rounded-full">Developer</span>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
-            <p className="flex items-center text-green-600 space-x-1">
-              <BoltIcon className="w-4 h-4" />
-              <span>Streak: 0</span>
-            </p>
-            <p className="flex items-center text-orange-500 space-x-1">
-              <StarIcon className="w-4 h-4" />
-              <span>Rating: 0</span>
-            </p>
-            <p className="flex items-center text-blue-700 space-x-1">
-              <ChartBarIcon className="w-4 h-4" />
-              <span>Projects: 0</span>
-            </p>
-            <p className="flex items-center text-red-600 space-x-1">
-              <BoltIcon className="w-4 h-4" />
-              <span>Bugs: 0</span>
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Main Area */}
@@ -134,57 +140,49 @@ export default function ProlanceDashboard() {
             <h1 className="text-2xl font-bold mt-5">Prolance</h1>
             <p className="text-gray-500">Find your next gig or hire top talent.</p>
           </div>
-          <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+          <button
+            onClick={() => setOpenPostModal(true)}
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+          >
             + Post a Project
           </button>
         </div>
 
-        {/* Filters */}
+        {/* Filters (UNCHANGED UI) */}
         <div className="flex flex-wrap gap-3 mb-6 p-4 bg-white rounded-lg shadow">
           <input
             type="text"
             placeholder="Search jobs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-3 py-2 border rounded-lg w-1/4 focus:outline-none focus:ring-1 focus:ring-blue-500 "
+            className="px-3 py-2 border rounded-lg w-1/4"
           />
-          <select
-            value={filterDomain}
-            onChange={(e) => setFilterDomain(e.target.value)}
-            className="px-3 py-2 border rounded-lg w-1/5 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
+
+          <select value={filterDomain} onChange={(e) => setFilterDomain(e.target.value)} className="px-3 py-2 border rounded-lg w-1/5">
             <option>All Domains</option>
             <option>Web Development</option>
+            <option>Full stack development</option>
             <option>Mobile App</option>
-            <option>Data Science</option>
-            <option>AI/ML</option>
             <option>Blockchain</option>
-            <option>Game development</option>
+            <option>AI/ML</option>
+            <option>Game Development</option>
+            <option>Data Scientist</option>
           </select>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="px-3 py-2 border rounded-lg w-1/6 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
+
+          <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="px-3 py-2 border rounded-lg w-1/6">
             <option>All Types</option>
             <option>Fixed Price</option>
             <option>Hourly Rate</option>
           </select>
-          <select
-            value={filterBudget}
-            onChange={(e) => setFilterBudget(e.target.value)}
-            className="px-3 py-2 border rounded-lg w-1/6 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
+
+          <select value={filterBudget} onChange={(e) => setFilterBudget(e.target.value)} className="px-3 py-2 border rounded-lg w-1/6">
             <option>All Budgets</option>
             <option>$0 - $500</option>
             <option>$500 - $1000</option>
             <option>$1000+</option>
           </select>
-          <select
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value)}
-            className="px-3 py-2 border rounded-lg w-1/6 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
+
+          <select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="px-3 py-2 border rounded-lg w-1/6">
             <option>All Levels</option>
             <option>Beginner</option>
             <option>Intermediate</option>
@@ -192,39 +190,59 @@ export default function ProlanceDashboard() {
           </select>
         </div>
 
-        {/* Jobs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {jobs.map((job, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-lg font-bold">{job.title}</h2>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${job.level === "beginner"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-yellow-100 text-yellow-600"
-                      }`}
-                  >
-                    {job.level}
-                  </span>
-                </div>
-                <p className="text-green-600 font-semibold mb-2">{job.price}</p>
-                <p className="text-gray-600 text-sm mb-4">{job.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {job.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <button className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition">
-                Apply Now &rarr;
-              </button>
-            </div>
-          ))}
+        {/* Toggle */}
+        <div className="mb-6 bg-white rounded-lg shadow flex">
+          <button onClick={() => setActiveTab("find")} className={`flex-1 py-3 font-semibold ${activeTab === "find" ? "border-b-2 border-black" : "text-gray-500"}`}>
+            Find Work
+          </button>
+          <button onClick={() => setActiveTab("contracts")} className={`flex-1 py-3 font-semibold ${activeTab === "contracts" ? "border-b-2 border-black" : "text-gray-500"}`}>
+            My Contracts
+          </button>
         </div>
+
+        {activeTab === "find" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredJobs.length === 0 && (
+              <div className="col-span-full text-center text-gray-500">
+                No jobs match your filters.
+              </div>
+            )}
+
+            {filteredJobs.map((job, idx) => (
+              <div key={idx} className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <h2 className="text-lg font-bold">{job.title}</h2>
+                    <span className="px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-600">
+                      {job.level}
+                    </span>
+                  </div>
+                  <p className="text-green-600 font-semibold mb-2">{job.price}</p>
+                  <p className="text-gray-600 text-sm mb-4">{job.description}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {job.tags.map((tag) => (
+                      <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg">
+                  Apply Now →
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "contracts" && (
+          <div className="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+            No contracts yet.
+          </div>
+        )}
       </div>
+
+      {openPostModal && <PostProjectModal closeModal={() => setOpenPostModal(false)} />}
     </div>
   );
 }
