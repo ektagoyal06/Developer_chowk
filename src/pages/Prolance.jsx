@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PostProjectModal from "../components/PostProjectModal";
+import ApplyProposalModal from "../components/ApplyProposalModal";
 import {
   HomeIcon,
   FolderIcon,
@@ -74,6 +75,7 @@ export default function ProlanceDashboard() {
   const [filterLevel, setFilterLevel] = useState("All Levels");
   const [openPostModal, setOpenPostModal] = useState(false);
   const [activeTab, setActiveTab] = useState("find");
+  const [selectedJob, setSelectedJob] = useState(null);
 
   // ✅ FILTER LOGIC (ADDED)
   const filteredJobs = jobs.filter((job) => {
@@ -130,6 +132,35 @@ export default function ProlanceDashboard() {
             </Link>
           ))}
         </nav>
+        <div className="m-4 p-4 bg-white rounded-lg shadow text-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl">
+              <UserCircleIcon className="w-7 h-7" />
+            </div>
+            <div>
+              <h2 className="font-bold">Anjali Arora</h2>
+              <span className="text-xs px-2 py-1 bg-gray-200 rounded-full">Developer</span>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
+            <p className="flex items-center text-green-600 space-x-1">
+              <BoltIcon className="w-4 h-4" />
+              <span>Streak: 0</span>
+            </p>
+            <p className="flex items-center text-orange-500 space-x-1">
+              <StarIcon className="w-4 h-4" />
+              <span>Rating: 0</span>
+            </p>
+            <p className="flex items-center text-blue-700 space-x-1">
+              <ChartBarIcon className="w-4 h-4" />
+              <span>Projects: 0</span>
+            </p>
+            <p className="flex items-center text-red-600 space-x-1">
+              <BoltIcon className="w-4 h-4" />
+              <span>Bugs: 0</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Main Area */}
@@ -227,9 +258,13 @@ export default function ProlanceDashboard() {
                     ))}
                   </div>
                 </div>
-                <button className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg">
+                <button
+                  onClick={() => setSelectedJob(job)}
+                  className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+                >
                   Apply Now →
                 </button>
+
               </div>
             ))}
           </div>
@@ -241,6 +276,12 @@ export default function ProlanceDashboard() {
           </div>
         )}
       </div>
+      {selectedJob && (
+        <ApplyProposalModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+        />
+      )}
 
       {openPostModal && <PostProjectModal closeModal={() => setOpenPostModal(false)} />}
     </div>

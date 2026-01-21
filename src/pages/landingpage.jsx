@@ -59,28 +59,28 @@ export default function LandingPage() {
 
               {/* Dropdown Content */}
               <div className="absolute left-0 top-full hidden group-hover:block p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-[200px] z-20">
-                <a href="#" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                <a href="/project" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>📝</span> <span>Projects Arena</span>
                 </a>
-                <a href="#" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                <a href="/teams" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>🔄</span> <span>TeamHive</span>
                 </a>
-                <a href="#" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
-                  <span>⚡</span> <span>CollabHub</span>
+                <a href="/mind-merge" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                  <span>⚡</span> <span>MindMerge</span>
                 </a>
-                <a href="#" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                <a href="/bug-bounty" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>🛡️</span> <span>BugBounty</span>
                 </a>
-                <a href="#" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                <a href="/prolance" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>📄</span> <span>ProLance</span>
                 </a>
-                <a href="#" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
-                  <span>📚</span> <span>ProjMart</span>
+                <a href="/study-stack" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                  <span>📚</span> <span>StudyStack</span>
                 </a>
               </div>
             </div>
 
-            <a href="#whyus" className="relative group">
+            <a href="#" className="relative group">
               About Us
               <span className="absolute left-0 -bottom-1 w-0 group-hover:w-full h-0.5 bg-blue-500 transition-all"></span>
             </a>
@@ -435,7 +435,7 @@ export default function LandingPage() {
                     TeamHive
                   </span>
                 </div>
-              ), back: "Common problem faced of not having the desired team. So, join with the professionals from here. TeamHive here..."
+              ), back: "Common problem faced for not having the desired team. So, join with the professionals from here. TeamHive here..."
             },
 
             {

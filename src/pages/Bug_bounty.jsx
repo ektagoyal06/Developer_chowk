@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import PostBugModal from "../components/PostBugModal";
+import BugDetailsModal from "../components/BugDetailsModal";
 import {
   HomeIcon,
   FolderIcon,
@@ -40,6 +42,7 @@ const bugs = [
     reward: 30,
     desc: "App crashes when trying to access device camera on certain Android devices.",
     tags: ["Flutter", "Dart", "Android"],
+    postedBy: "anjaliaroraa100", // ✅ ADDED
   },
   {
     title: "React Component Memory Leak",
@@ -47,6 +50,7 @@ const bugs = [
     reward: 25,
     desc: "Memory leak in a React component when using useEffect with websocket connections.",
     tags: ["React", "JavaScript", "WebSocket"],
+    postedBy: "rahul_dev",
   },
   {
     title: "Database Query Performance Issue",
@@ -54,9 +58,9 @@ const bugs = [
     reward: 20,
     desc: "Slow query performance when fetching user data with related posts.",
     tags: ["MongoDB", "Mongoose", "Node.js"],
+    postedBy: "db_master",
   },
 ];
-
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("all");
 
@@ -64,6 +68,10 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [domain, setDomain] = useState("All");
   const [reward, setReward] = useState("All");
+  const [selectedBug, setSelectedBug] = useState(null);
+  const [openBugModal, setOpenBugModal] = useState(false);
+  const [priceRange, setPriceRange] = useState("All");
+
 
   // ✅ FILTER LOGIC
   const filteredBugs = bugs.filter((bug) => {
@@ -75,10 +83,14 @@ export default function Dashboard() {
       domain === "All" || bug.tags.includes(domain);
 
     const matchesReward =
-      reward === "All" || bug.reward >= Number(reward);
+      reward === "All" || reward === "points";
 
-    return matchesSearch && matchesDomain && matchesReward;
+    const matchesPrice =
+      priceRange === "All" || bug.reward >= Number(priceRange);
+
+    return matchesSearch && matchesDomain && matchesReward && matchesPrice;
   });
+
 
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900">
@@ -144,16 +156,19 @@ export default function Dashboard() {
       {/* ================= MAIN CONTENT ================= */}
       <div className="flex-1 p-8 overflow-y-auto bg-gradient-to-b from-orange-50 to-gray-100">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
+            <h1 className="text-2xl font-bold flex items-center gap-2 mt-5">
               <BugAntIcon className="w-6 h-6" /> Bug Bounty
             </h1>
             <p className="text-gray-500">
               Get rewarded for your problem-solving skills.
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600">
+          <button
+            onClick={() => setOpenBugModal(true)}
+            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600"
+          >
             <PlusIcon className="w-5 h-5" />
             Post a Bug
           </button>
@@ -161,6 +176,7 @@ export default function Dashboard() {
 
         {/* Filters */}
         <div className="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 mb-6">
+          {/* Search */}
           <div className="relative w-1/3">
             <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
             <input
@@ -171,6 +187,7 @@ export default function Dashboard() {
             />
           </div>
 
+          {/* Domain */}
           <select
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
@@ -186,25 +203,27 @@ export default function Dashboard() {
             <option>Data Scientist</option>
           </select>
 
+          {/* Reward Type */}
           <select
             value={reward}
             onChange={(e) => setReward(e.target.value)}
             className="border rounded-lg px-3 py-2 w-1/5"
           >
             <option value="All">All Rewards</option>
-            <option value="points">points only</option>
-            <option value="paid">paid</option>
+            <option value="points">Points only</option>
+            <option value="paid">Paid</option>
           </select>
 
+          {/* Price */}
           <select
-            value={reward}
-            onChange={(e) => setReward(e.target.value)}
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.target.value)}
             className="border rounded-lg px-3 py-2 w-1/5"
           >
             <option value="All">All Prices</option>
-            <option value="20">0-500</option>
-            <option value="25">500-1000</option>
-            <option value="30">1000+</option>
+            <option value="20">0–20 pts</option>
+            <option value="25">21–25 pts</option>
+            <option value="30">26+ pts</option>
           </select>
         </div>
 
@@ -266,9 +285,13 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <button className="mt-6 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold">
+                <button
+                  onClick={() => setSelectedBug(bug)}
+                  className="mt-6 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold"
+                >
                   Apply
                 </button>
+
               </div>
             ))}
           </div>
@@ -279,6 +302,16 @@ export default function Dashboard() {
             No bugs posted yet.
           </div>
         )}
+        {openBugModal && (
+          <PostBugModal closeModal={() => setOpenBugModal(false)} />
+        )}
+        {selectedBug && (
+          <BugDetailsModal
+            bug={selectedBug}
+            onClose={() => setSelectedBug(null)}
+          />
+        )}
+
       </div>
     </div>
   );
