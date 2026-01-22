@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import CreateMentorshipModal from "../components/CreateMentorshipModal";
+import BookSessionModal from "../components/BookSessionModal";
 import {
   HomeIcon,
   FolderIcon,
@@ -114,7 +116,10 @@ export default function Dashboard() {
   const [type, setType] = React.useState("All");
   const [price, setPrice] = React.useState("All");
   const [activeTab, setActiveTab] = React.useState("browse");
+  const [showMentorshipForm, setShowMentorshipForm] = React.useState(false);
+  const [openBooking, setOpenBooking] = useState(false);
   const [mySessions, setMySessions] = React.useState([]); // empty for now
+  
 
 
   const filteredMentors = mentors.filter((mentor) => {
@@ -217,9 +222,13 @@ export default function Dashboard() {
             </p>
           </div>
 
-          <button className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700">
+          <button
+            onClick={() => setShowMentorshipForm(true)}
+            className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700"
+          >
             + Offer Mentorship
           </button>
+
         </div>
 
         {/* Filters */}
@@ -291,79 +300,91 @@ export default function Dashboard() {
 
         {/* Mentor Cards */}
         {/* Content based on active tab */}
-{activeTab === "browse" && (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-    {filteredMentors.length === 0 ? (
-      <p className="text-gray-500 col-span-3 text-center">
-        No mentors found 😕
-      </p>
-    ) : (
-      filteredMentors.map((mentor) => (
-        <div
-          key={mentor.id}
-          className="bg-white rounded-xl shadow p-6 flex flex-col justify-between"
-        >
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-12 h-12 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold text-lg">
-                {mentor.name.charAt(0)}
-              </div>
-              <div>
-                <h2 className="font-semibold">{mentor.name}</h2>
-                <p className="text-sm text-gray-500">
-                  ⭐ {mentor.rating} ({mentor.sessions} sessions)
-                </p>
-              </div>
-            </div>
-
-            <h3 className="font-semibold mb-2">{mentor.title}</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              {mentor.description}
-            </p>
-
-            <p className="text-sm mb-1">⏱ {mentor.duration} minutes</p>
-            <p className="text-green-600 font-semibold mb-2">
-              ₹ {mentor.price}
-            </p>
-            <p className="text-sm mb-3">👤 {mentor.type}</p>
-
-            <div className="flex flex-wrap gap-2">
-              {mentor.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs bg-gray-100 px-3 py-1 rounded-full"
+        {activeTab === "browse" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {filteredMentors.length === 0 ? (
+              <p className="text-gray-500 col-span-3 text-center">
+                No mentors found 😕
+              </p>
+            ) : (
+              filteredMentors.map((mentor) => (
+                <div
+                  key={mentor.id}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col justify-between"
                 >
-                  {tag}
-                </span>
-              ))}
-            </div>
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold text-lg">
+                        {mentor.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h2 className="font-semibold">{mentor.name}</h2>
+                        <p className="text-sm text-gray-500">
+                          ⭐ {mentor.rating} ({mentor.sessions} sessions)
+                        </p>
+                      </div>
+                    </div>
+
+                    <h3 className="font-semibold mb-2">{mentor.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {mentor.description}
+                    </p>
+
+                    <p className="text-sm mb-1">⏱ {mentor.duration} minutes</p>
+                    <p className="text-green-600 font-semibold mb-2">
+                      ₹ {mentor.price}
+                    </p>
+                    <p className="text-sm mb-3">👤 {mentor.type}</p>
+
+                    <div className="flex flex-wrap gap-2">
+                      {mentor.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="text-xs bg-gray-100 px-3 py-1 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setOpenBooking(true)}
+                    className="mt-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold"
+                  >
+                    Book Session
+                  </button>
+                </div>
+              ))
+            )}
           </div>
+        )}
 
-          <button className="mt-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded-lg font-semibold">
-            Book Session
-          </button>
-        </div>
-      ))
-    )}
-  </div>
-)}
-
-{activeTab === "sessions" && (
-  <div className="bg-white rounded-xl shadow p-10 text-center">
-    {mySessions.length === 0 ? (
-      <p className="text-gray-500 text-lg">
-        My Sessions dashboard coming soon!
-      </p>
-    ) : (
-      <div>
-        {/* future sessions UI */}
-      </div>
-    )}
-  </div>
-)}
+        {activeTab === "sessions" && (
+          <div className="bg-white rounded-xl shadow p-10 text-center">
+            {mySessions.length === 0 ? (
+              <p className="text-gray-500 text-lg">
+                My Sessions dashboard coming soon!
+              </p>
+            ) : (
+              <div>
+                {/* future sessions UI */}
+              </div>
+            )}
+          </div>
+        )}
 
 
       </div>
+      <CreateMentorshipModal
+        open={showMentorshipForm}
+        onClose={() => setShowMentorshipForm(false)}
+      />
+
+      <BookSessionModal
+        open={openBooking}
+        onClose={() => setOpenBooking(false)}
+      />
 
     </div>
   );

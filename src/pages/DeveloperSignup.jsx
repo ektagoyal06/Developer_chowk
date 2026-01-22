@@ -575,7 +575,10 @@ export default function DeveloperChowkAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-indigo-50">
+    <div
+      className="min-h-screen bg-cover bg-center bg-no-repeat relative"
+      style={{ backgroundImage: "url('/watermark2.jpg')" }}
+    >
       <header className="mx-auto max-w-5xl px-4 py-6 mt-20 ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -869,7 +872,7 @@ export default function DeveloperChowkAuth() {
                         ))}
                       </select>
                     </div>
-                    
+
                   </div>
                 </Section>
               )}
