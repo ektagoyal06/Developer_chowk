@@ -235,7 +235,7 @@ export default function Dashboard() {
         <div className="bg-white p-4 rounded-xl shadow flex flex-wrap gap-4 mb-6">
           <input
             placeholder="Search mentors..."
-            className="border rounded-lg px-4 py-2 w-1/4"
+            className="border rounded-lg px-4 py-2 w-[400px]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -301,7 +301,7 @@ export default function Dashboard() {
         {/* Mentor Cards */}
         {/* Content based on active tab */}
         {activeTab === "browse" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {filteredMentors.length === 0 ? (
               <p className="text-gray-500 col-span-3 text-center">
                 No mentors found 😕

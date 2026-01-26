@@ -247,7 +247,7 @@ export default function Dashboard() {
 
         {/* Bug Cards */}
         {activeTab === "all" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {filteredBugs.length === 0 && (
               <div className="col-span-full text-center text-gray-500">
                 No bugs match your filters.
@@ -260,12 +260,14 @@ export default function Dashboard() {
                 className="bg-white rounded-xl shadow p-6 flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex justify-between mb-2">
+                  <div className="flex justify-between items-start mb-2">
                     <h2 className="font-bold text-lg">{bug.title}</h2>
-                    <span className="text-xs px-3 py-1 rounded-full bg-orange-100 text-orange-600">
+
+                    <span className="inline-flex items-center text-xs px-2.5 py-1 rounded-md bg-orange-100 text-orange-600 leading-none">
                       {bug.level}
                     </span>
                   </div>
+
 
                   <p className="text-green-600 font-semibold mb-3">
                     ⚡ {bug.reward} pts
