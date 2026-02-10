@@ -22,7 +22,8 @@ import {
 
 import { Link } from "react-router-dom";   // <-- ADDED
 
-const mentors = [
+const initialMentors = [
+
   {
     id: 1,
     name: "Anjali Arora",
@@ -119,32 +120,46 @@ export default function Dashboard() {
   const [showMentorshipForm, setShowMentorshipForm] = React.useState(false);
   const [openBooking, setOpenBooking] = useState(false);
   const [mySessions, setMySessions] = React.useState([]); // empty for now
-  
+  const [mentorList, setMentorList] = useState(initialMentors);
 
 
-  const filteredMentors = mentors.filter((mentor) => {
-    const matchesSearch =
-      mentor.name.toLowerCase().includes(search.toLowerCase()) ||
-      mentor.title.toLowerCase().includes(search.toLowerCase());
+  /* ===== ADD MENTOR FROM MODAL ===== */
+  const handleAddMentor = (mentor) => {
+    setMentorList(prev => [
+      {
+        ...mentor,
+        id: Date.now(),
+        rating: 0,
+        sessions: 0,
+      },
+      ...prev
+    ]);
+  };
 
-    const matchesExpertise =
-      expertise === "All" || mentor.expertise === expertise;
+  const filteredMentors = mentorList.filter(
+    (mentor) => {
+      const matchesSearch =
+        mentor.name.toLowerCase().includes(search.toLowerCase()) ||
+        mentor.title.toLowerCase().includes(search.toLowerCase());
 
-    const matchesType =
-      type === "All" || mentor.type === type;
+      const matchesExpertise =
+        expertise === "All" || mentor.expertise === expertise;
 
-    const matchesPrice =
-      price === "All" ||
-      (price === "Free" && mentor.price === 0) ||
-      (price === "Paid" && mentor.price > 0);
+      const matchesType =
+        type === "All" || mentor.type === type;
 
-    return (
-      matchesSearch &&
-      matchesExpertise &&
-      matchesType &&
-      matchesPrice
-    );
-  });
+      const matchesPrice =
+        price === "All" ||
+        (price === "Free" && mentor.price === 0) ||
+        (price === "Paid" && mentor.price > 0);
+
+      return (
+        matchesSearch &&
+        matchesExpertise &&
+        matchesType &&
+        matchesPrice
+      );
+    });
 
 
   return (
@@ -377,9 +392,11 @@ export default function Dashboard() {
 
       </div>
       <CreateMentorshipModal
-        open={showMentorshipForm}
-        onClose={() => setShowMentorshipForm(false)}
-      />
+  open={showMentorshipForm}
+  onClose={() => setShowMentorshipForm(false)}
+  onAddMentor={handleAddMentor}
+/>
+
 
       <BookSessionModal
         open={openBooking}

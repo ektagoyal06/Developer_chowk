@@ -121,6 +121,17 @@ export default function Dashboard() {
   const [selectedNote, setSelectedNote] = useState(null);
   const [openSellModal, setOpenSellModal] = useState(false);
 
+  /* ===================== ADD NOTE ===================== */
+const handleAddNote = (newNote) => {
+  const noteWithId = {
+    ...newNote,
+    id: Date.now(), // unique id
+  };
+
+  setNotes(prev => [noteWithId, ...prev]);
+};
+
+
   /* ===================== FILTER LOGIC ===================== */
   const filteredNotes = notes.filter((note) => {
     const matchSearch =
@@ -281,7 +292,7 @@ export default function Dashboard() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[330px]">
           {filteredNotes.map((note) => (
             <div
               key={note.id}
@@ -374,9 +385,11 @@ export default function Dashboard() {
         </div>
       )}
       <SellNoteModal
-        open={openSellModal}
-        onClose={() => setOpenSellModal(false)}
-      />
+  open={openSellModal}
+  onClose={() => setOpenSellModal(false)}
+  onAddNote={handleAddNote}
+/>
+
     </div>
   );
 }

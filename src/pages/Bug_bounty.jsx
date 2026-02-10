@@ -35,7 +35,8 @@ const sidebarLinks = [
 ];
 
 // Bug cards data
-const bugs = [
+const initialBugs = [
+
   {
     title: "Flutter App Crash on Android",
     level: "high",
@@ -71,7 +72,19 @@ export default function Dashboard() {
   const [selectedBug, setSelectedBug] = useState(null);
   const [openBugModal, setOpenBugModal] = useState(false);
   const [priceRange, setPriceRange] = useState("All");
+  const [bugs, setBugs] = useState(initialBugs);
 
+
+  const handleAddBug = (bugData) => {
+    setBugs(prev => [
+      {
+        ...bugData,
+        id: Date.now(),
+        postedBy: "anjaliaroraa100"
+      },
+      ...prev
+    ]);
+  };
 
   // ✅ FILTER LOGIC
   const filteredBugs = bugs.filter((bug) => {
@@ -305,7 +318,12 @@ export default function Dashboard() {
           </div>
         )}
         {openBugModal && (
-          <PostBugModal closeModal={() => setOpenBugModal(false)} />
+          <PostBugModal
+  closeModal={() => setOpenBugModal(false)}
+  onPostBug={handleAddBug}
+/>
+
+
         )}
         {selectedBug && (
           <BugDetailsModal
