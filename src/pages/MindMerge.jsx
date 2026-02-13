@@ -122,14 +122,14 @@ export default function Dashboard() {
   const [openSellModal, setOpenSellModal] = useState(false);
 
   /* ===================== ADD NOTE ===================== */
-const handleAddNote = (newNote) => {
-  const noteWithId = {
-    ...newNote,
-    id: Date.now(), // unique id
-  };
+  const handleAddNote = (newNote) => {
+    const noteWithId = {
+      ...newNote,
+      id: Date.now(), // unique id
+    };
 
-  setNotes(prev => [noteWithId, ...prev]);
-};
+    setNotes(prev => [noteWithId, ...prev]);
+  };
 
 
   /* ===================== FILTER LOGIC ===================== */
@@ -192,14 +192,14 @@ const handleAddNote = (newNote) => {
           ))}
         </nav>
 
-        <div className="m-4 p-4 bg-white rounded-lg shadow">
+        <div className="m-4 p-4 bg-white rounded-lg shadow text-gray-700">
           <div className="flex items-center space-x-3">
-            <UserCircleIcon className="w-10 h-10 text-purple-600" />
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl">
+              <UserCircleIcon className="w-7 h-7" />
+            </div>
             <div>
               <h2 className="font-bold">Anjali Arora</h2>
-              <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">
-                Developer
-              </span>
+              <span className="text-xs px-2 py-1 bg-gray-200 rounded-full">Developer</span>
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
@@ -235,12 +235,12 @@ const handleAddNote = (newNote) => {
             </p>
           </div>
           <button
-        onClick={() => setOpenSellModal(true)}
-        className="flex items-center gap-1 bg-green-600 text-white px-3 h-10 rounded font-bold text-sm mt-5"
-      >
-        <PlusIcon className="w-5 h-5" />
-        Sell Your Notes
-      </button>
+            onClick={() => setOpenSellModal(true)}
+            className="flex items-center gap-1 bg-green-600 text-white px-3 h-10 rounded font-bold text-sm mt-5"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Sell Your Notes
+          </button>
 
 
         </div>
@@ -385,10 +385,10 @@ const handleAddNote = (newNote) => {
         </div>
       )}
       <SellNoteModal
-  open={openSellModal}
-  onClose={() => setOpenSellModal(false)}
-  onAddNote={handleAddNote}
-/>
+        open={openSellModal}
+        onClose={() => setOpenSellModal(false)}
+        onAddNote={handleAddNote}
+      />
 
     </div>
   );
