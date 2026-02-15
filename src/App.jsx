@@ -16,9 +16,9 @@ import StudyStack from "./pages/StudyStack";
 const App = () => (
   <Router>
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/landingpage" element={<LandingPage />} />
       <Route path="/signup" element={<DeveloperSignup />} />
-      <Route path="/home" element={<Home />} />   {/* ✅ Added Route */}
+      <Route path="/" element={<Home />} />   {/* ✅ Added Route */}
       <Route path="/project" element={<Project />} />
       <Route path="/teams" element={<Teams />} />
       <Route path="/prolance" element={<Prolance />} />
