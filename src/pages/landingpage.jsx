@@ -168,7 +168,7 @@ export default function LandingPage() {
             </p>
             <div className="space-x-4">
               <a
-                href="#"
+                href="/signup"
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
               >
                 Join Now
@@ -257,7 +257,7 @@ export default function LandingPage() {
             </p>
 
             <a
-              href="#"
+              href="/signup"
               className="mt-6 inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
             >
               Join the Community
@@ -291,7 +291,7 @@ export default function LandingPage() {
 
         {/* Button added here */}
         <a
-          href="#"
+          href="/teams"
           className="inline-block mt-6 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
         >
           Teamhive here
@@ -356,7 +356,7 @@ export default function LandingPage() {
 
           {/* Button */}
           <a
-            href="/freelance"
+            href="/prolance"
             className="mt-10 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:opacity-90 transition"
           >
             Prolance Now
@@ -392,7 +392,7 @@ export default function LandingPage() {
               Fix bugs, earn instant payouts, and build your profile as a top bug bounty hunter.
             </p>
             <a
-              href="#"
+              href="/bug-bounty"
               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
             >
               Go for Bug Bounty

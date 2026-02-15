@@ -185,7 +185,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 bg-purple-50">
         <div className="max-w-7xl mx-auto space-y-8">
 
           {/* Welcome + Stats Row */}
