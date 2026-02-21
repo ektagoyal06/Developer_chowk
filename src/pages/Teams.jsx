@@ -115,6 +115,7 @@ export default function Dashboard() {
     setProjects((prev) => [newProject, ...prev]);
   };
 
+
   return (
     <div className="flex h-screen bg-blue-50 text-gray-900">
 
@@ -229,61 +230,75 @@ export default function Dashboard() {
         </div>
 
         {/* PROJECTS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((proj, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-lg shadow-md relative">
+        {/* TAB CONTENT */}
+        {activeTab === "Browse Projects" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((proj, idx) => (
+              <div key={idx} className="bg-white p-6 rounded-lg shadow-md relative">
 
-              {proj.recruiting && (
-                <span className="absolute top-4 right-4 bg-gray-200 px-2 py-1 rounded-full text-xs">
-                  recruiting
-                </span>
-              )}
-
-              <h2 className="text-lg font-bold mb-2">{proj.title}</h2>
-              <p className="text-gray-600 mb-4">{proj.description}</p>
-
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="px-2 py-1 rounded-full text-xs bg-yellow-100">
-                  {proj.level}
-                </span>
-                <span className="px-2 py-1 rounded-full text-xs bg-gray-200">
-                  {proj.type}
-                </span>
-              </div>
-
-              <div className="text-gray-500 text-sm mb-4">
-                <p>{proj.members}</p>
-                <p>{proj.due}</p>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-4">
-                {proj.tags?.map((tag) => (
-                  <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
-                    {tag}
+                {proj.recruiting && (
+                  <span className="absolute top-4 right-4 bg-gray-200 px-2 py-1 rounded-full text-xs">
+                    recruiting
                   </span>
-                ))}
-              </div>
+                )}
 
-              <div className="flex gap-2">
-                <button className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition flex items-center gap-1">
-                  <EyeIcon size={16} /> Explore
-                </button>
-                <button className="px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center gap-1">
-                  <UserPlusIcon size={16} /> Join Team
-                </button>
+                <h2 className="text-lg font-bold mb-2">{proj.title}</h2>
+                <p className="text-gray-600 mb-4">{proj.description}</p>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="px-2 py-1 rounded-full text-xs bg-yellow-100">
+                    {proj.level}
+                  </span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-gray-200">
+                    {proj.type}
+                  </span>
+                </div>
+
+                <div className="text-gray-500 text-sm mb-4">
+                  <p>{proj.members}</p>
+                  <p>{proj.due}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {proj.tags?.map((tag) => (
+                    <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <button className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition flex items-center gap-1">
+                    <EyeIcon size={16} /> Explore
+                  </button>
+                  <button className="px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center gap-1">
+                    <UserPlusIcon size={16} /> Join Team
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {/* EMPTY STATE FOR OTHER TABS */}
+        {activeTab !== "Browse Projects" && (
+          <div className="bg-white rounded-xl shadow p-10 text-center text-gray-500">
+            Nothing is posted yet.
+          </div>
+        )}
       </div>
 
       {/* MODALS */}
-      <CreateTeamRoomModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <CreateTeamRoomModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onCreate={handleAddProject}
+      />
 
       <LookingForMembersModal
         isOpen={isLookingModalOpen}
         onClose={() => setIsLookingModalOpen(false)}
-        onPost={handleAddProject}
+        onPostProject={handleAddProject}
       />
     </div>
   );

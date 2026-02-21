@@ -5,11 +5,33 @@ export default function ApplyProposalModal({ job, onClose }) {
   const [proposal, setProposal] = useState("");
   const [bid, setBid] = useState("");
   const [delivery, setDelivery] = useState("");
+  const [file, setFile] = useState(null);
   const [error, setError] = useState("");
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+
+    if (selectedFile) {
+      const allowedTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+
+      if (!allowedTypes.includes(selectedFile.type)) {
+        setError("Only PDF or DOC files are allowed.");
+        setFile(null);
+        return;
+      }
+
+      setError("");
+      setFile(selectedFile);
+    }
+  };
 
   const handleSubmit = () => {
     if (!proposal || !bid || !delivery) {
-      setError("All fields are required.");
+      setError("All required fields must be filled.");
       return;
     }
 
@@ -20,6 +42,7 @@ export default function ApplyProposalModal({ job, onClose }) {
       proposal,
       bid,
       delivery,
+      file,
     });
 
     onClose();
@@ -87,6 +110,22 @@ export default function ApplyProposalModal({ job, onClose }) {
               }`}
             />
           </div>
+        </div>
+
+        {/* File Upload (Optional) */}
+        <div className="mb-4">
+          <label className="block font-semibold mb-1">
+            Upload Detailed Proposal (Optional)
+          </label>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileChange}
+            className="w-full border rounded-lg p-2"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Only PDF or DOC files allowed.
+          </p>
         </div>
 
         {/* Error */}

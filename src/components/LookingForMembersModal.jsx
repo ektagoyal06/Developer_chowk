@@ -28,14 +28,37 @@ export default function LookingForMembersModal({ isOpen, onClose, onPostProject 
   };
 
   const handleSubmit = () => {
-    if (!form.title || !form.description || !form.teamRoom) {
+    if (!form.title.trim() || !form.description.trim() || !form.teamRoom) {
       alert("Please fill all required fields!");
       return;
     }
 
-    onPostProject(form); // send data to parent
-    setForm(initialState); // reset form
-    onClose(); // close modal
+    if (form.membersNeeded < 1) {
+      alert("Members needed must be at least 1");
+      return;
+    }
+
+    if (form.deadline) {
+      const today = new Date();
+      const selectedDate = new Date(form.deadline);
+
+      today.setHours(0, 0, 0, 0);
+
+      if (selectedDate < today) {
+        alert("Deadline cannot be in the past!");
+        return;
+      }
+    }
+
+    onPostProject({
+      ...form,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      techStack: form.techStack.trim(),
+    });
+
+    setForm(initialState); 
+    onClose(); 
   };
 
   return (
@@ -75,7 +98,7 @@ export default function LookingForMembersModal({ isOpen, onClose, onPostProject 
             <textarea
               name="description"
               value={form.description}
-              placeholder="Describe your project, goals and requirements... "
+              placeholder="Describe your project, goals and requirements..."
               className="w-full border rounded px-3 py-2 h-24"
               onChange={handleChange}
             ></textarea>
@@ -151,7 +174,7 @@ export default function LookingForMembersModal({ isOpen, onClose, onPostProject 
               name="techStack"
               value={form.techStack}
               type="text"
-              placeholder="React, Node.js, mongoDB"
+              placeholder="React, Node.js, MongoDB"
               className="w-full border rounded px-3 py-2"
               onChange={handleChange}
             />
@@ -165,6 +188,7 @@ export default function LookingForMembersModal({ isOpen, onClose, onPostProject 
               type="date"
               value={form.deadline}
               className="w-full border rounded px-3 py-2"
+              min={new Date().toISOString().split("T")[0]}
               onChange={handleChange}
             />
           </div>

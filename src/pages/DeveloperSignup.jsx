@@ -707,6 +707,7 @@ export default function DeveloperChowkAuth() {
                       <label className="block text-sm font-medium text-indigo-900">
                         Phone Number
                       </label>
+
                       <div className="flex gap-2">
                         <input
                           type="tel"
@@ -722,14 +723,31 @@ export default function DeveloperChowkAuth() {
                           maxLength={10}
                           placeholder="Enter 10-digit number"
                         />
+
                         <button
                           type="button"
-                          onClick={sendOtp}
-                          className="rounded-xl bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+                          onClick={() => {
+                            if (dev.phone.length === 10) {
+                              sendOtp();
+                            }
+                          }}
+                          disabled={dev.phone.length !== 10}
+                          className={`rounded-xl px-4 py-2 text-white ${dev.phone.length === 10
+                            ? "bg-indigo-600 hover:bg-indigo-700"
+                            : "bg-indigo-300 cursor-not-allowed"
+                            }`}
                         >
                           Send OTP
                         </button>
                       </div>
+
+                      {/* Optional validation message */}
+                      {dev.phone.length > 0 && dev.phone.length < 10 && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Please enter a valid 10-digit phone number
+                        </p>
+                      )}
+
                       {otpSent && (
                         <div className="mt-2 flex gap-2">
                           <input
@@ -745,6 +763,7 @@ export default function DeveloperChowkAuth() {
                           >
                             Verify
                           </button>
+
                           {otpVerified && (
                             <span className="rounded-full bg-green-100 px-3 py-1 text-green-700 text-sm">
                               Verified
@@ -838,6 +857,7 @@ export default function DeveloperChowkAuth() {
                       <label className="block text-sm font-medium text-indigo-900">
                         Degree
                       </label>
+
                       <select
                         className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                         value={dev.degree}
@@ -851,12 +871,28 @@ export default function DeveloperChowkAuth() {
                             {d}
                           </option>
                         ))}
+                        <option value="Other">Other</option>
                       </select>
+
+                      {/* Show input when Other is selected */}
+                      {dev.degree === "Other" && (
+                        <input
+                          type="text"
+                          placeholder="Enter your degree"
+                          className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.otherDegree || ""}
+                          onChange={(e) =>
+                            setDev({ ...dev, otherDegree: e.target.value })
+                          }
+                        />
+                      )}
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
                         College
                       </label>
+
                       <select
                         className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                         value={dev.college}
@@ -870,7 +906,21 @@ export default function DeveloperChowkAuth() {
                             {c}
                           </option>
                         ))}
+                        <option value="Other">Other</option>
                       </select>
+
+                      {/* Show input when Other is selected */}
+                      {dev.college === "Other" && (
+                        <input
+                          type="text"
+                          placeholder="Enter your college name"
+                          className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.otherCollege || ""}
+                          onChange={(e) =>
+                            setDev({ ...dev, otherCollege: e.target.value })
+                          }
+                        />
+                      )}
                     </div>
 
                   </div>
@@ -904,31 +954,112 @@ export default function DeveloperChowkAuth() {
               {devStep === 4 && (
                 <Section title="Portfolio">
                   <div className="grid md:grid-cols-2 gap-4">
-                    <FileField
-                      label="Upload Resume (PDF)"
-                      accept="application/pdf"
-                      value={dev.resume}
-                      setValue={(f) => setDev({ ...dev, resume: f })}
-                    />
+
+                    {/* Resume Upload */}
                     <div>
+                      <label className="block text-sm font-medium text-indigo-900">
+                        Upload Resume (PDF / DOC / DOCX)
+                      </label>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const validTypes = [
+                                "application/pdf",
+                                "application/msword",
+                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                              ];
+
+                              if (validTypes.includes(file.type)) {
+                                setDev({ ...dev, resume: file });
+                              } else {
+                                alert("Only PDF or DOC/DOCX files are allowed");
+                              }
+                            }
+                          }}
+                        />
+
+                        {/* Remove Resume Button */}
+                        {dev.resume && (
+                          <button
+                            type="button"
+                            onClick={() => setDev({ ...dev, resume: null })}
+                            className="text-red-500 text-xl font-bold"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      {dev.resume && (
+                        <p className="text-sm text-green-600 mt-1">
+                          {dev.resume.name}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Links Section */}
+                    <div>
+                      {/* GitHub */}
                       <label className="block text-sm font-medium text-indigo-900">
                         GitHub Link
                       </label>
                       <input
+                        type="url"
                         placeholder="https://github.com/username"
+                        pattern="https?://.+"
                         className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                         value={dev.github}
                         onChange={(e) =>
                           setDev({ ...dev, github: e.target.value })
                         }
                       />
-                      <div className="mt-2 grid md:grid-cols-2 gap-2">
+
+                      {/* LinkedIn */}
+                      <label className="block text-sm font-medium text-indigo-900 mt-4">
+                        LinkedIn Profile
+                      </label>
+                      <input
+                        type="url"
+                        placeholder="https://linkedin.com/in/username"
+                        pattern="https?://.+"
+                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                        value={dev.linkedin}
+                        onChange={(e) =>
+                          setDev({ ...dev, linkedin: e.target.value })
+                        }
+                      />
+
+                      {/* Personal Portfolio (Optional) */}
+                      <label className="block text-sm font-medium text-indigo-900 mt-4">
+                        Personal Portfolio (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        placeholder="https://yourportfolio.com"
+                        pattern="https?://.+"
+                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                        value={dev.portfolio}
+                        onChange={(e) =>
+                          setDev({ ...dev, portfolio: e.target.value })
+                        }
+                      />
+
+                      {/* Competitive Profiles */}
+                      <div className="mt-4 grid md:grid-cols-2 gap-2">
                         <div>
                           <label className="block text-sm font-medium text-indigo-900">
                             LeetCode Profile
                           </label>
                           <input
-                            placeholder="leetcode_username"
+                            type="url"
+                            placeholder="https://leetcode.com/username"
+                            pattern="https?://.+"
                             className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                             value={dev.lc}
                             onChange={(e) =>
@@ -936,18 +1067,28 @@ export default function DeveloperChowkAuth() {
                             }
                           />
                         </div>
+
                         <div>
                           <label className="block text-sm font-medium text-indigo-900">
-                            Codeforces Profile
+                            Codeforces Profile <span className="text-gray-500">(Optional)</span>
                           </label>
+
                           <input
-                            placeholder="codeforces_handle"
+                            type="url"
+                            placeholder="https://codeforces.com/profile/handle"
                             className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                             value={dev.cf}
                             onChange={(e) =>
                               setDev({ ...dev, cf: e.target.value })
                             }
                           />
+
+                          {/* Show error only if user types something invalid */}
+                          {dev.cf && !/^https?:\/\/.+/.test(dev.cf) && (
+                            <p className="text-red-500 text-sm mt-1">
+                              Please enter a valid URL (must start with http or https)
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -32,7 +32,7 @@ const sidebarLinks = [
 ];
 
 // Sample jobs
-const jobs = [
+const initialJobs = [
   {
     title: "Mobile App UI/UX Design",
     level: "beginner",
@@ -68,6 +68,8 @@ const jobs = [
 ];
 
 export default function ProlanceDashboard() {
+  const [jobs, setJobs] = useState(initialJobs);
+
   const [search, setSearch] = useState("");
   const [filterDomain, setFilterDomain] = useState("All Domains");
   const [filterType, setFilterType] = useState("All Types");
@@ -76,7 +78,19 @@ export default function ProlanceDashboard() {
   const [openPostModal, setOpenPostModal] = useState(false);
   const [activeTab, setActiveTab] = useState("find");
   const [selectedJob, setSelectedJob] = useState(null);
+  const handleAddProject = (project) => {
+    const formattedProject = {
+      ...project,
+      price:
+        project.budgetType === "Hourly"
+          ? `$${project.budget} / hr`
+          : `$${project.budget}`,
+      level: project.difficulty.toLowerCase(),
+      tags: project.skills || [],
+    };
 
+    setJobs((prev) => [formattedProject, ...prev]);
+  };
   // ✅ FILTER LOGIC (ADDED)
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
@@ -283,7 +297,12 @@ export default function ProlanceDashboard() {
         />
       )}
 
-      {openPostModal && <PostProjectModal closeModal={() => setOpenPostModal(false)} />}
+      {openPostModal && (
+        <PostProjectModal
+          closeModal={() => setOpenPostModal(false)}
+          onAddProject={handleAddProject}   // ✅ IMPORTANT
+        />
+      )}
     </div>
   );
 }
