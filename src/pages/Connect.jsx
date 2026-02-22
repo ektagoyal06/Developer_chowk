@@ -121,7 +121,7 @@ export default function Dashboard() {
   const [openBooking, setOpenBooking] = useState(false);
   const [mySessions, setMySessions] = React.useState([]); // empty for now
   const [mentorList, setMentorList] = useState(initialMentors);
-
+  const [selectedMentor, setSelectedMentor] = useState(null);
 
   /* ===== ADD MENTOR FROM MODAL ===== */
   const handleAddMentor = (mentor) => {
@@ -364,7 +364,10 @@ export default function Dashboard() {
                   </div>
 
                   <button
-                    onClick={() => setOpenBooking(true)}
+                    onClick={() => {
+                      setSelectedMentor(mentor);
+                      setOpenBooking(true);
+                    }}
                     className="mt-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold"
                   >
                     Book Session
@@ -392,15 +395,18 @@ export default function Dashboard() {
 
       </div>
       <CreateMentorshipModal
-  open={showMentorshipForm}
-  onClose={() => setShowMentorshipForm(false)}
-  onAddMentor={handleAddMentor}
-/>
-
+        open={showMentorshipForm}
+        onClose={() => setShowMentorshipForm(false)}
+        onAddMentor={handleAddMentor}
+      />
 
       <BookSessionModal
         open={openBooking}
-        onClose={() => setOpenBooking(false)}
+        onClose={() => {
+          setOpenBooking(false);
+          setSelectedMentor(null);
+        }}
+        mentor={selectedMentor}
       />
 
     </div>

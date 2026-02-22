@@ -1,7 +1,7 @@
 import React from "react";
 
-export default function BookSessionModal({ open, onClose }) {
-  if (!open) return null;
+export default function BookSessionModal({ open, onClose, mentor }) {
+  if (!open || !mentor) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
@@ -15,27 +15,29 @@ export default function BookSessionModal({ open, onClose }) {
           ✕
         </button>
 
-        <h2 className="text-lg font-semibold mb-4">
-          Book Session with Anjali Arora
+        <h2 className="text-xl font-bold mb-4">
+          Book Session with {mentor.name}
         </h2>
 
         {/* Session Card */}
         <div className="bg-gray-50 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold">Interview preparation</h3>
+          <h3 className="font-semibold">{mentor.title}</h3>
 
           <div className="flex justify-between text-sm mt-2">
             <span className="text-gray-500">Duration:</span>
-            <span>60 minutes</span>
+            <span>{mentor.duration} minutes</span>
           </div>
 
           <div className="flex justify-between text-sm mt-1">
             <span className="text-gray-500">Price:</span>
-            <span className="text-green-600 font-medium">₹500</span>
+            <span className="text-green-600 font-medium">
+              ₹{mentor.price}
+            </span>
           </div>
 
           <div className="flex justify-between text-sm mt-1">
             <span className="text-gray-500">Session Type:</span>
-            <span>One-on-One</span>
+            <span>{mentor.type}</span>
           </div>
         </div>
 

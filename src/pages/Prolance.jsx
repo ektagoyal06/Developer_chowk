@@ -69,7 +69,7 @@ const initialJobs = [
 
 export default function ProlanceDashboard() {
   const [jobs, setJobs] = useState(initialJobs);
-
+  const [viewJob, setViewJob] = useState(null);
   const [search, setSearch] = useState("");
   const [filterDomain, setFilterDomain] = useState("All Domains");
   const [filterType, setFilterType] = useState("All Types");
@@ -246,7 +246,7 @@ export default function ProlanceDashboard() {
         </div>
 
         {activeTab === "find" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredJobs.length === 0 && (
               <div className="col-span-full text-center text-gray-500">
                 No jobs match your filters.
@@ -272,13 +272,21 @@ export default function ProlanceDashboard() {
                     ))}
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedJob(job)}
-                  className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
-                >
-                  Apply Now →
-                </button>
+                <div className="mt-4 space-y-2">
+                  <button
+                    onClick={() => setViewJob(job)}
+                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-semibold"
+                  >
+                    View Details
+                  </button>
 
+                  <button
+                    onClick={() => setSelectedJob(job)}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold"
+                  >
+                    Apply Now →
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -302,6 +310,74 @@ export default function ProlanceDashboard() {
           closeModal={() => setOpenPostModal(false)}
           onAddProject={handleAddProject}   // ✅ IMPORTANT
         />
+      )}
+
+      {viewJob && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white w-[700px] max-h-[90vh] overflow-y-auto rounded-xl shadow-xl p-6 relative">
+
+            {/* Close */}
+            <button
+              onClick={() => setViewJob(null)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-black text-lg"
+            >
+              ✕
+            </button>
+
+            {/* Title */}
+            <h2 className="text-2xl font-bold mb-2">
+              {viewJob.title}
+            </h2>
+
+            {/* Level + Price */}
+            <div className="flex gap-3 items-center mb-4">
+              <span className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm">
+                {viewJob.level}
+              </span>
+              <span className="text-green-600 font-semibold text-lg">
+                {viewJob.price}
+              </span>
+            </div>
+
+            {/* Description */}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-2">Project Description</h3>
+              <p className="text-gray-600 leading-relaxed text-sm">
+                {viewJob.description}
+              </p>
+            </div>
+
+            {/* Skills */}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-2">Required Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {viewJob.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-gray-200 rounded-full text-xs"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setViewJob(null);
+                  setSelectedJob(viewJob);
+                }}
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+              >
+                Apply for this Job
+              </button>
+
+            </div>
+
+          </div>
+        </div>
       )}
     </div>
   );
