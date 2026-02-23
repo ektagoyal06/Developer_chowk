@@ -18,6 +18,7 @@ import {
   ChartBarIcon,
   BoltIcon,
   StarIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 
 import { Link } from "react-router-dom";   // <-- ADDED
@@ -122,6 +123,8 @@ export default function Dashboard() {
   const [mySessions, setMySessions] = React.useState([]); // empty for now
   const [mentorList, setMentorList] = useState(initialMentors);
   const [selectedMentor, setSelectedMentor] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [mentorToDelete, setMentorToDelete] = useState(null);
 
   /* ===== ADD MENTOR FROM MODAL ===== */
   const handleAddMentor = (mentor) => {
@@ -134,6 +137,16 @@ export default function Dashboard() {
       },
       ...prev
     ]);
+  };
+  const handleDeleteClick = (id) => {
+    setMentorToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteMentor = () => {
+    setMentorList(prev => prev.filter(m => m.id !== mentorToDelete));
+    setShowDeleteModal(false);
+    setMentorToDelete(null);
   };
 
   const filteredMentors = mentorList.filter(
@@ -228,7 +241,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 mt-5">
+            <h1 className="text-3xl font-bold flex items-center gap-2 mb-1">
               <ChatBubbleLeftRightIcon className="w-6 h-6" />
               Let's Connect
             </h1>
@@ -363,15 +376,29 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setSelectedMentor(mentor);
-                      setOpenBooking(true);
-                    }}
-                    className="mt-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold"
-                  >
-                    Book Session
-                  </button>
+                  <div className="mt-6 flex gap-2 items-center">
+
+                    {/* Book */}
+                    <button
+                      onClick={() => {
+                        setSelectedMentor(mentor);
+                        setOpenBooking(true);
+                      }}
+                      className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold"
+                    >
+                      Book Session
+                    </button>
+
+                    {/* Trash (only if posted by current user) */}
+
+                    <button
+                      onClick={() => handleDeleteClick(mentor.id)}
+                      className="px-3 py-2 border rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </button>
+
+                  </div>
                 </div>
               ))
             )}
@@ -391,7 +418,35 @@ export default function Dashboard() {
             )}
           </div>
         )}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white w-[500px] rounded-2xl shadow-xl p-8">
 
+              <h2 className="text-2xl font-bold mb-4">Are you sure?</h2>
+
+              <p className="text-gray-600 mb-8">
+                This action cannot be undone. This will permanently delete this mentorship listing.
+              </p>
+
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="px-6 py-2 border rounded-lg hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={confirmDeleteMentor}
+                  className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                >
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
 
       </div>
       <CreateMentorshipModal

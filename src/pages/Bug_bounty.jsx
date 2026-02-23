@@ -18,6 +18,7 @@ import {
   BugAntIcon,
   MagnifyingGlassIcon,
   PlusIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
@@ -73,7 +74,8 @@ export default function Dashboard() {
   const [openBugModal, setOpenBugModal] = useState(false);
   const [priceRange, setPriceRange] = useState("All");
   const [bugs, setBugs] = useState(initialBugs);
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bugToDelete, setBugToDelete] = useState(null);
 
   const handleAddBug = (bugData) => {
     setBugs(prev => [
@@ -84,6 +86,16 @@ export default function Dashboard() {
       },
       ...prev
     ]);
+  };
+  const handleDeleteClick = (index) => {
+    setBugToDelete(index);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteBug = () => {
+    setBugs((prev) => prev.filter((_, i) => i !== bugToDelete));
+    setShowDeleteModal(false);
+    setBugToDelete(null);
   };
 
   // ✅ FILTER LOGIC
@@ -171,7 +183,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 mt-5">
+            <h1 className="text-3xl font-bold flex items-center gap-2 mb-1">
               <BugAntIcon className="w-6 h-6" /> Bug Bounty
             </h1>
             <p className="text-gray-500">
@@ -300,12 +312,26 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setSelectedBug(bug)}
-                  className="mt-6 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold"
-                >
-                  Apply
-                </button>
+                <div className="mt-6 flex gap-2">
+
+                  <button
+                    onClick={() => setSelectedBug(bug)}
+                    className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold"
+                  >
+                    Apply
+                  </button>
+
+                  {/* ✅ Trash Icon (Only Poster Can See) */}
+
+                  <button
+                    onClick={() => handleDeleteClick(idx)}
+                    className="px-3 py-2 border rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+                  >
+                    <TrashIcon className="w-5 h-5" />
+                  </button>
+
+
+                </div>
 
               </div>
             ))}
@@ -319,9 +345,9 @@ export default function Dashboard() {
         )}
         {openBugModal && (
           <PostBugModal
-  closeModal={() => setOpenBugModal(false)}
-  onPostBug={handleAddBug}
-/>
+            closeModal={() => setOpenBugModal(false)}
+            onPostBug={handleAddBug}
+          />
 
 
         )}
@@ -331,6 +357,35 @@ export default function Dashboard() {
             onClose={() => setSelectedBug(null)}
           />
         )}
+        {showDeleteModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div className="bg-white w-[500px] rounded-2xl shadow-xl p-8">
+
+      <h2 className="text-2xl font-bold mb-4">Are you sure?</h2>
+
+      <p className="text-gray-600 mb-8">
+        This action cannot be undone. This will permanently delete this bug.
+      </p>
+
+      <div className="flex justify-end gap-4">
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-6 py-2 border rounded-lg hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={confirmDeleteBug}
+          className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+        >
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
 
       </div>
     </div>

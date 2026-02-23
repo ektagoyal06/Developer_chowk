@@ -564,7 +564,7 @@ export default function Dashboard() {
 
         {/* PROJMART */}
         {activeTab === "ProjMart" && (
-          <div className="p-6 bg-white rounded-lg shadow">
+          <div className="p-6 ">
             <div className="grid grid-cols-3 gap-6">
               {/* Card 1 */}
               <div className="border rounded-lg overflow-hidden shadow">

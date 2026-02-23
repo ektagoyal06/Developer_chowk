@@ -15,6 +15,7 @@ import {
   BoltIcon,
   ChartBarIcon,
   StarIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
@@ -78,6 +79,9 @@ export default function ProlanceDashboard() {
   const [openPostModal, setOpenPostModal] = useState(false);
   const [activeTab, setActiveTab] = useState("find");
   const [selectedJob, setSelectedJob] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState(null);
+
   const handleAddProject = (project) => {
     const formattedProject = {
       ...project,
@@ -87,9 +91,20 @@ export default function ProlanceDashboard() {
           : `$${project.budget}`,
       level: project.difficulty.toLowerCase(),
       tags: project.skills || [],
+      // poster: currentUser, // ✅ ADDED
     };
 
     setJobs((prev) => [formattedProject, ...prev]);
+  };
+  const handleDeleteClick = (index) => {
+    setJobToDelete(index);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteJob = () => {
+    setJobs((prev) => prev.filter((_, i) => i !== jobToDelete));
+    setShowDeleteModal(false);
+    setJobToDelete(null);
   };
   // ✅ FILTER LOGIC (ADDED)
   const filteredJobs = jobs.filter((job) => {
@@ -182,7 +197,7 @@ export default function ProlanceDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold mt-5">Prolance</h1>
+            <h1 className="text-3xl font-bold mb-1">Prolance</h1>
             <p className="text-gray-500">Find your next gig or hire top talent.</p>
           </div>
           <button
@@ -275,17 +290,30 @@ export default function ProlanceDashboard() {
                 <div className="mt-4 space-y-2">
                   <button
                     onClick={() => setViewJob(job)}
-                    className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-semibold"
+                    className="w-full px-4 py-2 bg-green-500 text-white rounded-lg font-semibold"
                   >
                     View Details
                   </button>
 
-                  <button
-                    onClick={() => setSelectedJob(job)}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold"
-                  >
-                    Apply Now →
-                  </button>
+                  {/* Apply + Delete Row */}
+                  <div className="flex gap-2">
+
+                    <button
+                      onClick={() => setSelectedJob(job)}
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold"
+                    >
+                      Apply Now →
+                    </button>
+
+                    {/* ✅ Trash Icon Beside Apply */}
+
+                    <button
+                      onClick={() => handleDeleteClick(idx)}
+                      className="px-3 py-2 border rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -312,6 +340,35 @@ export default function ProlanceDashboard() {
         />
       )}
 
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white w-[500px] rounded-2xl shadow-xl p-8">
+
+            <h2 className="text-2xl font-bold mb-4">Are you sure?</h2>
+
+            <p className="text-gray-700 mb-8 font-semibold">
+              This action cannot be undone. This will permanently delete this job.
+            </p>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-6 py-2 border rounded-lg hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDeleteJob}
+                className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+              >
+                Delete
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
       {viewJob && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-[700px] max-h-[90vh] overflow-y-auto rounded-xl shadow-xl p-6 relative">

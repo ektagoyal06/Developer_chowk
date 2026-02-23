@@ -185,7 +185,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 mt-5">
+            <h1 className="text-3xl font-bold flex items-center gap-2 mb-1">
               <ArchiveBoxIcon className="w-7 h-7 text-indigo-600" />
               StudyStack
             </h1>

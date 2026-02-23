@@ -229,7 +229,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold mt-5">📘 MindMerge</h1>
+            <h1 className="text-3xl font-bold mb-1">📘 MindMerge</h1>
             <p className="text-gray-600">
               Buy and sell study notes from top students.
             </p>

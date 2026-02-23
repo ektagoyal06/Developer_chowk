@@ -17,6 +17,7 @@ import {
   BoltIcon,
   ChartBarIcon,
   StarIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
@@ -77,6 +78,7 @@ const defaultProjects = [
     due: "Due by Aug 1, 2024",
     tags: ["React", "WebSockets", "Canvas API"],
     recruiting: true,
+    poster: "Anjali Arora",
   },
   {
     title: "E-Commerce Platform with AI Recommendations",
@@ -88,6 +90,7 @@ const defaultProjects = [
     due: "Due by Aug 15, 2024",
     tags: ["React", "Node.js", "MongoDB"],
     recruiting: true,
+    poster: "Anjali Arora",
   },
   {
     title: "Social Media App for College Students",
@@ -99,22 +102,48 @@ const defaultProjects = [
     due: "Due by Jul 30, 2024",
     tags: ["React Native", "Firebase", "Node.js"],
     recruiting: true,
+    poster: "Anjali Arora",
   },
 ];
 
 export default function Dashboard() {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("Browse Projects");
   const [projects, setProjects] = useState(defaultProjects);
   const [isOpen, setIsOpen] = useState(false);
   const [isLookingModalOpen, setIsLookingModalOpen] = useState(false);
   const [selectedBrowseProject, setSelectedBrowseProject] = useState(null);
   const [showBrowseModal, setShowBrowseModal] = useState(false);
+  const currentUser = "Anjali Arora";
 
   // ADD NEW PROJECT FROM MODAL
   const handleAddProject = (newProject) => {
-    setProjects((prev) => [newProject, ...prev]);
+    setProjects((prev) => [
+      { ...newProject, poster: currentUser }, // ✅ ensure poster saved
+      ...prev,
+    ]);
+  };
+  // ✅ DELETE FUNCTION
+  const handleDeleteProject = (index) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+
+    if (confirmDelete) {
+      setProjects((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+  const handleDeleteClick = (index) => {
+    setProjectToDelete(index);
+    setShowDeleteModal(true);
   };
 
+  const confirmDeleteProject = () => {
+    setProjects((prev) => prev.filter((_, i) => i !== projectToDelete));
+    setShowDeleteModal(false);
+    setProjectToDelete(null);
+  };
 
   return (
     <div className="flex h-screen bg-blue-50 text-gray-900">
@@ -185,7 +214,7 @@ export default function Dashboard() {
         <header className="flex justify-between items-center mb-8">
           {/* Left Side Title */}
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 mt-5">
+            <h1 className="text-3xl font-bold flex items-center gap-2 mb-1">
               <span>👥</span> TeamsHive
             </h1>
             <p className="text-gray-500">
@@ -296,6 +325,15 @@ export default function Dashboard() {
                   >
                     <UserPlusIcon size={16} /> Join Team
                   </button>
+                  {/* ✅ DUSTBIN BUTTON (Only Poster Can See) */}
+                  {proj.poster === currentUser && (
+                    <button
+                      onClick={() => handleDeleteClick(idx)}
+                      className="px-3 py-2 border rounded-lg hover:bg-red-100 transition flex items-center justify-center text-red-600"
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </button>
+                  )}
 
                 </div>
 
@@ -324,7 +362,35 @@ export default function Dashboard() {
         onClose={() => setIsLookingModalOpen(false)}
         onPostProject={handleAddProject}
       />
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white w-[500px] rounded-2xl shadow-xl p-8">
 
+            <h2 className="text-2xl font-bold mb-4">Are you sure?</h2>
+
+            <p className="text-gray-600 mb-8">
+              This action cannot be undone. This will permanently delete your material.
+            </p>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-6 py-2 border rounded-lg hover:bg-gray-100 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmDeleteProject}
+                className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+              >
+                Delete
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
       {showBrowseModal && selectedBrowseProject && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-[650px] max-h-[90vh] overflow-y-auto rounded-xl shadow-xl p-6 relative">
