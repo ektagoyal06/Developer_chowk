@@ -1,42 +1,16 @@
 import React, { useState } from "react";
 import CreateProjectModal from "../components/CreateProjectModal";
-import { Link } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+// import { Link } from "react-router-dom";
 
 import {
-  HomeIcon,
-  FolderIcon,
-  UserGroupIcon,
-  BriefcaseIcon,
-  Cog6ToothIcon,
-  ChatBubbleLeftRightIcon,
-  BookOpenIcon,
-  ArchiveBoxIcon,
-  TrophyIcon,
-  UserCircleIcon,
   EyeIcon,
   TrashIcon,
   UsersIcon,
   UserPlusIcon,
   CalendarIcon,
   PlusIcon,
-  BoltIcon,
-  StarIcon,
-  ChartBarIcon,
 } from "@heroicons/react/24/outline";
-
-/* Sidebar Links */
-const sidebarLinks = [
-  { icon: HomeIcon, title: "Home", subtitle: "Your personalized feed", path: "/" },
-  { icon: FolderIcon, title: "ProjectArena", subtitle: "Discover & collaborate", path: "/project" },
-  { icon: UserGroupIcon, title: "TeamsHive", subtitle: "Find your squad", path: "/teams" },
-  { icon: BriefcaseIcon, title: "Prolance", subtitle: "Earn while you code", path: "/prolance" },
-  { icon: Cog6ToothIcon, title: "Bug Bounty", subtitle: "Fix & get rewards", path: "/bug-bounty" },
-  { icon: ChatBubbleLeftRightIcon, title: "Let's Connect", subtitle: "Find mentors", path: "/connect" },
-  { icon: BookOpenIcon, title: "MindMerge", subtitle: "Buy & sell notes", path: "/mind-merge" },
-  { icon: ArchiveBoxIcon, title: "StudyStack", subtitle: "Courses & materials", path: "/study-stack" },
-  { icon: TrophyIcon, title: "Leaderboard", subtitle: "Compete & rank up", path: "/leaderboard" },
-];
-
 
 /* Default Projects */
 const initialProjects = [
@@ -306,64 +280,7 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen bg-white text-gray-900">
       {/* Sidebar */}
-      <div className="w-64 bg-white flex flex-col border-r border-gray-300">
-        <div className="flex items-center p-4 space-x-3 border-b border-gray-200">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-lg flex items-center justify-center text-white text-xl font-bold">
-            &lt;/&gt;
-          </div>
-          <div>
-            <h1 className="font-bold text-lg">Developer Chowk</h1>
-            <p className="text-xs text-gray-600">Build. Collaborate. Grow.</p>
-          </div>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-          {sidebarLinks.map(({ icon: Icon, title, subtitle, path }) => (
-            <Link
-              to={path}                // <-- ADDED NAVIGATION
-              key={title}
-              className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 cursor-pointer"
-            >
-              <Icon className="w-5 h-5" />
-              <div className="text-sm">
-                <p className="font-semibold text-gray-900">{title}</p>
-                <p className="text-xs text-gray-400">{subtitle}</p>
-              </div>
-            </Link>
-          ))}
-        </nav>
-
-        <div className="m-4 p-4 bg-white rounded-lg shadow text-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl">
-              <UserCircleIcon className="w-7 h-7" />
-            </div>
-            <div>
-              <h2 className="font-bold">Anjali Arora</h2>
-              <span className="text-xs px-2 py-1 bg-gray-200 rounded-full">Developer</span>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
-            <p className="flex items-center text-green-600 space-x-1">
-              <BoltIcon className="w-4 h-4" />
-              <span>Streak: 0</span>
-            </p>
-            <p className="flex items-center text-orange-500 space-x-1">
-              <StarIcon className="w-4 h-4" />
-              <span>Rating: 0</span>
-            </p>
-            <p className="flex items-center text-blue-700 space-x-1">
-              <ChartBarIcon className="w-4 h-4" />
-              <span>Projects: 0</span>
-            </p>
-            <p className="flex items-center text-red-600 space-x-1">
-              <BoltIcon className="w-4 h-4" />
-              <span>Bugs: 0</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
+      <Sidebar />
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto p-10 bg-gradient-to-br from-indigo-50 to-white">
         {/* Header */}
@@ -686,71 +603,71 @@ export default function Dashboard() {
       </main>
 
       {showProjectModal && selectedProject && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-    <div className="bg-white w-[600px] max-h-[90vh] overflow-y-auto rounded-xl shadow-lg p-6 relative">
-      
-      {/* Close Button */}
-      <button
-        onClick={() => setShowProjectModal(false)}
-        className="absolute top-4 right-4 text-gray-500 hover:text-black"
-      >
-        ✕
-      </button>
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white w-[600px] max-h-[90vh] overflow-y-auto rounded-xl shadow-lg p-6 relative">
 
-      {/* Project Title */}
-      <h2 className="text-2xl font-bold mb-3">
-        {selectedProject.title}
-      </h2>
+            {/* Close Button */}
+            <button
+              onClick={() => setShowProjectModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
 
-      {/* Status */}
-      <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm">
-        Open
-      </span>
+            {/* Project Title */}
+            <h2 className="text-2xl font-bold mb-3">
+              {selectedProject.title}
+            </h2>
 
-      {/* Tags */}
-      <div className="flex gap-2 mt-4 flex-wrap">
-        <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm capitalize">
-          {selectedProject.level}
-        </span>
-        <span className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm lowercase">
-          {selectedProject.domain}
-        </span>
-      </div>
+            {/* Status */}
+            <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm">
+              Open
+            </span>
 
-      {/* Description */}
-      <div className="mt-5">
-        <h3 className="font-semibold mb-2">Project Description</h3>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          {selectedProject.description}
-        </p>
-      </div>
+            {/* Tags */}
+            <div className="flex gap-2 mt-4 flex-wrap">
+              <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm capitalize">
+                {selectedProject.level}
+              </span>
+              <span className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm lowercase">
+                {selectedProject.domain}
+              </span>
+            </div>
 
-      {/* Details */}
-      <div className="mt-6 space-y-3 text-sm text-gray-600">
-        <div className="flex items-center gap-2">
-          <UsersIcon className="w-4 h-4" />
-          Members Required: {selectedProject.members}
+            {/* Description */}
+            <div className="mt-5">
+              <h3 className="font-semibold mb-2">Project Description</h3>
+              <p className="text-gray-600 text-sm leading-relaxed">
+                {selectedProject.description}
+              </p>
+            </div>
+
+            {/* Details */}
+            <div className="mt-6 space-y-3 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <UsersIcon className="w-4 h-4" />
+                Members Required: {selectedProject.members}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <UserPlusIcon className="w-4 h-4" />
+                Applications: {selectedProject.applications}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="w-4 h-4" />
+                Due Date: {selectedProject.due}
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <button className="mt-6 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-2 rounded-md font-semibold hover:brightness-110">
+              Apply for this Project
+            </button>
+
+          </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <UserPlusIcon className="w-4 h-4" />
-          Applications: {selectedProject.applications}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="w-4 h-4" />
-          Due Date: {selectedProject.due}
-        </div>
-      </div>
-
-      {/* Apply Button */}
-      <button className="mt-6 w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-2 rounded-md font-semibold hover:brightness-110">
-        Apply for this Project
-      </button>
-
-    </div>
-  </div>
-)}
+      )}
       {/* DELETE CONFIRMATION MODAL */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

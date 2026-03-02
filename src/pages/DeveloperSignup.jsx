@@ -40,6 +40,15 @@ const CS_STACKS = [
   "Cyber Security",
   "Go Backend",
 ];
+
+const DOMAIN_OPTIONS = {
+  "B.Tech": ["Web Development", "AI/ML", "Cyber Security", "Data Science","Cloud Computing", "DevOps", "Full Stack"],
+  // "B.Tech IT": ["Cloud Computing", "DevOps", "Full Stack"],
+  "BCA": ["Web Development", "Mobile App Dev"],
+  "MCA": ["AI/ML", "Software Engineering"],
+  Other: ["General Tech", "Research", "Management"]
+};
+
 const SKILLS = [
   "C",
   "C++",
@@ -293,7 +302,8 @@ export default function DeveloperChowkAuth() {
     cf: "",
     aims: [],
     projects: [{ title: "", link: "", description: "" }],
-    certs: [""],
+    certs: [{ name: "", file: null }],
+    domain: "",
   });
 
   // HR form state
@@ -464,112 +474,231 @@ export default function DeveloperChowkAuth() {
   }
 
   function submitAll() {
+    // Save logged in user to localStorage
+    localStorage.setItem(
+      "dcUser",
+      JSON.stringify({
+        name: dev.name,
+        email: dev.email,
+        role: role,
+      })
+    );
+
     setSubmitted(true);
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // Dashboards (simple)
-  if (submitted) {
+  if (submitted && role === "developer") {
     return (
-      <div className="min-h-screen bg-indigo-50">
-        <header className="mx-auto max-w-5xl px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-2xl bg-indigo-600 grid place-content-center text-white font-bold">
-                DC
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+
+        {/* ===== HEADER ===== */}
+        <div className="max-w-6xl mx-auto px-6 pt-10">
+
+          <div className="bg-white rounded-3xl shadow-xl p-8 border border-indigo-100">
+
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+              {/* Profile Info */}
+              <div>
+                <h1 className="text-3xl font-bold text-indigo-900">
+                  {dev.name}
+                </h1>
+
+                <p className="text-indigo-600">{dev.location}</p>
+
+                {/* NEW INFO SECTION */}
+                <div className="mt-3 space-y-1 text-sm text-gray-700">
+                  {dev.email && (
+                    <p>📧 {dev.email}</p>
+                  )}
+                  {dev.mobile && (
+                    <p>📱 {dev.mobile}</p>
+                  )}
+                  {dev.college && (
+                    <p>🎓 {dev.college}</p>
+                  )}
+                </div>
+
+                {/* SOCIAL LINKS */}
+                <div className="flex flex-wrap gap-3 mt-3 text-sm">
+                  {dev.github && (
+                    <a
+                      href={dev.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:underline"
+                    >
+                      GitHub
+                    </a>
+                  )}
+
+                  {dev.lc && (
+                    <a
+                      href={dev.lc}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:underline"
+                    >
+                      LeetCode
+                    </a>
+                  )}
+
+                  {dev.linkedin && (
+                    <a
+                      href={dev.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-600 hover:underline"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                </div>
               </div>
-              <h1 className="text-2xl font-bold text-indigo-900">
-                Developer Chowk
-              </h1>
+              {/* Resume Badge */}
+              {dev.resume && (
+                <div className="bg-indigo-50 px-6 py-4 rounded-2xl border border-indigo-100 text-center">
+                  <div className="text-indigo-600 text-sm">Resume</div>
+                  <div className="font-semibold text-indigo-900 text-sm">
+                    {dev.resume.name}
+                  </div>
+                </div>
+              )}
             </div>
-            <span className="rounded-full bg-white px-4 py-1.5 text-indigo-700 border border-indigo-200">
-              {role.toUpperCase()} Dashboard
-            </span>
           </div>
-        </header>
-        <main className="mx-auto max-w-5xl px-4 pb-16 space-y-6">
-          {role === "developer" ? (
-            <div className="grid gap-6 lg:grid-cols-3">
-              <Section title="Quick Actions">
-                <div className="grid gap-2">
-                  <button className="rounded-xl bg-indigo-600 px-4 py-2 text-white font-medium hover:bg-indigo-700">
-                    Post Project
-                  </button>
-                  <button className="rounded-xl bg-white px-4 py-2 text-indigo-700 font-medium border border-indigo-200 hover:bg-indigo-50">
-                    Find Collaborators
-                  </button>
-                  <button className="rounded-xl bg-white px-4 py-2 text-indigo-700 font-medium border border-indigo-200 hover:bg-indigo-50">
-                    Apply for Jobs
-                  </button>
-                </div>
-              </Section>
-              <Section title="Profile Snapshot">
-                <PreviewBlock title="Name" value={dev.name} />
-                <PreviewBlock title="GitHub" value={dev.github} />
-                <PreviewBlock title="Stacks" value={dev.stacks.join(", ")} />
-                <PreviewBlock
-                  title="Top Skills"
-                  value={dev.skills.slice(0, 5).join(", ")}
-                />
-              </Section>
-              <Section title="Activity">
-                <div className="text-sm text-indigo-900">
-                  Active skills start at 0% and rise with platform activity.
-                </div>
-                <div className="mt-2 space-y-2">
+
+          {/* ===== MAIN GRID ===== */}
+          <div className="grid lg:grid-cols-3 gap-8 mt-10">
+
+            {/* LEFT - SKILLS */}
+            <div className="lg:col-span-2 space-y-8">
+
+              {/* Skill Progress */}
+              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
+                <h2 className="text-xl font-bold text-indigo-900 mb-6">
+                  🧠 Skill Progress
+                </h2>
+
+                <div className="space-y-5">
                   {(dev.skills.length ? dev.skills : ["JavaScript", "React"])
-                    .slice(0, 4)
-                    .map((s, i) => (
-                      <div key={i}>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-indigo-700">{s}</span>
-                          <span>0%</span>
+                    .slice(0, 6)
+                    .map((skill, i) => {
+                      const percent = 0;
+                      return (
+                        <div key={i}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="font-medium text-indigo-700">
+                              {skill}
+                            </span>
+                            <span className="text-indigo-600">{percent}%</span>
+                          </div>
+                          <div className="h-3 rounded-full bg-indigo-100 overflow-hidden">
+                            <div
+                              className="h-3 bg-gradient-to-r from-indigo-500 to-purple-500"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
                         </div>
-                        <div className="h-2 rounded-full bg-indigo-100" />
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
-              </Section>
-            </div>
-          ) : (
-            <div className="grid gap-6 lg:grid-cols-3">
-              <Section title="Quick Actions">
-                <div className="grid gap-2">
-                  <button className="rounded-xl bg-indigo-600 px-4 py-2 text-white font-medium hover:bg-indigo-700">
-                    Post Job
-                  </button>
-                  <button className="rounded-xl bg-white px-4 py-2 text-indigo-700 font-medium border border-indigo-200 hover:bg-indigo-50">
-                    Post Competition
-                  </button>
-                  <button className="rounded-xl bg-white px-4 py-2 text-indigo-700 font-medium border border-indigo-200 hover:bg-indigo-50">
-                    View Applicants
-                  </button>
+              </div>
+
+              {/* Projects */}
+              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
+                <h2 className="text-xl font-bold text-indigo-900 mb-6">
+                  📂 Projects
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  {dev.projects.map((p, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl p-6 border border-indigo-100 bg-indigo-50 hover:shadow-lg transition"
+                    >
+                      <h3 className="font-semibold text-indigo-800 mb-2">
+                        {p.title}
+                      </h3>
+                      <p className="text-sm text-indigo-700 mb-3 line-clamp-3">
+                        {p.description}
+                      </p>
+                      {p.link && (
+                        <a
+                          href={p.link}
+                          target="_blank"
+                          className="text-indigo-600 text-sm font-medium hover:underline"
+                        >
+                          🔗 View Project
+                        </a>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </Section>
-              <Section title="Company">
-                <PreviewBlock title="Company Name" value={hr.companyName} />
-                <PreviewBlock title="Website" value={hr.website} />
-                <PreviewBlock
-                  title="Hiring For"
-                  value={hr.reqSkills.slice(0, 6).join(", ")}
-                />
-              </Section>
-              <Section title="Upcoming">
-                {hr.compTitle ? (
-                  <div className="text-sm text-indigo-900">
-                    Competition{" "}
-                    <span className="font-medium">{hr.compTitle}</span> planned
-                    from {hr.startDate} to {hr.endDate}.
-                  </div>
-                ) : (
-                  <div className="text-sm text-indigo-900">
-                    No competitions yet. Create one to engage the community!
-                  </div>
-                )}
-              </Section>
+              </div>
             </div>
-          )}
-        </main>
+
+            {/* RIGHT - STACKS + STATS */}
+            <div className="space-y-8">
+
+              {/* Tech Stacks */}
+              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
+                <h2 className="text-xl font-bold text-indigo-900 mb-4">
+                  💻 Tech Stack
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                  {dev.stacks.map((stack, i) => (
+                    <span
+                      key={i}
+                      className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow"
+                    >
+                      {stack}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stats Card */}
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl shadow-xl p-8">
+                <h2 className="text-xl font-bold mb-4">📊 Developer Stats</h2>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span>Projects</span>
+                    <span>{dev.projects.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Skills</span>
+                    <span>{dev.skills.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Stacks</span>
+                    <span>{dev.stacks.length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Aims */}
+              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
+                <h2 className="text-xl font-bold text-indigo-900 mb-4">
+                  🎯 Goals on DC
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {dev.aims.map((aim, i) => (
+                    <span
+                      key={i}
+                      className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
+                    >
+                      {aim}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     );
   }
@@ -853,6 +982,7 @@ export default function DeveloperChowkAuth() {
                         }
                       />
                     </div>
+                    {/* DEGREE + DOMAIN (Same Column) */}
                     <div>
                       <label className="block text-sm font-medium text-indigo-900">
                         Degree
@@ -862,7 +992,7 @@ export default function DeveloperChowkAuth() {
                         className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                         value={dev.degree}
                         onChange={(e) =>
-                          setDev({ ...dev, degree: e.target.value })
+                          setDev({ ...dev, degree: e.target.value, domain: "" }) // reset domain when degree changes
                         }
                       >
                         <option value="">Select Degree</option>
@@ -874,7 +1004,7 @@ export default function DeveloperChowkAuth() {
                         <option value="Other">Other</option>
                       </select>
 
-                      {/* Show input when Other is selected */}
+                      {/* Other Degree Input */}
                       {dev.degree === "Other" && (
                         <input
                           type="text"
@@ -886,9 +1016,34 @@ export default function DeveloperChowkAuth() {
                           }
                         />
                       )}
+
+                      {/* DOMAIN DROPDOWN */}
+                      {dev.degree && (
+                        <div className="mt-3">
+                          <label className="block text-sm font-medium text-indigo-900">
+                            Domain
+                          </label>
+
+                          <select
+                            className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                            value={dev.domain}
+                            onChange={(e) =>
+                              setDev({ ...dev, domain: e.target.value })
+                            }
+                          >
+                            <option value="">Select Domain</option>
+                            {(DOMAIN_OPTIONS[dev.degree] || []).map((d) => (
+                              <option key={d} value={d}>
+                                {d}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
 
-                    <div>
+                    {/* COLLEGE - New Row */}
+                    <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-indigo-900">
                         College
                       </label>
@@ -909,7 +1064,6 @@ export default function DeveloperChowkAuth() {
                         <option value="Other">Other</option>
                       </select>
 
-                      {/* Show input when Other is selected */}
                       {dev.college === "Other" && (
                         <input
                           type="text"
@@ -920,6 +1074,35 @@ export default function DeveloperChowkAuth() {
                             setDev({ ...dev, otherCollege: e.target.value })
                           }
                         />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-indigo-900">
+                        University CGPA
+                      </label>
+
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="10"
+                        placeholder="Enter your CGPA (0 - 10)"
+                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                        value={dev.cgpa || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+
+                          // Allow only valid CGPA between 0 and 10
+                          if (value === "" || (Number(value) >= 0 && Number(value) <= 10)) {
+                            setDev({ ...dev, cgpa: value });
+                          }
+                        }}
+                      />
+
+                      {dev.cgpa && (Number(dev.cgpa) < 0 || Number(dev.cgpa) > 10) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          CGPA must be between 0 and 10
+                        </p>
                       )}
                     </div>
 
@@ -1220,19 +1403,44 @@ export default function DeveloperChowkAuth() {
 
               {devStep === 7 && (
                 <Section title="Certifications">
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {dev.certs.map((c, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
+                      <div
+                        key={idx}
+                        className="space-y-3 p-4 rounded-xl border border-indigo-200 bg-indigo-50"
+                      >
+                        {/* Certification Name */}
                         <input
                           placeholder="Certification name"
                           className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                          value={c}
+                          value={c.name}
                           onChange={(e) => {
                             const arr = [...dev.certs];
-                            arr[idx] = e.target.value;
+                            arr[idx].name = e.target.value;
                             setDev({ ...dev, certs: arr });
                           }}
                         />
+
+                        {/* Upload Certificate */}
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2 bg-white"
+                          onChange={(e) => {
+                            const arr = [...dev.certs];
+                            arr[idx].file = e.target.files[0];
+                            setDev({ ...dev, certs: arr });
+                          }}
+                        />
+
+                        {/* Show selected file name */}
+                        {c.file && (
+                          <p className="text-sm text-green-600">
+                            Uploaded: {c.file.name}
+                          </p>
+                        )}
+
+                        {/* Remove Button */}
                         <button
                           type="button"
                           onClick={() =>
@@ -1241,16 +1449,21 @@ export default function DeveloperChowkAuth() {
                               certs: dev.certs.filter((_, i) => i !== idx),
                             })
                           }
-                          className="rounded-xl border border-indigo-200 px-3 py-2 text-indigo-700 hover:bg-indigo-50"
+                          className="rounded-xl border border-red-200 px-3 py-2 text-red-600 hover:bg-red-50"
                         >
                           Remove
                         </button>
                       </div>
                     ))}
+
+                    {/* Add Certification */}
                     <button
                       type="button"
                       onClick={() =>
-                        setDev({ ...dev, certs: [...dev.certs, ""] })
+                        setDev({
+                          ...dev,
+                          certs: [...dev.certs, { name: "", file: null }],
+                        })
                       }
                       className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
                     >
@@ -1261,96 +1474,214 @@ export default function DeveloperChowkAuth() {
               )}
 
               {devStep === 8 && (
-                <Section title="Profile Review">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <PreviewBlock title="Full Name" value={dev.name} />
-                      <PreviewBlock title="Email" value={dev.email} />
-                      <PreviewBlock title="Phone" value={dev.phone} />
-                      <PreviewBlock title="Age" value={dev.age} />
-                      <PreviewBlock title="Location" value={dev.location} />
-                      <PreviewBlock
-                        title="Education"
-                        value={`${dev.degree} @ ${dev.college}`}
-                      />
-                      <PreviewBlock
-                        title="10th / 12th"
-                        value={`${dev.tenth}% / ${dev.twelfth}%`}
-                      />
-                      <PreviewBlock
-                        title="Stacks"
-                        value={dev.stacks.join(", ")}
-                      />
-                      <PreviewBlock
-                        title="Skills"
-                        value={dev.skills.join(", ")}
-                      />
-                    </div>
-                    <div className="space-y-3">
-                      <PreviewBlock title="GitHub" value={dev.github} />
-                      <PreviewBlock title="LeetCode" value={dev.lc} />
-                      <PreviewBlock title="Codeforces" value={dev.cf} />
-                      <PreviewBlock title="Aims" value={dev.aims.join(", ")} />
-                      <div>
-                        <div className="text-xs uppercase tracking-wider text-indigo-500">
-                          Projects
-                        </div>
-                        <ul className="list-disc pl-5 text-sm text-indigo-900">
-                          {dev.projects.map((p, i) => (
-                            <li key={i}>
-                              <span className="font-medium">{p.title}</span>
-                              {p.link ? ` – ${p.link}` : ""}
-                            </li>
-                          ))}
-                        </ul>
+                <Section title="🚀 Profile Review">
+                  <div className="space-y-8">
+
+                    {/* ===== Profile Header ===== */}
+                    <div className="flex items-center gap-6 bg-indigo-50 p-6 rounded-2xl border border-indigo-100 shadow-sm">
+                      <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                        {dev.name?.charAt(0)}
                       </div>
-                      <PreviewBlock
-                        title="Certifications"
-                        value={dev.certs.filter(Boolean).join(", ")}
-                      />
-                      {dev.resume && (
-                        <PreviewBlock title="Resume" value={dev.resume.name} />
-                      )}
+                      <div>
+                        <h2 className="text-2xl font-bold text-indigo-900">{dev.name}</h2>
+                        <p className="text-sm text-indigo-600">{dev.email}</p>
+                        <p className="text-sm text-indigo-600">{dev.location}</p>
+                      </div>
+                    </div>
+
+                    {/* ===== Main Grid ===== */}
+                    <div className="grid md:grid-cols-2 gap-6">
+
+                      {/* LEFT SIDE */}
+                      <div className="bg-white rounded-2xl shadow-md p-6 border border-indigo-100 space-y-4">
+                        <h3 className="text-lg font-semibold text-indigo-700">
+                          📌 Personal Information
+                        </h3>
+
+                        <PreviewBlock title="Phone" value={dev.phone} />
+                        <PreviewBlock title="Age" value={dev.age} />
+                        <PreviewBlock
+                          title="Education"
+                          value={`${dev.degree} @ ${dev.college}`}
+                        />
+                        <PreviewBlock
+                          title="10th / 12th"
+                          value={`${dev.tenth}% / ${dev.twelfth}%`}
+                        />
+
+                        <div>
+                          <div className="text-sm font-medium text-indigo-600 mb-2">
+                            💻 Tech Stacks
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {dev.stacks.map((stack, i) => (
+                              <span
+                                key={i}
+                                className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium"
+                              >
+                                {stack}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="text-sm font-medium text-indigo-600 mb-2">
+                            ⚡ Skills
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {dev.skills.map((skill, i) => (
+                              <span
+                                key={i}
+                                className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* RIGHT SIDE */}
+                      <div className="bg-white rounded-2xl shadow-md p-6 border border-indigo-100 space-y-4">
+                        <h3 className="text-lg font-semibold text-indigo-700">
+                          🌐 Professional Links
+                        </h3>
+
+                        <PreviewBlock title="GitHub" value={dev.github} />
+                        <PreviewBlock title="LeetCode" value={dev.lc} />
+                        <PreviewBlock title="Codeforces" value={dev.cf} />
+
+                        <div>
+                          <div className="text-sm font-medium text-indigo-600 mb-2">
+                            🎯 Aims
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {dev.aims.map((aim, i) => (
+                              <span
+                                key={i}
+                                className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium"
+                              >
+                                {aim}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Projects Card Style */}
+                        <div>
+                          <div className="text-sm font-medium text-indigo-600 mb-2">
+                            📂 Projects
+                          </div>
+                          <div className="space-y-3">
+                            {dev.projects.map((p, i) => (
+                              <div
+                                key={i}
+                                className="p-4 rounded-xl border border-indigo-100 bg-indigo-50 hover:shadow-md transition"
+                              >
+                                <div className="font-semibold text-indigo-800">
+                                  {p.title}
+                                </div>
+                                {p.link && (
+                                  <a
+                                    href={p.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-indigo-600 hover:underline"
+                                  >
+                                    🔗 View Project
+                                  </a>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="text-sm font-medium text-indigo-600 mb-2">
+                            🎓 Certifications
+                          </div>
+
+                          <div className="space-y-3">
+                            {dev.certs
+                              .filter((c) => c.name)
+                              .map((c, i) => (
+                                <div
+                                  key={i}
+                                  className="p-4 rounded-xl border border-indigo-100 bg-indigo-50"
+                                >
+                                  <div className="font-semibold text-indigo-800">
+                                    {c.name}
+                                  </div>
+
+                                  {c.file && (
+                                    <div className="text-sm text-green-600 mt-1">
+                                      📄 {c.file.name}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+
+                            {dev.certs.filter((c) => c.name).length === 0 && (
+                              <p className="text-sm text-gray-400">No certifications added</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {dev.resume && (
+                          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                            <div className="text-sm font-medium text-indigo-600">
+                              📄 Resume Uploaded
+                            </div>
+                            <div className="text-sm text-indigo-800 font-medium">
+                              {dev.resume.name}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Section>
               )}
 
-              <div className="flex justify-between">
+              <div className="flex justify-between mt-8">
                 <button
                   disabled={devStep === 0}
                   onClick={() => setDevStep((s) => Math.max(0, s - 1))}
-                  className={`rounded-xl px-4 py-2 font-medium border ${devStep === 0
-                    ? "opacity-50 cursor-not-allowed border-indigo-200 text-indigo-300"
-                    : "text-indigo-700 border-indigo-200 hover:bg-indigo-50"
+                  className={`rounded-xl px-5 py-2 font-medium transition-all duration-200 ${devStep === 0
+                    ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400"
+                    : "bg-white border border-indigo-300 text-indigo-700 hover:bg-indigo-50"
                     }`}
                 >
-                  Back
+                  ← Back
                 </button>
+
                 {devStep < DEV_STEPS.length - 1 ? (
                   <button
                     disabled={!canContinue}
                     onClick={() =>
                       setDevStep((s) => Math.min(DEV_STEPS.length - 1, s + 1))
                     }
-                    className={`rounded-xl px-6 py-2 font-semibold text-white ${canContinue
-                      ? "bg-indigo-600 hover:bg-indigo-700"
+                    className={`rounded-xl px-6 py-2 font-semibold text-white transition-all duration-200 ${canContinue
+                      ? "bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg"
                       : "bg-indigo-300"
                       }`}
                   >
-                    Continue
+                    Continue →
                   </button>
                 ) : (
                   <button
                     onClick={submitAll}
-                    className="rounded-xl px-6 py-2 font-semibold text-white bg-indigo-600 hover:bg-indigo-700"
+                    className="rounded-xl px-8 py-3 font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-105 transition-transform shadow-lg"
                   >
-                    Submit & Create Developer Account
+                    🚀 Submit & Create Developer Account
                   </button>
                 )}
               </div>
             </div>
           ) : (
+
+
             // --- HR FLOW --- //
             <div className="grid gap-6">
               {hrStep === 0 && (
