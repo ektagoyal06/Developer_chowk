@@ -65,14 +65,14 @@ export default function LandingPage() {
                 <a href="/teams" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>🔄</span> <span>TeamHive</span>
                 </a>
-                <a href="/mind-merge" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
-                  <span>⚡</span> <span>MindMerge</span>
+                <a href="/prolance" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                  <span>📄</span> <span>ProLance</span>
                 </a>
                 <a href="/bug-bounty" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>🛡️</span> <span>BugBounty</span>
                 </a>
-                <a href="/prolance" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
-                  <span>📄</span> <span>ProLance</span>
+                <a href="/mind-merge" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
+                  <span>⚡</span> <span>MindMerge</span>
                 </a>
                 <a href="/study-stack" className="flex items-center space-x-2 mb-2 hover:text-blue-500">
                   <span>📚</span> <span>StudyStack</span>
@@ -566,7 +566,7 @@ export default function LandingPage() {
               <div className="relative h-56 w-56 [transform-style:preserve-3d] transition-transform duration-700 group-hover:[transform:rotateY(180deg)]">
                 {/* Front */}
                 <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white dark:bg-gray-800 shadow-xl p-4 text-center text-gray-800 dark:text-gray-200 [backface-visibility:hidden]">
-                  <p className="font-semibold">{card.front}</p>
+                  <div className="font-semibold">{card.front}</div>
                 </div>
                 {/* Back */}
                 <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl p-4 text-center [transform:rotateY(180deg)] [backface-visibility:hidden]">

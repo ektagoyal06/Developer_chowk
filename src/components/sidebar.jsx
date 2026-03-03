@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HomeIcon,
   FolderIcon,
@@ -17,7 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 const sidebarLinks = [
-  { icon: HomeIcon, title: "Home", subtitle: "Your personalized feed", path: "/" },
+  { icon: HomeIcon, title: "Home", subtitle: "Your personalized feed", path: "/home" },
   { icon: FolderIcon, title: "ProjectArena", subtitle: "Discover & collaborate", path: "/project" },
   { icon: UserGroupIcon, title: "TeamsHive", subtitle: "Find your squad", path: "/teams" },
   { icon: BriefcaseIcon, title: "Prolance", subtitle: "Earn while you code", path: "/prolance" },
@@ -29,6 +30,7 @@ const sidebarLinks = [
 ];
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -57,10 +59,9 @@ export default function Sidebar() {
               to={path}
               key={title}
               className={({ isActive }) =>
-                `flex items-center space-x-3 transition ${
-                  isActive
-                    ? "text-purple-600 font-semibold"
-                    : "text-gray-700 hover:text-purple-500"
+                `flex items-center space-x-3 transition ${isActive
+                  ? "text-purple-600 font-semibold"
+                  : "text-gray-700 hover:text-purple-500"
                 }`
               }
             >

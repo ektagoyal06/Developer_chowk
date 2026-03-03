@@ -194,27 +194,27 @@ export default function Dashboard() {
 
                 {/* BUTTONS */}
                 <div className="flex gap-2 mt-auto w-full">
-
-                  <button
-                    onClick={() => {
-                      setSelectedBrowseProject(proj);
-                      setShowBrowseModal(true);
-                    }}
-                    className="flex-1 min-w-0 px-3 py-2 border rounded-lg hover:bg-gray-100 transition flex items-center justify-center gap-1 font-semibold"
-                  >
-                    <EyeIcon size={16} /> Explore
-                  </button>
-
                   <button
                     className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
                   >
                     <UserPlusIcon size={16} /> Join Team
                   </button>
+                  <button
+                    onClick={() => {
+                      setSelectedBrowseProject(proj);
+                      setShowBrowseModal(true);
+                    }}
+                    className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition flex items-center justify-center text-gray-600"
+                  >
+                    <EyeIcon size={16} />
+                  </button>
+
+
                   {/* ✅ DUSTBIN BUTTON (Only Poster Can See) */}
                   {proj.poster === currentUser && (
                     <button
                       onClick={() => handleDeleteClick(idx)}
-                      className="px-3 py-2 border rounded-lg hover:bg-red-100 transition flex items-center justify-center text-red-600"
+                      className="px-3 py-2 border border-red-400 rounded-lg hover:bg-red-100 transition flex items-center justify-center text-red-600"
                     >
                       <TrashIcon className="w-5 h-5" />
                     </button>

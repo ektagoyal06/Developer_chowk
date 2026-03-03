@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Eye, EyeOff, Moon, Sun } from "lucide-react";
+import { Link } from "react-router-dom";
 // import { Eye, EyeOff } from "lucide-react";
 
 // --- Mock catalogs --- //
@@ -42,7 +43,7 @@ const CS_STACKS = [
 ];
 
 const DOMAIN_OPTIONS = {
-  "B.Tech": ["Web Development", "AI/ML", "Cyber Security", "Data Science","Cloud Computing", "DevOps", "Full Stack"],
+  "B.Tech": ["Web Development", "AI/ML", "Cyber Security", "Data Science", "Cloud Computing", "DevOps", "Full Stack"],
   // "B.Tech IT": ["Cloud Computing", "DevOps", "Full Stack"],
   "BCA": ["Web Development", "Mobile App Dev"],
   "MCA": ["AI/ML", "Software Engineering"],
@@ -492,8 +493,14 @@ export default function DeveloperChowkAuth() {
   // Dashboards (simple)
   if (submitted && role === "developer") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative">
+        {/* ===== TOP RIGHT HOME ICON ===== */}
+        <Link
+          to="/home"
+          className="absolute top-10 right-10 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-lg hover:scale-105 transition duration-200"
+        >
+          {dev?.name?.charAt(0).toUpperCase()}
+        </Link>
         {/* ===== HEADER ===== */}
         <div className="max-w-6xl mx-auto px-6 pt-10">
 

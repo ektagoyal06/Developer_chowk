@@ -208,7 +208,7 @@ export default function Dashboard() {
 
                   className="p-2 rounded-lg hover:bg-red-50 transition"
                 >
-                  <Trash2 className="w-5 h-5 text-red-600 hover:text-red-700" />
+                  <Trash2 className="w-5 h-5 text-red-600 hover:text-red-700 " />
                 </button>
 
               </div>

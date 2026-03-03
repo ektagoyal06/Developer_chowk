@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { useNavigate } from "react-router-dom";
 import {
   TrophyIcon,
-  UserCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CalendarDaysIcon,
@@ -67,7 +67,41 @@ const competitions = [
   },
 ];
 
-export default function Dashboard() {
+
+export default function Home() {
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const user = localStorage.getItem("dcUser");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      setUserName(parsedUser.name);
+    }
+  }, []);
+
+  const stats = [
+    {
+      icon: CalendarDaysIcon,
+      title: "Day Streak",
+      value: "12",
+    },
+    {
+      icon: TrophyIcon,
+      title: "Bugs Fixed",
+      value: "34",
+    },
+    {
+      icon: CalendarDaysIcon,
+      title: "Projects",
+      value: "8",
+    },
+    {
+      icon: TrophyIcon,
+      title: "Rating",
+      value: "4.8",
+    },
+  ];
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900">
       {/* Sidebar */}
@@ -80,12 +114,19 @@ export default function Dashboard() {
           {/* Welcome + Stats Row */}
           <div className="flex flex-wrap items-stretch gap-6">
             <div className="flex-1 min-w-[300px] bg-gradient-to-r from-purple-600 to-purple-400 rounded-xl p-6 text-white shadow-lg">
-              <h1 className="font-bold text-2xl">Welcome, Anjali 👋</h1>
-              <p className="text-sm mt-1">Code, collaborate, conquer! 🎯</p>
+              <h1 className="font-bold text-4xl">
+                Welcome, {userName || "Developer"} 👋
+              </h1>
+              <p className="text-lg mt-1">Code, collaborate, conquer! 🎯</p>
               <div className="mt-5 space-x-3">
                 <button className="bg-purple-500 hover:bg-purple-400 px-4 py-2 rounded-md font-semibold">Complete Profile</button>
                 <button className="bg-purple-500 hover:bg-purple-400 px-4 py-2 rounded-md font-semibold">Create Team Room</button>
-                <button className="bg-purple-500 hover:bg-purple-400 px-4 py-2 rounded-md font-semibold">Explore Projects</button>
+                <button
+                  onClick={() => navigate("/project")}
+                  className="bg-purple-500 hover:bg-purple-400 px-4 py-2 rounded-md font-semibold"
+                >
+                  Explore Projects
+                </button>
               </div>
             </div>
 

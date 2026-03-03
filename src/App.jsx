@@ -13,6 +13,7 @@ import Connect from "./pages/Connect";
 import StudyStack from "./pages/StudyStack"; 
 
 
+
 const App = () => (
   <Router>
     <Routes>
@@ -26,6 +27,7 @@ const App = () => (
       <Route path="/mind-merge" element={<MindMerge />} />
       <Route path="/connect" element={<Connect />} />
       <Route path="/study-stack" element={<StudyStack />} />
+      {/* <Route path="/developer" element={<DeveloperSignup />} /> */}
     </Routes>
   </Router>
 );
