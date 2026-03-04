@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
 import DeveloperSignup from "./pages/DeveloperSignup";
-import Home from "./pages/Home";   // ✅ Added Home.jsx
+import Home from "./pages/Home";  
 import Project from "./pages/Project"; 
 import Teams from "./pages/Teams";   
 import Prolance from "./pages/Prolance"; 
@@ -19,7 +19,7 @@ const App = () => (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/signup" element={<DeveloperSignup />} />
-      <Route path="/home" element={<Home />} />   {/* ✅ Added Route */}
+      <Route path="/home" element={<Home />} />  
       <Route path="/project" element={<Project />} />
       <Route path="/teams" element={<Teams />} />
       <Route path="/prolance" element={<Prolance />} />
@@ -27,7 +27,6 @@ const App = () => (
       <Route path="/mind-merge" element={<MindMerge />} />
       <Route path="/connect" element={<Connect />} />
       <Route path="/study-stack" element={<StudyStack />} />
-      {/* <Route path="/developer" element={<DeveloperSignup />} /> */}
     </Routes>
   </Router>
 );

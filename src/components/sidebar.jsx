@@ -41,10 +41,13 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100 text-gray-900">
-      <div className="w-64 bg-white flex flex-col border-r border-gray-300">
-        <div className="flex items-center p-4 space-x-3 border-b border-gray-200">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+    <div className="flex h-screen bg-gray-100 text-gray-900 ">
+      <div className="w-64 bg-white flex flex-col border-r border-gray-300 w-[240px]">
+        <div className="flex items-center p-4 space-x-3 border-b border-gray-200 mt-3">
+          <div
+            onClick={() => navigate("/")}
+            className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-lg flex items-center justify-center text-white text-xl font-bold cursor-pointer hover:scale-105 transition"
+          >
             &lt;/&gt;
           </div>
           <div>
