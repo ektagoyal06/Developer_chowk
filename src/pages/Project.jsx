@@ -260,6 +260,18 @@ export default function Dashboard() {
     setOpenSellModal(false);
   };
 
+  const handleApply = () => {
+    const user = localStorage.getItem("dcUser");
+
+    if (!user) {
+      alert("⚠️ Please Sign Up / Login first to apply.");
+      return;
+    }
+
+    // If user exists
+    alert("✅ Application submitted successfully!");
+  };
+
   /* ---------------------- FILTER LOGIC ---------------------- */
   const filteredProjects = projects.filter((p) => {
     const matchesSearch =
@@ -287,7 +299,7 @@ export default function Dashboard() {
         <header className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold mb-1">ProjectArena</h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 font-semibold">
               Discover amazing projects and build together
             </p>
           </div>
@@ -448,7 +460,10 @@ export default function Dashboard() {
                   </div>
 
                   <div className="flex space-x-3 mt-6">
-                    <button className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 rounded-md hover:brightness-110">
+                    <button
+                      onClick={handleApply}
+                      className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 rounded-md hover:brightness-110"
+                    >
                       Apply
                     </button>
 

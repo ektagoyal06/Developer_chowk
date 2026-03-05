@@ -476,20 +476,22 @@ export default function DeveloperChowkAuth() {
   }
 
   function submitAll() {
-    // Save logged in user to localStorage
-    localStorage.setItem(
-      "dcUser",
-      JSON.stringify({
-        name: dev.name,
-        email: dev.email,
-        role: role,
-      })
-    );
+  // Save logged in user
+  const userData = {
+    name: dev.name,
+    email: dev.email,
+    role: role,
+  };
 
-    setSubmitted(true);
+  localStorage.setItem("dcUser", JSON.stringify(userData));
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  // 🔔 Notify whole app (Navbar, Sidebar etc.)
+  window.dispatchEvent(new Event("userAuthChanged"));
+
+  setSubmitted(true);
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
   // Dashboards (simple)
   if (submitted && role === "developer") {

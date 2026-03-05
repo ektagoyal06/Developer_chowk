@@ -3,10 +3,22 @@ import { XMarkIcon, BoltIcon } from "@heroicons/react/24/outline";
 export default function BugDetailsModal({ bug, onClose }) {
   if (!bug) return null;
 
+  const handleApply = () => {
+    const user = localStorage.getItem("dcUser");
+
+    if (!user) {
+      alert("⚠️ Please Sign Up / Login first to apply.");
+      navigate("/signup");
+      return;
+    }
+
+    // user is logged in → continue apply logic
+    console.log("User applied successfully");
+  };
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6 relative">
-        
+
         {/* Close */}
         <button
           onClick={onClose}
@@ -70,7 +82,10 @@ export default function BugDetailsModal({ bug, onClose }) {
             >
               Close
             </button>
-            <button className="px-4 py-2 bg-red-500 text-white rounded-lg flex items-center gap-2">
+            <button
+              onClick={handleApply}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg flex items-center gap-2 hover:bg-red-600 transition"
+            >
               ⭐ Apply
             </button>
           </div>

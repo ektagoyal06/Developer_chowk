@@ -350,7 +350,7 @@ export default function ProlanceDashboard() {
                 }}
                 className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
               >
-                Apply for this Job
+                Apply for this task
               </button>
 
             </div>

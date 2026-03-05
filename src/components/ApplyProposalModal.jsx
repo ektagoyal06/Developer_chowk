@@ -48,6 +48,19 @@ export default function ApplyProposalModal({ job, onClose }) {
     onClose();
   };
 
+  const handleProposal = () => {
+    const user = localStorage.getItem("dcUser");
+
+    if (!user) {
+      alert("⚠️ Please Sign Up / Login first to send a proposal.");
+      navigate("/signup");
+      return;
+    }
+
+    // if logged in
+    handleSubmit();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white w-full max-w-lg rounded-xl p-6 relative">
@@ -73,9 +86,8 @@ export default function ApplyProposalModal({ job, onClose }) {
           value={proposal}
           onChange={(e) => setProposal(e.target.value)}
           placeholder="Explain why you're the best fit..."
-          className={`w-full border rounded-lg p-3 mb-4 resize-none ${
-            error && !proposal ? "border-red-500" : ""
-          }`}
+          className={`w-full border rounded-lg p-3 mb-4 resize-none ${error && !proposal ? "border-red-500" : ""
+            }`}
           rows={4}
         />
 
@@ -90,9 +102,8 @@ export default function ApplyProposalModal({ job, onClose }) {
               type="number"
               value={bid}
               onChange={(e) => setBid(e.target.value)}
-              className={`w-full border rounded-lg p-2 ${
-                error && !bid ? "border-red-500" : ""
-              }`}
+              className={`w-full border rounded-lg p-2 ${error && !bid ? "border-red-500" : ""
+                }`}
             />
           </div>
 
@@ -105,9 +116,8 @@ export default function ApplyProposalModal({ job, onClose }) {
               value={delivery}
               onChange={(e) => setDelivery(e.target.value)}
               placeholder="e.g. 2 weeks"
-              className={`w-full border rounded-lg p-2 ${
-                error && !delivery ? "border-red-500" : ""
-              }`}
+              className={`w-full border rounded-lg p-2 ${error && !delivery ? "border-red-500" : ""
+                }`}
             />
           </div>
         </div>
@@ -135,8 +145,8 @@ export default function ApplyProposalModal({ job, onClose }) {
 
         {/* Submit */}
         <button
-          onClick={handleSubmit}
-          className="w-full py-3 bg-black text-white rounded-lg font-semibold"
+          onClick={handleProposal}
+          className="w-full py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition"
         >
           Send Proposal
         </button>

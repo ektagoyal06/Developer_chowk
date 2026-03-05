@@ -88,6 +88,18 @@ export default function Dashboard() {
     setProjectToDelete(null);
   };
 
+  const handleJoinTeam = () => {
+    const user = localStorage.getItem("dcUser");
+
+    if (!user) {
+      alert("⚠️ Please Sign Up / Login first to join a team.");
+      navigate("/signup"); // redirect to signup page
+      return;
+    }
+
+    alert("✅ Request sent to join the team!");
+  };
+
   return (
     <div className="flex h-screen bg-blue-50 text-gray-900">
       <Sidebar />
@@ -129,7 +141,7 @@ export default function Dashboard() {
 
 
         {/* Tabs */}
-        <div className="flex border-b bg-white rounded-lg overflow-hidden w-full mb-8">
+        <div className="flex border-b bg-white rounded-lg overflow-hidden w-full mb-8 p-2 text-lg">
           {["Browse Projects", "Browse Rooms", "My Rooms", "Applications"].map((tab) => (
             <button
               key={tab}
@@ -195,6 +207,7 @@ export default function Dashboard() {
                 {/* BUTTONS */}
                 <div className="flex gap-2 mt-auto w-full">
                   <button
+                    onClick={handleJoinTeam}
                     className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
                   >
                     <UserPlusIcon size={16} /> Join Team
@@ -335,12 +348,15 @@ export default function Dashboard() {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <button className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-100 transition">
+              <button className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-100 transition font-bold">
                 Contact Team
               </button>
-              <button className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
-                Join Team
-              </button>
+              <button
+                    onClick={handleJoinTeam}
+                    className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
+                  >
+                    <UserPlusIcon size={16} /> Join Team
+                  </button>
             </div>
 
           </div>

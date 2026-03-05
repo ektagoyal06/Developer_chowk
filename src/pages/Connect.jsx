@@ -103,6 +103,19 @@ export default function Dashboard() {
     setMentorToDelete(null);
   };
 
+  const handleBookSession = (mentor) => {
+    const user = localStorage.getItem("dcUser");
+
+    if (!user) {
+      alert("⚠️ Please Sign Up / Login first to book a session.");
+      navigate("/signup");
+      return;
+    }
+
+    setSelectedMentor(mentor);
+    setOpenBooking(true);
+  };
+
   const filteredMentors = mentorList.filter(
     (mentor) => {
       const matchesSearch =
@@ -278,15 +291,11 @@ export default function Dashboard() {
 
                     {/* Book */}
                     <button
-                      onClick={() => {
-                        setSelectedMentor(mentor);
-                        setOpenBooking(true);
-                      }}
-                      className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold"
+                      onClick={() => handleBookSession(mentor)}
+                      className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:brightness-110 transition"
                     >
                       Book Session
                     </button>
-
                     {/* Trash (only if posted by current user) */}
 
                     <button

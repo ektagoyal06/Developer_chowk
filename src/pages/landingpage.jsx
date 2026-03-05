@@ -1,17 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-
 export default function LandingPage() {
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "dark";
+  });
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState(false);
 
-  const toggleTheme = () => setDarkMode(!darkMode);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("dcUser");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
+  const toggleTheme = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("dcUser");
+    setUser(null);
+    setOpenDropdown(false);
+  };
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
   const slides = [
     {
       title: "Empowering Developers & Experts – All in One Platform",
@@ -86,28 +115,62 @@ export default function LandingPage() {
             </a>
 
             {/* Sign Up / Login Dropdown */}
-            <div className="relative group">
-              <button
-                onClick={() => navigate("/signup")}
-                className="transition text-gray-900 dark:text-white hover:text-blue-500"
-              >
-                Sign Up / Login
-              </button>
+            <div className="relative">
+              {user ? (
+                <>
+                  {/* PROFILE ICON */}
+                  <div
+                    onClick={() => setOpenDropdown(!openDropdown)}
+                    className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white font-bold cursor-pointer"
+                  >
+                    {user.name?.charAt(0).toUpperCase()}
+                  </div>
 
-              {/* <div className="absolute left-0 top-full  hidden group-hover:block bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden z-20">
-                <a
-                  href="/signup"
-                  className="block px-4 py-2 text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-gray-800"
+                  {/* DROPDOWN */}
+                  {openDropdown && (
+                    <div className="absolute right-0 mt-2 w-56 bg-gray-900 shadow-lg rounded-lg  text-sm overflow-hidden">
+
+                      <button
+                        onClick={() => navigate("/developer-dashboard")}
+                        className="block w-full text-left px-4 py-2 hover:text-blue-500"
+                      >
+                        <span>📝</span> <span>My Projects Contribution</span>
+                      </button>
+
+                      <button
+                        onClick={() => navigate("/prolance")}
+                        className="block w-full text-left px-4 py-2 hover:text-blue-500"
+                      >
+                        <span>📄</span> <span>My ProLance Contribution</span>
+                      </button>
+
+                      <button
+                        onClick={() => navigate("/bug-bounty")}
+                        className="block w-full text-left px-4 py-2 hover:text-blue-500"
+                      >
+                        <span>🛡️</span> <span>My Bugs Contribution</span>
+                      </button>
+
+                      <hr />
+
+                      <button
+                        onClick={handleSignOut}
+                        className="flex items-center space-x-2 w-full text-left px-4 py-2 text-red-500 mt-1 mb-1"
+                      >
+                        <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="transition text-white hover:text-blue-500"
                 >
-                  As Developer
-                </a>
-                <a
-                  href="/signup"
-                  className="block px-4 py-2 text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-gray-800"
-                >
-                  As Industry Expert
-                </a>
-              </div> */}
+                  Sign Up / Login
+                </button>
+              )}
             </div>
 
             {/* Theme Toggle */}
@@ -267,35 +330,44 @@ export default function LandingPage() {
       </section>
 
       {/* Find Teammate */}
-      <section className="py-10 px-6 max-w-6xl mx-auto text-center" id="findmate">
-        <motion.h2
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="text-4xl font-extrabold mb-6"
-        >
-          Looking for a Teammate?
-        </motion.h2>
+      <section
+        className="py-12 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10"
+        id="findmate"
+      >
+        {/* LEFT SIDE - TEXT */}
+        <div className="md:w-1/2 text-left">
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-4xl font-extrabold mb-6"
+          >
+            Looking for a Teammate?
+          </motion.h2>
 
-        <p className="text-gray-600 dark:text-black-300 font-bold mb-12 max-w-xl mx-auto">
-          Search developers by skills & location. Get AI suggestions for best teammate match.
-        </p>
+          <p className="text-gray-600 dark:text-black-300 font-bold mb-8 max-w-xl text-lg ">
+            Search developers by skills & location. Get AI suggestions for best
+            teammate match.
+          </p>
 
-        <motion.img
-          initial={{ scale: 0.8, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          src="/teammate.png"   // ✅ directly from public
-          alt="Teammates"
-          className="mx-auto w-85 h-80 mb-8 rounded-2xl"
-        />
+          <a
+            href="/teams"
+            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
+          >
+            Teamhive here
+          </a>
+        </div>
 
-        {/* Button added here */}
-        <a
-          href="/teams"
-          className="inline-block mt-6 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
-        >
-          Teamhive here
-        </a>
+        {/* RIGHT SIDE - IMAGE */}
+        <div className="md:w-1/2 flex justify-center">
+          <motion.img
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            src="/teammate.png"
+            alt="Teammates"
+            className="w-85 h-80 rounded-2xl"
+          />
+        </div>
       </section>
 
 
@@ -335,34 +407,44 @@ export default function LandingPage() {
       </section>
 
       {/* Freelance */}
-      <section className="py-8 px-6 max-w-5xl mx-auto text-center">
+      <section className="py-12 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+
+        {/* LEFT SIDE - TEXT */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
+          className="md:w-1/2 text-left"
         >
           <h2 className="text-4xl font-extrabold mb-6">
             Become the top Prolancer
           </h2>
-          {/* text-gray-600 dark:text-black-300 */}
-          <h2 className="text-4xl font-bold mb-6">Work. Earn. Grow.</h2>
-          <p className="mb-10 text-gray-600 dark:text-black-300 font-bold max-w-xl mx-auto">
+
+          <h2 className="text-4xl font-bold mb-6">
+            Work. Earn. Grow.
+          </h2>
+
+          <p className="mb-8 text-gray-600 dark:text-black-300 font-bold max-w-xl text-lg">
             Browse freelance gigs, track payments & climb the leaderboard.
           </p>
-          <img
-            src="https://illustrations.popsy.co/gray/freelancer.svg"
-            alt="Freelance"
-            className="mx-auto w-96 h-80 drop-shadow-2xl"
-          />
-
-          {/* Button */}
           <a
             href="/prolance"
-            className="mt-10 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:opacity-90 transition"
+            className="mt-3 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:opacity-90 transition"
           >
             Prolance Now
           </a>
-
         </motion.div>
+
+        {/* RIGHT SIDE - IMAGE + BUTTON */}
+        <div className="md:w-1/2 flex flex-col items-center">
+          <img
+            src="https://illustrations.popsy.co/gray/freelancer.svg"
+            alt="Freelance"
+            className="w-96 h-80 drop-shadow-2xl"
+          />
+
+          
+        </div>
+
       </section>
 
 
@@ -680,11 +762,11 @@ export default function LandingPage() {
       </section>
 
       {/* Success Stories Section */}
-      <section className="py-10 px-6 max-w-7xl mx-auto" id="success">
-        <h2 className="text-4xl font-extrabold mb-8 text-center text-gray-800">
+      <section className="py-12 px-6 max-w-7xl mx-auto" id="success">
+        <h2 className="text-4xl font-extrabold mb-8 text-center text-black-800">
           Success Stories from Our Community
         </h2>
-        <p className="text-lg text-gray-700 text-center mb-14 max-w-3xl mx-auto">
+        <p className="text-lg text-gray-700 text-center mb-14 max-w-3xl mx-auto font-semibold">
           See how developers, freelancers, and innovators are growing with DevChowk.
         </p>
 
@@ -707,6 +789,7 @@ export default function LandingPage() {
               on real-world projects and even landed freelance gigs together!”
             </p>
           </motion.div>
+          
 
           {/* Story 2 */}
           <motion.div

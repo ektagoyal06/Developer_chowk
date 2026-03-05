@@ -34,10 +34,24 @@ export default function Sidebar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("dcUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+
+    const loadUser = () => {
+      const storedUser = localStorage.getItem("dcUser");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+    };
+
+    loadUser();
+
+    window.addEventListener("userAuthChanged", loadUser);
+
+    return () => {
+      window.removeEventListener("userAuthChanged", loadUser);
+    };
+
   }, []);
 
   return (
@@ -69,9 +83,9 @@ export default function Sidebar() {
               }
             >
               <Icon className="w-5 h-5" />
-              <div className="text-sm">
-                <p className="font-semibold">{title}</p>
-                <p className="text-xs text-gray-400">{subtitle}</p>
+              <div className="text-1xl">
+                <p className="font-semibold ">{title}</p>
+                <p className="text-xs text-gray-600 font-semibold">{subtitle}</p>
               </div>
             </NavLink>
           ))}
