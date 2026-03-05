@@ -476,22 +476,22 @@ export default function DeveloperChowkAuth() {
   }
 
   function submitAll() {
-  // Save logged in user
-  const userData = {
-    name: dev.name,
-    email: dev.email,
-    role: role,
-  };
+    // Save logged in user
+    const userData = {
+      name: dev.name,
+      email: dev.email,
+      role: role,
+    };
 
-  localStorage.setItem("dcUser", JSON.stringify(userData));
+    localStorage.setItem("dcUser", JSON.stringify(userData));
 
-  // 🔔 Notify whole app (Navbar, Sidebar etc.)
-  window.dispatchEvent(new Event("userAuthChanged"));
+    // 🔔 Notify whole app (Navbar, Sidebar etc.)
+    window.dispatchEvent(new Event("userAuthChanged"));
 
-  setSubmitted(true);
+    setSubmitted(true);
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   // Dashboards (simple)
   if (submitted && role === "developer") {
@@ -715,10 +715,10 @@ export default function DeveloperChowkAuth() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat relative"
+      className="min-h-screen bg-cover bg-center bg-no-repeat relative py-12"
       style={{ backgroundImage: "url('/watermark2.jpg')" }}
     >
-      <header className="mx-auto max-w-5xl px-4 py-6 mt-20 ">
+      <header className="mx-auto max-w-5xl px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-2xl bg-indigo-600 grid place-content-center text-white font-bold">

@@ -75,7 +75,7 @@ export default function LandingPage() {
             href="#"
             className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500"
           >
-            DevChowk
+            DeveloperChowk
           </a>
 
           {/* Desktop Menu */}

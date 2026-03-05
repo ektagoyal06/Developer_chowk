@@ -94,7 +94,16 @@ export default function Sidebar() {
         {/* ===== USER PROFILE CARD ===== */}
         <div className="m-4 p-4 bg-white rounded-lg shadow text-gray-700">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl">
+            <div
+              onClick={() => {
+                if (user) {
+                  navigate("/developer-dashboard");
+                } else {
+                  navigate("/signup");
+                }
+              }}
+              className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl cursor-pointer hover:scale-105 transition"
+            >
               <UserCircleIcon className="w-7 h-7" />
             </div>
             <div>
