@@ -298,7 +298,7 @@ export default function LandingPage() {
 
       {/* Join Community */}
       <section
-        className="py-20 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900"
+        className="py-20 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 mt-5"
         id="community"
       >
         <motion.div
@@ -327,7 +327,7 @@ export default function LandingPage() {
 
             <a
               href="/signup"
-              className="mt-6 inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
+              className="mt-6 inline-block px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform font-semibold text-lg"
             >
               Join the Community
             </a>
@@ -337,7 +337,7 @@ export default function LandingPage() {
 
       {/* Find Teammate */}
       <section
-        className="py-12 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10"
+        className="py-12 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 mt-8 mb-8"
         id="findmate"
       >
         {/* LEFT SIDE - TEXT */}
@@ -357,7 +357,7 @@ export default function LandingPage() {
 
           <a
             href="/teams"
-            className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
+            className="inline-block px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform text-xl font-semibold"
           >
             Teamhive here
           </a>
@@ -413,7 +413,7 @@ export default function LandingPage() {
       </section>
 
       {/* Freelance */}
-      <section className="py-12 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+      <section className="py-12 px-6 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 mt-8 mb-8 ">
 
         {/* LEFT SIDE - TEXT */}
         <motion.div
@@ -434,7 +434,7 @@ export default function LandingPage() {
           </p>
           <a
             href="/prolance"
-            className="mt-3 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:opacity-90 transition"
+            className="mt-3 inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:opacity-90 transition text-lg "
           >
             Prolance Now
           </a>
@@ -481,7 +481,7 @@ export default function LandingPage() {
             </p>
             <a
               href="/bug-bounty"
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform"
+              className="px-5 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl shadow-lg hover:scale-105 transition-transform font-semibold text-lg"
             >
               Go for Bug Bounty
             </a>

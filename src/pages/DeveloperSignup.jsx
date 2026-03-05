@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { Eye, EyeOff, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import CalendarHeatmap from "react-calendar-heatmap";
+import "react-calendar-heatmap/dist/styles.css";
+import { subDays } from "date-fns";
 // import DeveloperDashboard from "./pages/DeveloperDashboard";
 // import { Eye, EyeOff } from "lucide-react";
 
@@ -85,6 +89,8 @@ const EXPERIENCE_OPTIONS = [
   "3+ years",
   "5+ years",
 ];
+
+
 
 // Utility: simple fuzzy filter
 function filterLike(list, q) {
@@ -257,7 +263,7 @@ export default function DeveloperChowkAuth() {
   const [hrStep, setHrStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
+  const navigate = useNavigate();
 
   // OTP mock state
   const [otpSent, setOtpSent] = useState(false);
@@ -357,6 +363,17 @@ export default function DeveloperChowkAuth() {
     "Uploads (Optional)",
     "Review",
   ];
+
+  const today = new Date();
+
+const heatmapData = [
+  { date: "2025-03-01", count: 2 },
+  { date: "2025-03-05", count: 5 },
+  { date: "2025-03-12", count: 3 },
+  { date: "2025-04-01", count: 7 },
+  { date: "2025-04-10", count: 1 },
+  { date: "2025-04-15", count: 4 },
+];
 
   // Simple validators per step
   function validDevStep(i) {
@@ -500,201 +517,96 @@ export default function DeveloperChowkAuth() {
         {/* ===== TOP RIGHT HOME ICON ===== */}
         <Link
           to="/home"
-          className="absolute top-10 right-10 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-lg hover:scale-105 transition duration-200"
+          className="absolute top-5 right-5 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-lg hover:scale-105 transition duration-200"
         >
           {dev?.name?.charAt(0).toUpperCase()}
         </Link>
         {/* ===== HEADER ===== */}
-        <div className="max-w-6xl mx-auto px-6 pt-10">
+        <div className="max-w-[1400px] mx-auto px-8 pt-10">
 
           <div className="bg-white rounded-3xl shadow-xl p-8 border border-indigo-100">
+            <div className="flex gap-8 items-start">
 
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              {/* PROFILE SECTION */}
+              <div className="w-[320px] bg-white rounded-3xl shadow-lg border border-indigo-100 p-6 flex flex-col gap-6">
 
-              {/* Profile Info */}
-              <div>
-                <h1 className="text-3xl font-bold text-indigo-900">
-                  {dev.name}
-                </h1>
+                {/* PROFILE TOP */}
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
+                    {dev.name?.charAt(0)}
+                  </div>
 
-                <p className="text-indigo-600">{dev.location}</p>
-
-                {/* NEW INFO SECTION */}
-                <div className="mt-3 space-y-1 text-sm text-gray-700">
-                  {dev.email && (
-                    <p>📧 {dev.email}</p>
-                  )}
-                  {dev.mobile && (
-                    <p>📱 {dev.mobile}</p>
-                  )}
-                  {dev.college && (
-                    <p>🎓 {dev.college}</p>
-                  )}
-                </div>
-
-                {/* SOCIAL LINKS */}
-                <div className="flex flex-wrap gap-3 mt-3 text-sm">
-                  {dev.github && (
-                    <a
-                      href={dev.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-indigo-600 hover:underline"
-                    >
-                      GitHub
-                    </a>
-                  )}
-
-                  {dev.lc && (
-                    <a
-                      href={dev.lc}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-indigo-600 hover:underline"
-                    >
-                      LeetCode
-                    </a>
-                  )}
-
-                  {dev.linkedin && (
-                    <a
-                      href={dev.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-indigo-600 hover:underline"
-                    >
-                      LinkedIn
-                    </a>
-                  )}
-                </div>
-              </div>
-              {/* Resume Badge */}
-              {dev.resume && (
-                <div className="bg-indigo-50 px-6 py-4 rounded-2xl border border-indigo-100 text-center">
-                  <div className="text-indigo-600 text-sm">Resume</div>
-                  <div className="font-semibold text-indigo-900 text-sm">
-                    {dev.resume.name}
+                  <div>
+                    <h2 className="text-xl font-bold">{dev.name}</h2>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* ===== MAIN GRID ===== */}
-          <div className="grid lg:grid-cols-3 gap-8 mt-10">
+                <button className="w-full bg-gradient-to-r from-purple-600 to-purple-500 text-white py-2 rounded-lg font-semibold">
+                  Edit Profile
+                </button>
 
-            {/* LEFT - SKILLS */}
-            <div className="lg:col-span-2 space-y-8">
-
-              {/* Skill Progress */}
-              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
-                <h2 className="text-xl font-bold text-indigo-900 mb-6">
-                  🧠 Skill Progress
-                </h2>
-
-                <div className="space-y-5">
-                  {(dev.skills.length ? dev.skills : ["JavaScript", "React"])
-                    .slice(0, 6)
-                    .map((skill, i) => {
-                      const percent = 0;
-                      return (
-                        <div key={i}>
-                          <div className="flex justify-between text-sm mb-1">
-                            <span className="font-medium text-indigo-700">
-                              {skill}
-                            </span>
-                            <span className="text-indigo-600">{percent}%</span>
-                          </div>
-                          <div className="h-3 rounded-full bg-indigo-100 overflow-hidden">
-                            <div
-                              className="h-3 bg-gradient-to-r from-indigo-500 to-purple-500"
-                              style={{ width: `${percent}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
+                <div className="space-y-3 text-sm text-gray-700 font-semibold">
+                  <p>📍 {dev.location}</p>
+                  <p>🎓 {dev.college}</p>
+                  {dev.github && <p>🐙 {dev.github}</p>}
+                  {dev.linkedin && <p>💼 {dev.linkedin}</p>}
+                  {dev.resume && (
+                    <p>
+                      📄
+                      <a
+                        href={dev.resume}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 text-indigo-600 hover:underline"
+                      >
+                        View Resume
+                      </a>
+                    </p>
+                  )}
                 </div>
-              </div>
+                <hr />
 
-              {/* Projects */}
-              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
-                <h2 className="text-xl font-bold text-indigo-900 mb-6">
-                  📂 Projects
-                </h2>
+                {/* TECH STACK */}
+                <div>
+                  <h2 className="text-xl font-bold text-indigo-900 mb-4">
+                    💻 Tech Stack
+                  </h2>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  {dev.projects.map((p, i) => (
-                    <div
-                      key={i}
-                      className="rounded-2xl p-6 border border-indigo-100 bg-indigo-50 hover:shadow-lg transition"
-                    >
-                      <h3 className="font-semibold text-indigo-800 mb-2">
-                        {p.title}
-                      </h3>
-                      <p className="text-sm text-indigo-700 mb-3 line-clamp-3">
-                        {p.description}
-                      </p>
-                      {p.link && (
-                        <a
-                          href={p.link}
-                          target="_blank"
-                          className="text-indigo-600 text-sm font-medium hover:underline"
-                        >
-                          🔗 View Project
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT - STACKS + STATS */}
-            <div className="space-y-8">
-
-              {/* Tech Stacks */}
-              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
-                <h2 className="text-xl font-bold text-indigo-900 mb-4">
-                  💻 Tech Stack
-                </h2>
-                <div className="flex flex-wrap gap-3">
-                  {dev.stacks.map((stack, i) => (
-                    <span
-                      key={i}
-                      className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow"
-                    >
-                      {stack}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Stats Card */}
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-3xl shadow-xl p-8">
-                <h2 className="text-xl font-bold mb-4">📊 Developer Stats</h2>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span>Projects</span>
-                    <span>{dev.projects.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Skills</span>
-                    <span>{dev.skills.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Stacks</span>
-                    <span>{dev.stacks.length}</span>
+                  <div className="flex flex-wrap gap-3">
+                    {dev.stacks.map((stack, i) => (
+                      <span
+                        key={i}
+                        className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow"
+                      >
+                        {stack}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              </div>
+                <hr/>
+                {/* SKILLS */}
+                <div>
+                  <h3 className="text-lg font-semibold text-indigo-900 mb-4">
+                    🧠 Skills
+                  </h3>
 
-              {/* Aims */}
-              <div className="bg-white rounded-3xl shadow-md p-8 border border-indigo-100">
-                <h2 className="text-xl font-bold text-indigo-900 mb-4">
+                  <div className="flex flex-wrap gap-2">
+                    {dev.skills.map((skill, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 bg-gray-200 rounded-full text-xs font-medium"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <hr />
+
+                <h2 className="text-xl font-bold text-indigo-900 mb-1">
                   🎯 Goals on DC
                 </h2>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 ">
                   {dev.aims.map((aim, i) => (
                     <span
                       key={i}
@@ -703,11 +615,150 @@ export default function DeveloperChowkAuth() {
                       {aim}
                     </span>
                   ))}
+
+                  <hr/>
+
+                  {/* CERTIFICATIONS */}
+                  <div>
+                    <h2 className="text-xl font-bold text-indigo-900 mt-6 mb-5">
+                      📜 Certifications
+                    </h2>
+
+                    <div className="space-y-2">
+                      {dev.certs?.map((cert, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-sm"
+                        >
+                          <span className="font-medium text-yellow-900">
+                            {cert.name}
+                          </span>
+
+                          {cert.file && (
+                            <a
+                              href={cert.file}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-indigo-600 hover:underline text-xs ml-6"
+                            >
+                              View
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* PROJECT SECTION */}
+              <div className="flex-1 flex flex-col gap-6">
+
+                {/* ===== DEVELOPER STATS ===== */}
+                <div className="bg-white rounded-3xl shadow-md p-6 border border-indigo-100">
+                  <h2 className="text-xl font-bold text-indigo-900 mb-6">
+                    📊 Developer Stats
+                  </h2>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+                    {/* PROJECTS */}
+                    <div className="bg-indigo-100 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-indigo-700">
+                        {dev.projects.length}
+                      </p>
+                      <p className="text-sm text-blue-900 mt-1 font-bold">Projects</p>
+                    </div>
+
+                    {/* BUGS */}
+                    <div className="bg-red-100 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-red-600">
+                        12
+                      </p>
+                      <p className="text-sm text-red-900 font-bold mt-1">Bugs Solved</p>
+                    </div>
+
+                    {/* PROLANCE */}
+                    <div className="bg-purple-100 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-purple-700">
+                        5
+                      </p>
+                      <p className="text-sm text-purple-900 font-bold mt-1">Prolance Contribution</p>
+                    </div>
+
+                    {/* EXTRA METRIC */}
+                    <div className="bg-green-100 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-green-600">
+                        88
+                      </p>
+                      <p className="text-sm text-green-800 font-bold mt-1">Reputation</p>
+                    </div>
+
+                  </div>
+                </div>
+
+
+                {/* ===== PROJECT SECTION ===== */}
+                <div className="bg-white rounded-3xl shadow-md py-4 px-5 border border-indigo-100">
+
+                  <h2 className="text-xl font-bold text-indigo-900 mb-6">
+                    📂 Projects
+                  </h2>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                    {dev.projects.map((p, i) => (
+                      <div
+                        key={i}
+                        className="rounded-2xl p-4 border border-indigo-100 bg-indigo-50 hover:shadow-lg transition flex flex-col justify-between min-h-[180px]"
+                      >
+                        <div>
+                          <h3 className="font-semibold text-indigo-800 mb-2">
+                            {p.title}
+                          </h3>
+
+                          <p className="text-sm text-indigo-700 mb-3">
+                            {p.description}
+                          </p>
+                        </div>
+
+                        {p.link && (
+                          <a
+                            href={p.link}
+                            target="_blank"
+                            className="text-indigo-600 text-sm font-medium hover:underline"
+                          >
+                            🔗 View Project
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* ===== CONTRIBUTION HEATMAP ===== */}
+<div className="bg-white rounded-3xl shadow-md p-6 border border-indigo-100">
+
+  <h2 className="text-xl font-bold text-indigo-900 mb-6">
+    🔥 Coding Activity
+  </h2>
+
+  <CalendarHeatmap
+    startDate={subDays(today, 365)}
+    endDate={today}
+    values={heatmapData}
+    classForValue={(value) => {
+      if (!value) return "color-empty";
+      return `color-github-${value.count}`;
+    }}
+    showWeekdayLabels={true}
+  />
+
+</div>
+
               </div>
             </div>
           </div>
-
         </div>
       </div>
     );
@@ -721,7 +772,10 @@ export default function DeveloperChowkAuth() {
       <header className="mx-auto max-w-5xl px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-2xl bg-indigo-600 grid place-content-center text-white font-bold">
+            <div
+              onClick={() => navigate("/")}
+              className="size-10 rounded-2xl bg-indigo-600 grid place-content-center text-white font-bold cursor-pointer hover:scale-105 transition"
+            >
               DC
             </div>
             <h1 className="text-2xl font-bold text-indigo-900">
@@ -2124,7 +2178,6 @@ export default function DeveloperChowkAuth() {
           )}
         </div>
       </main>
-
 
     </div>
   );

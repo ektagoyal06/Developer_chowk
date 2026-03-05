@@ -141,7 +141,7 @@ export default function Dashboard() {
 
 
         {/* Tabs */}
-        <div className="flex border-b bg-white rounded-lg overflow-hidden w-full mb-8 p-2 text-lg">
+        <div className="flex border-b bg-white rounded-lg overflow-hidden w-full mb-8 p-2 text-lg font-semibold">
           {["Browse Projects", "Browse Rooms", "My Rooms", "Applications"].map((tab) => (
             <button
               key={tab}
