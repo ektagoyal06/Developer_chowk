@@ -80,6 +80,12 @@ export default function LandingPage() {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex items-center space-x-8 font-medium text-gray-900 dark:text-white">
+            <button
+              onClick={() => navigate("/home")}
+              className="transition text-gray-900 dark:text-white hover:text-blue-500"
+            >
+              Home
+            </button>
             {/* Features Dropdown */}
             <div className="relative group">
               <button className="transition text-gray-900 dark:text-white hover:text-blue-500">
@@ -442,7 +448,7 @@ export default function LandingPage() {
             className="w-96 h-80 drop-shadow-2xl"
           />
 
-          
+
         </div>
 
       </section>
@@ -789,7 +795,7 @@ export default function LandingPage() {
               on real-world projects and even landed freelance gigs together!”
             </p>
           </motion.div>
-          
+
 
           {/* Story 2 */}
           <motion.div
