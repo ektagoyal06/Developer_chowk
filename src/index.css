@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 .react-calendar-heatmap .color-empty {
-  fill: #ebedf0;
+  fill: #b4bbc8;
 }
-
 .react-calendar-heatmap .color-github-1 {
   fill: #9be9a8;
 }
@@ -20,4 +19,32 @@
 
 .react-calendar-heatmap .color-github-4 {
   fill: #216e39;
+}
+
+.react-calendar-heatmap text {
+  font-size: 12px;
+  fill: #6b7280;
+}
+
+/* space between months */
+.react-calendar-heatmap .react-calendar-heatmap-month-label {
+  transform: translateY(-1px);
+}
+
+/* add horizontal gap */
+/* normal cells */
+.react-calendar-heatmap rect {
+  rx: 3px;
+  ry: 3px;
+  stroke: white;
+  stroke-width: 2px;
+}
+
+/* create space between months */
+.react-calendar-heatmap g:nth-of-type(5n) rect {
+  transform: translateX(6px);
+}
+
+.react-calendar-heatmap .color-empty {
+  fill: #9ca3af;
 }

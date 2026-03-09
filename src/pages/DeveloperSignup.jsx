@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import { subDays } from "date-fns";
+import { startOfYear, endOfYear } from "date-fns";
 // import DeveloperDashboard from "./pages/DeveloperDashboard";
 // import { Eye, EyeOff } from "lucide-react";
 
@@ -28,7 +29,6 @@ const COLLEGE_OPTIONS = [
   "Anna University",
   "Jadavpur University",
   "Delhi Technological University",
-  "Other",
 ];
 const CS_STACKS = [
   "MERN",
@@ -364,16 +364,53 @@ export default function DeveloperChowkAuth() {
     "Review",
   ];
 
-  const today = new Date();
+  const months = [
+    { name: "Jan", days: 31 },
+    { name: "Feb", days: 28 },
+    { name: "Mar", days: 31 },
+    { name: "Apr", days: 30 },
+    { name: "May", days: 31 },
+    { name: "Jun", days: 30 },
+    { name: "Jul", days: 31 },
+    { name: "Aug", days: 31 },
+    { name: "Sep", days: 30 },
+    { name: "Oct", days: 31 },
+    { name: "Nov", days: 30 },
+    { name: "Dec", days: 31 },
+  ];
 
-const heatmapData = [
-  { date: "2025-03-01", count: 2 },
-  { date: "2025-03-05", count: 5 },
-  { date: "2025-03-12", count: 3 },
-  { date: "2025-04-01", count: 7 },
-  { date: "2025-04-10", count: 1 },
-  { date: "2025-04-15", count: 4 },
-];
+  const [activeTab, setActiveTab] = useState("project");
+
+  const activities = {
+    project: [
+      { name: "Developer Chowk Landing Page", time: "2 days ago" },
+      { name: "EventCraft Dashboard UI", time: "1 week ago" },
+      { name: "Authentication System", time: "2 weeks ago" },
+    ],
+
+    bug: [
+      { name: "Payment Gateway Fix", time: "3 days ago" },
+      { name: "Login Validation Bug", time: "1 week ago" },
+      { name: "API Timeout Error", time: "2 weeks ago" },
+    ],
+
+    freelance: [
+      { name: "Portfolio Website for Client", time: "5 days ago" },
+      { name: "Restaurant Booking App", time: "2 weeks ago" },
+      { name: "Landing Page Design", time: "3 weeks ago" },
+    ],
+  };
+
+  // let currentDate = new Date(startDate);
+
+  // while (currentDate <= endDate) {
+  //   heatmapData.push({
+  //     date: new Date(currentDate),
+  //     count: const heatmapData = dev?.activity || []; // activity level
+  //   });
+
+  //   currentDate.setDate(currentDate.getDate() + 1);
+  // }
 
   // Simple validators per step
   function validDevStep(i) {
@@ -548,13 +585,37 @@ const heatmapData = [
                 <div className="space-y-3 text-sm text-gray-700 font-semibold">
                   <p>📍 {dev.location}</p>
                   <p>🎓 {dev.college}</p>
-                  {dev.github && <p>🐙 {dev.github}</p>}
-                  {dev.linkedin && <p>💼 {dev.linkedin}</p>}
+                  {dev.github && (
+                    <p>
+                      🐙
+                      <a
+                        href={dev.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 text-indigo-600 hover:underline"
+                      >
+                        {dev.github}
+                      </a>
+                    </p>
+                  )}
+                  {dev.linkedin && (
+                    <p>
+                      💼
+                      <a
+                        href={dev.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 text-indigo-600 hover:underline"
+                      >
+                        {dev.linkedin}
+                      </a>
+                    </p>
+                  )}
                   {dev.resume && (
                     <p>
                       📄
                       <a
-                        href={dev.resume}
+                        href={URL.createObjectURL(dev.resume)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="ml-1 text-indigo-600 hover:underline"
@@ -583,7 +644,7 @@ const heatmapData = [
                     ))}
                   </div>
                 </div>
-                <hr/>
+                <hr />
                 {/* SKILLS */}
                 <div>
                   <h3 className="text-lg font-semibold text-indigo-900 mb-4">
@@ -616,7 +677,7 @@ const heatmapData = [
                     </span>
                   ))}
 
-                  <hr/>
+                  <hr />
 
                   {/* CERTIFICATIONS */}
                   <div>
@@ -628,7 +689,7 @@ const heatmapData = [
                       {dev.certs?.map((cert, i) => (
                         <div
                           key={i}
-                          className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-sm"
+                          className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-lg px-5 py-2 text-sm"
                         >
                           <span className="font-medium text-yellow-900">
                             {cert.name}
@@ -636,7 +697,7 @@ const heatmapData = [
 
                           {cert.file && (
                             <a
-                              href={cert.file}
+                              href={URL.createObjectURL(cert.file)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-indigo-600 hover:underline text-xs ml-6"
@@ -733,29 +794,112 @@ const heatmapData = [
                       </div>
                     ))}
                   </div>
+                </div>
+
+                <div className="bg-white rounded-3xl shadow-md py-3 px-5 border border-indigo-100 mt-1 ">
+                  <h2 className="text-xl font-bold text-indigo-900 mb-5">
+                    🔥 Activity Heatmap
+                  </h2>
+                  <div className="bg-[#FFFFFF] p-6 rounded-md w-fit">
+                    {/* GRID */}
+                    <div className="flex gap-4">
+                      {months.map((month, i) => (
+                        <div key={i} className="flex flex-col items-center justify-between">
+
+                          {/* Squares */}
+                          <div className="grid grid-cols-4 gap-[4px] mb-2 mt-[-20px] ">
+                            {Array.from({ length: month.days }).map((_, j) => {
+
+                              const date = `${j + 1} ${month.name} 2026`;
+                              const contributionData = {};
+
+                              const contributions = contributionData[date] || 0;
+                              return (
+                                <div
+                                  key={j}
+                                  title={`${contributions} contribution${contributions !== 1 ? "s" : ""} on ${date}`}
+                                  className="w-[12px] h-[10px] bg-[#9E9E9E] rounded-[2px]  hover:scale-110  transition"
+                                />
+                              );
+                            })}
+                          </div>
+                          {/* Month label */}
+                          <span className="text-gray-800 text-sm font-semibold ">{month.name}</span>
+
+                        </div>
+                      ))}
+                    </div>
+
+                  </div>
 
                 </div>
 
-                {/* ===== CONTRIBUTION HEATMAP ===== */}
-<div className="bg-white rounded-3xl shadow-md p-6 border border-indigo-100">
+                <div className="bg-white rounded-3xl shadow-md py-4 px-6 border border-indigo-100 mt-1">
 
-  <h2 className="text-xl font-bold text-indigo-900 mb-6">
-    🔥 Coding Activity
-  </h2>
+                  {/* HEADER */}
+                  <h2 className="text-xl font-bold text-indigo-900 mb-4">
+                    ⚡ Recent Activity
+                  </h2>
 
-  <CalendarHeatmap
-    startDate={subDays(today, 365)}
-    endDate={today}
-    values={heatmapData}
-    classForValue={(value) => {
-      if (!value) return "color-empty";
-      return `color-github-${value.count}`;
-    }}
-    showWeekdayLabels={true}
-  />
+                  {/* TOGGLE TABS */}
+                  <div className="flex gap-6 mb-4 ">
 
-</div>
+                    <button
+                      onClick={() => setActiveTab("project")}
+                      className={`px-12 py-2 rounded-lg text-sm font-medium transition 
+                    ${activeTab === "project"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
+                        }`}
+                    >
+                      Project Contribution
+                    </button>
 
+                    <button
+                      onClick={() => setActiveTab("bug")}
+                      className={`px-12 py-2 rounded-lg text-sm font-medium transition 
+                    ${activeTab === "bug"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
+                        }`}
+                    >
+                      Bug Solved
+                    </button>
+
+                    <button
+                      onClick={() => setActiveTab("freelance")}
+                      className={`px-12 py-2 rounded-lg text-sm font-medium transition 
+                    ${activeTab === "freelance"
+                          ? "bg-indigo-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
+                        }`}
+                    >
+                      Freelance Project
+                    </button>
+
+                  </div>
+
+                  {/* ACTIVITY LIST */}
+                  <div className="flex flex-col gap-3">
+
+                    {activities[activeTab].map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center bg-gray-50 hover:bg-indigo-50 transition px-4 py-3 rounded-lg"
+                      >
+                        <span className="text-gray-800 font-medium">
+                          {item.name}
+                        </span>
+
+                        <span className="text-gray-500 text-sm">
+                          {item.time}
+                        </span>
+                      </div>
+                    ))}
+
+                  </div>
+
+                </div>
               </div>
             </div>
           </div>
