@@ -6,6 +6,8 @@ import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import { subDays } from "date-fns";
 import { startOfYear, endOfYear } from "date-fns";
+import DeveloperDashboard from "./DeveloperDashboard";
+import axios from "axios";
 // import DeveloperDashboard from "./pages/DeveloperDashboard";
 // import { Eye, EyeOff } from "lucide-react";
 
@@ -264,12 +266,86 @@ export default function DeveloperChowkAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
+  const [isSignin, setIsSignin] = useState(false);
 
   // OTP mock state
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [otpInput, setOtpInput] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
+
+  const [signinData, setSigninData] = useState({
+    emailOrPhone: "",
+    password: "",
+  });
+
+  // const [devStep, setDevStep] = useState(0);
+
+  const [dev, setDev] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    dcPassword: "",
+    dob: "",
+    location: "",
+    tenth: "",
+    twelfth: "",
+    degree: "",
+    college: "",
+    cgpa: "",
+
+    stacks: [],
+    skills: [],
+    aims: [],
+
+    github: "",
+    linkedin: "",
+    portfolio: "",
+    lc: "",
+    cf: "",
+
+    projects: [
+      {
+        title: "",
+        link: "",
+        description: "",
+      },
+    ],
+
+    certs: [
+      {
+        name: "",
+        file: null,
+      },
+    ],
+
+    resume: null,
+  });
+
+
+  const loginDeveloper = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/developer/login",
+        {
+          emailOrPhone,
+          password,
+        }
+      );
+
+      alert(response.data.message);
+
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+
+      alert(
+        error.response?.data?.message ||
+        "Login failed"
+      );
+    }
+  };
 
   const calculateAge = (dob) => {
     const birthDate = new Date(dob);
@@ -288,31 +364,31 @@ export default function DeveloperChowkAuth() {
     setDev({ ...dev, dob, age });
   };
   // Developer form state
-  const [dev, setDev] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-    dcPassword: "",
-    dob: "",
-    age: "",
-    location: "",
-    tenth: "",
-    twelfth: "",
-    degree: "",
-    college: "",
-    stacks: [],
-    skills: [],
-    activeSkills: [], // auto – initial 0%
-    resume: null,
-    github: "",
-    lc: "",
-    cf: "",
-    aims: [],
-    projects: [{ title: "", link: "", description: "" }],
-    certs: [{ name: "", file: null }],
-    domain: "",
-  });
+  // const [dev, setDev] = useState({
+  //   name: "",
+  //   email: "",
+  //   password: "",
+  //   phone: "",
+  //   dcPassword: "",
+  //   dob: "",
+  //   age: "",
+  //   location: "",
+  //   tenth: "",
+  //   twelfth: "",
+  //   degree: "",
+  //   college: "",
+  //   stacks: [],
+  //   skills: [],
+  //   activeSkills: [], // auto – initial 0%
+  //   resume: null,
+  //   github: "",
+  //   lc: "",
+  //   cf: "",
+  //   aims: [],
+  //   projects: [{ title: "", link: "", description: "" }],
+  //   certs: [{ name: "", file: null }],
+  //   domain: "",
+  // });
 
   // HR form state
   const [hr, setHr] = useState({
@@ -429,11 +505,11 @@ export default function DeveloperChowkAuth() {
       case 2:
         return dev.tenth && dev.twelfth && dev.degree && dev.college;
       case 3:
-        return dev.stacks.length > 0; // at least one stack
+        return (dev.stacks || []).length > 0; // at least one stack
       case 4:
         return !!dev.resume && dev.github;
       case 5:
-        return dev.aims.length > 0;
+        return (dev.aims || []).length > 0;
       case 6:
         return dev.projects.every((p) => p.title && p.description);
       case 7:
@@ -529,384 +605,69 @@ export default function DeveloperChowkAuth() {
     }));
   }
 
-  function submitAll() {
-    // Save logged in user
-    const userData = {
-      name: dev.name,
-      email: dev.email,
-      role: role,
-    };
 
-    localStorage.setItem("dcUser", JSON.stringify(userData));
 
-    // 🔔 Notify whole app (Navbar, Sidebar etc.)
-    window.dispatchEvent(new Event("userAuthChanged"));
+  const submitAll = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/developer/register",
+      dev
+    );
 
-    setSubmitted(true);
+    alert(response.data.message);
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // save current user
+    setDev(response.data.developer);
+
+    // redirect dashboard
+    navigate("/developer-dashboard");
+
+  } catch (error) {
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Something went wrong"
+    );
   }
-
+};
   // Dashboards (simple)
   if (submitted && role === "developer") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative">
-        {/* ===== TOP RIGHT HOME ICON ===== */}
-        <Link
-          to="/home"
-          className="absolute top-5 right-5 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-lg hover:scale-105 transition duration-200"
-        >
-          {dev?.name?.charAt(0).toUpperCase()}
-        </Link>
-        {/* ===== HEADER ===== */}
-        <div className="max-w-[1400px] mx-auto px-8 pt-10">
-
-          <div className="bg-white rounded-3xl shadow-xl p-8 border border-indigo-100">
-            <div className="flex gap-8 items-start">
-
-              {/* PROFILE SECTION */}
-              <div className="w-[320px] bg-white rounded-3xl shadow-lg border border-indigo-100 p-6 flex flex-col gap-6">
-
-                {/* PROFILE TOP */}
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-3xl font-bold">
-                    {dev.name?.charAt(0)}
-                  </div>
-
-                  <div>
-                    <h2 className="text-xl font-bold">{dev.name}</h2>
-                  </div>
-                </div>
-
-                <button className="w-full bg-gradient-to-r from-purple-600 to-purple-500 text-white py-2 rounded-lg font-semibold">
-                  Edit Profile
-                </button>
-
-                <div className="space-y-3 text-sm text-gray-700 font-semibold">
-                  <p>📍 {dev.location}</p>
-                  <p>🎓 {dev.college}</p>
-                  {dev.github && (
-                    <p>
-                      🐙
-                      <a
-                        href={dev.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-1 text-indigo-600 hover:underline"
-                      >
-                        {dev.github}
-                      </a>
-                    </p>
-                  )}
-                  {dev.linkedin && (
-                    <p>
-                      💼
-                      <a
-                        href={dev.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-1 text-indigo-600 hover:underline"
-                      >
-                        {dev.linkedin}
-                      </a>
-                    </p>
-                  )}
-                  {dev.resume && (
-                    <p>
-                      📄
-                      <a
-                        href={URL.createObjectURL(dev.resume)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-1 text-indigo-600 hover:underline"
-                      >
-                        View Resume
-                      </a>
-                    </p>
-                  )}
-                </div>
-                <hr />
-
-                {/* TECH STACK */}
-                <div>
-                  <h2 className="text-xl font-bold text-indigo-900 mb-4">
-                    💻 Tech Stack
-                  </h2>
-
-                  <div className="flex flex-wrap gap-3">
-                    {dev.stacks.map((stack, i) => (
-                      <span
-                        key={i}
-                        className="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-medium shadow"
-                      >
-                        {stack}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <hr />
-                {/* SKILLS */}
-                <div>
-                  <h3 className="text-lg font-semibold text-indigo-900 mb-4">
-                    🧠 Skills
-                  </h3>
-
-                  <div className="flex flex-wrap gap-2">
-                    {dev.skills.map((skill, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-gray-200 rounded-full text-xs font-medium"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <hr />
-
-                <h2 className="text-xl font-bold text-indigo-900 mb-1">
-                  🎯 Goals on DC
-                </h2>
-                <div className="flex flex-wrap gap-2 ">
-                  {dev.aims.map((aim, i) => (
-                    <span
-                      key={i}
-                      className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm"
-                    >
-                      {aim}
-                    </span>
-                  ))}
-
-                  <hr />
-
-                  {/* CERTIFICATIONS */}
-                  <div>
-                    <h2 className="text-xl font-bold text-indigo-900 mt-6 mb-5">
-                      📜 Certifications
-                    </h2>
-
-                    <div className="space-y-2">
-                      {dev.certs?.map((cert, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-lg px-5 py-2 text-sm"
-                        >
-                          <span className="font-medium text-yellow-900">
-                            {cert.name}
-                          </span>
-
-                          {cert.file && (
-                            <a
-                              href={URL.createObjectURL(cert.file)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-indigo-600 hover:underline text-xs ml-6"
-                            >
-                              View
-                            </a>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* PROJECT SECTION */}
-              <div className="flex-1 flex flex-col gap-6">
-
-                {/* ===== DEVELOPER STATS ===== */}
-                <div className="bg-white rounded-3xl shadow-md p-6 border border-indigo-100">
-                  <h2 className="text-xl font-bold text-indigo-900 mb-6">
-                    📊 Developer Stats
-                  </h2>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-                    {/* PROJECTS */}
-                    <div className="bg-indigo-100 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-indigo-700">
-                        {dev.projects.length}
-                      </p>
-                      <p className="text-sm text-blue-900 mt-1 font-bold">Projects</p>
-                    </div>
-
-                    {/* BUGS */}
-                    <div className="bg-red-100 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-red-600">
-                        12
-                      </p>
-                      <p className="text-sm text-red-900 font-bold mt-1">Bugs Solved</p>
-                    </div>
-
-                    {/* PROLANCE */}
-                    <div className="bg-purple-100 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-purple-700">
-                        5
-                      </p>
-                      <p className="text-sm text-purple-900 font-bold mt-1">Prolance Contribution</p>
-                    </div>
-
-                    {/* EXTRA METRIC */}
-                    <div className="bg-green-100 rounded-xl p-4 text-center">
-                      <p className="text-2xl font-bold text-green-600">
-                        88
-                      </p>
-                      <p className="text-sm text-green-800 font-bold mt-1">Reputation</p>
-                    </div>
-
-                  </div>
-                </div>
-
-
-                {/* ===== PROJECT SECTION ===== */}
-                <div className="bg-white rounded-3xl shadow-md py-4 px-5 border border-indigo-100">
-
-                  <h2 className="text-xl font-bold text-indigo-900 mb-6">
-                    📂 Projects
-                  </h2>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-                    {dev.projects.map((p, i) => (
-                      <div
-                        key={i}
-                        className="rounded-2xl p-4 border border-indigo-100 bg-indigo-50 hover:shadow-lg transition flex flex-col justify-between min-h-[180px]"
-                      >
-                        <div>
-                          <h3 className="font-semibold text-indigo-800 mb-2">
-                            {p.title}
-                          </h3>
-
-                          <p className="text-sm text-indigo-700 mb-3">
-                            {p.description}
-                          </p>
-                        </div>
-
-                        {p.link && (
-                          <a
-                            href={p.link}
-                            target="_blank"
-                            className="text-indigo-600 text-sm font-medium hover:underline"
-                          >
-                            🔗 View Project
-                          </a>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-3xl shadow-md py-3 px-5 border border-indigo-100 mt-1 ">
-                  <h2 className="text-xl font-bold text-indigo-900 mb-5">
-                    🔥 Activity Heatmap
-                  </h2>
-                  <div className="bg-[#FFFFFF] p-6 rounded-md w-fit">
-                    {/* GRID */}
-                    <div className="flex gap-4">
-                      {months.map((month, i) => (
-                        <div key={i} className="flex flex-col items-center justify-between">
-
-                          {/* Squares */}
-                          <div className="grid grid-cols-4 gap-[4px] mb-2 mt-[-20px] ">
-                            {Array.from({ length: month.days }).map((_, j) => {
-
-                              const date = `${j + 1} ${month.name} 2026`;
-                              const contributionData = {};
-
-                              const contributions = contributionData[date] || 0;
-                              return (
-                                <div
-                                  key={j}
-                                  title={`${contributions} contribution${contributions !== 1 ? "s" : ""} on ${date}`}
-                                  className="w-[12px] h-[10px] bg-[#9E9E9E] rounded-[2px]  hover:scale-110  transition"
-                                />
-                              );
-                            })}
-                          </div>
-                          {/* Month label */}
-                          <span className="text-gray-800 text-sm font-semibold ">{month.name}</span>
-
-                        </div>
-                      ))}
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div className="bg-white rounded-3xl shadow-md py-4 px-6 border border-indigo-100 mt-1">
-
-                  {/* HEADER */}
-                  <h2 className="text-xl font-bold text-indigo-900 mb-4">
-                    ⚡ Recent Activity
-                  </h2>
-
-                  {/* TOGGLE TABS */}
-                  <div className="flex gap-6 mb-4 ">
-
-                    <button
-                      onClick={() => setActiveTab("project")}
-                      className={`px-12 py-2 rounded-lg text-sm font-medium transition 
-                    ${activeTab === "project"
-                          ? "bg-indigo-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
-                        }`}
-                    >
-                      Project Contribution
-                    </button>
-
-                    <button
-                      onClick={() => setActiveTab("bug")}
-                      className={`px-12 py-2 rounded-lg text-sm font-medium transition 
-                    ${activeTab === "bug"
-                          ? "bg-indigo-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
-                        }`}
-                    >
-                      Bug Solved
-                    </button>
-
-                    <button
-                      onClick={() => setActiveTab("freelance")}
-                      className={`px-12 py-2 rounded-lg text-sm font-medium transition 
-                    ${activeTab === "freelance"
-                          ? "bg-indigo-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-indigo-100"
-                        }`}
-                    >
-                      Freelance Project
-                    </button>
-
-                  </div>
-
-                  {/* ACTIVITY LIST */}
-                  <div className="flex flex-col gap-3">
-
-                    {activities[activeTab].map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-between items-center bg-gray-50 hover:bg-indigo-50 transition px-4 py-3 rounded-lg"
-                      >
-                        <span className="text-gray-800 font-medium">
-                          {item.name}
-                        </span>
-
-                        <span className="text-gray-500 text-sm">
-                          {item.time}
-                        </span>
-                      </div>
-                    ))}
-
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <DeveloperDashboard
+        dev={dev}
+        months={months}
+        activities={activities}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     );
   }
+
+  const handleSignin = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/developer/login",
+      signinData
+    );
+
+    alert(response.data.message);
+
+    // save logged user
+    setDev(response.data.developer);
+
+    // redirect to dashboard
+    navigate("/developer-dashboard");
+
+  } catch (error) {
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Login failed"
+    );
+  }
+};
 
   return (
     <div
@@ -962,933 +723,1018 @@ export default function DeveloperChowkAuth() {
           </div>
 
           {role === "developer" ? (
-            <div className="grid gap-6">
-              {devStep === 0 && (
-                <Section title="Basic Info">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Full Name
-                      </label>
-                      <input
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.name}
-                        onChange={(e) =>
-                          setDev({ ...dev, name: e.target.value })
-                        }
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        className={`w-full rounded-xl border px-3 py-2 ${dev.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dev.email)
-                          ? "border-red-500"
-                          : "border-indigo-200"
-                          }`}
-                        value={dev.email}
-                        onChange={(e) => setDev({ ...dev, email: e.target.value })}
-                        placeholder="Enter your email address"
-                      />
-                      {dev.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dev.email) && (
-                        <p className="text-red-500 text-sm mt-1">
-                          Please enter a valid email address
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Password
-                      </label>
-
-                      <div className="relative">
+            !isSignin ? (
+              <><div className="grid gap-6">
+                {devStep === 0 && (
+                  <Section title="Basic Info">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Full Name
+                        </label>
                         <input
-                          type={showPassword ? "text" : "password"}
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.name}
+                          onChange={(e) =>
+                            setDev({ ...dev, name: e.target.value })
+                          }
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Email
+                        </label>
+                        <input
+                          type="email"
                           required
-                          className={`w-full rounded-xl border px-3 py-2 pr-10 ${dev.password &&
-                            !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password)
+                          className={`w-full rounded-xl border px-3 py-2 ${dev.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dev.email)
                             ? "border-red-500"
                             : "border-indigo-200"
                             }`}
-                          value={dev.password}
-                          onChange={(e) => setDev({ ...dev, password: e.target.value })}
-                          placeholder="Enter your password"
+                          value={dev.email}
+                          onChange={(e) => setDev({ ...dev, email: e.target.value })}
+                          placeholder="Enter your email address"
                         />
-
-                        {/* Eye icon button */}
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-indigo-600"
-                        >
-                          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-
-                      {/* Validation message */}
-                      {dev.password &&
-                        !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password) && (
+                        {dev.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dev.email) && (
                           <p className="text-red-500 text-sm mt-1">
-                            Password must be at least 8 characters long, include 1 uppercase
-                            letter, 1 lowercase letter, and 1 special character.
+                            Please enter a valid email address
                           </p>
                         )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Phone Number
-                      </label>
-
-                      <div className="flex gap-2">
-                        <input
-                          type="tel"
-                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                          value={dev.phone}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            // Allow only digits and up to 10 characters
-                            if (/^\d{0,10}$/.test(value)) {
-                              setDev({ ...dev, phone: value });
-                            }
-                          }}
-                          maxLength={10}
-                          placeholder="Enter 10-digit number"
-                        />
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (dev.phone.length === 10) {
-                              sendOtp();
-                            }
-                          }}
-                          disabled={dev.phone.length !== 10}
-                          className={`rounded-xl px-4 py-2 text-white ${dev.phone.length === 10
-                            ? "bg-indigo-600 hover:bg-indigo-700"
-                            : "bg-indigo-300 cursor-not-allowed"
-                            }`}
-                        >
-                          Send OTP
-                        </button>
                       </div>
 
-                      {/* Optional validation message */}
-                      {dev.phone.length > 0 && dev.phone.length < 10 && (
-                        <p className="text-red-500 text-sm mt-1">
-                          Please enter a valid 10-digit phone number
-                        </p>
-                      )}
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Password
+                        </label>
 
-                      {otpSent && (
-                        <div className="mt-2 flex gap-2">
+                        <div className="relative">
                           <input
-                            placeholder="Enter OTP"
-                            className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={otpInput}
-                            onChange={(e) => setOtpInput(e.target.value)}
+                            type={showPassword ? "text" : "password"}
+                            required
+                            className={`w-full rounded-xl border px-3 py-2 pr-10 ${dev.password &&
+                              !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password)
+                              ? "border-red-500"
+                              : "border-indigo-200"
+                              }`}
+                            value={dev.password}
+                            onChange={(e) => setDev({ ...dev, password: e.target.value })}
+                            placeholder="Enter your password"
                           />
+
+                          {/* Eye icon button */}
                           <button
                             type="button"
-                            onClick={verifyOtp}
-                            className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-indigo-600"
                           >
-                            Verify
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                           </button>
+                        </div>
 
-                          {otpVerified && (
-                            <span className="rounded-full bg-green-100 px-3 py-1 text-green-700 text-sm">
-                              Verified
-                            </span>
+                        {/* Validation message */}
+                        {dev.password &&
+                          !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/.test(dev.password) && (
+                            <p className="text-red-500 text-sm mt-1">
+                              Password must be at least 8 characters long, include 1 uppercase
+                              letter, 1 lowercase letter, and 1 special character.
+                            </p>
                           )}
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Create DC Password
-                      </label>
-                      <input
-                        type="password"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.dcPassword}
-                        onChange={(e) =>
-                          setDev({ ...dev, dcPassword: e.target.value })
-                        }
-                        placeholder="Enter your DC password"
-                      />
-                    </div>
-                  </div>
-                </Section>
-              )}
+                      </div>
 
-              {devStep === 1 && (
-                <Section title="Personal Details">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Date of Birth
-                      </label>
-                      <input
-                        type="date"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.dob}
-                        onChange={handleDOBChange}
-                      />
-                      {dev.age && (
-                        <p className="mt-2 text-gray-700">Age: {dev.age} years</p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Location
-                      </label>
-                      <input
-                        placeholder="City, State"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.location}
-                        onChange={(e) =>
-                          setDev({ ...dev, location: e.target.value })
-                        }
-                      />
-                    </div>
-                  </div>
-                </Section>
-              )}
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Phone Number
+                        </label>
 
-              {devStep === 2 && (
-                <Section title="Education">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        10th Marks (%)
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.tenth}
-                        onChange={(e) =>
-                          setDev({ ...dev, tenth: e.target.value })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        12th Marks (%)
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.twelfth}
-                        onChange={(e) =>
-                          setDev({ ...dev, twelfth: e.target.value })
-                        }
-                      />
-                    </div>
-                    {/* DEGREE + DOMAIN (Same Column) */}
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Degree
-                      </label>
-
-                      <select
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.degree}
-                        onChange={(e) =>
-                          setDev({ ...dev, degree: e.target.value, domain: "" }) // reset domain when degree changes
-                        }
-                      >
-                        <option value="">Select Degree</option>
-                        {DEGREE_OPTIONS.map((d) => (
-                          <option key={d} value={d}>
-                            {d}
-                          </option>
-                        ))}
-                        <option value="Other">Other</option>
-                      </select>
-
-                      {/* Other Degree Input */}
-                      {dev.degree === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="Enter your degree"
-                          className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
-                          value={dev.otherDegree || ""}
-                          onChange={(e) =>
-                            setDev({ ...dev, otherDegree: e.target.value })
-                          }
-                        />
-                      )}
-
-                      {/* DOMAIN DROPDOWN */}
-                      {dev.degree && (
-                        <div className="mt-3">
-                          <label className="block text-sm font-medium text-indigo-900">
-                            Domain
-                          </label>
-
-                          <select
+                        <div className="flex gap-2">
+                          <input
+                            type="tel"
                             className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={dev.domain}
-                            onChange={(e) =>
-                              setDev({ ...dev, domain: e.target.value })
-                            }
-                          >
-                            <option value="">Select Domain</option>
-                            {(DOMAIN_OPTIONS[dev.degree] || []).map((d) => (
-                              <option key={d} value={d}>
-                                {d}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* COLLEGE - New Row */}
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-indigo-900">
-                        College
-                      </label>
-
-                      <select
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.college}
-                        onChange={(e) =>
-                          setDev({ ...dev, college: e.target.value })
-                        }
-                      >
-                        <option value="">Select College</option>
-                        {COLLEGE_OPTIONS.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                        <option value="Other">Other</option>
-                      </select>
-
-                      {dev.college === "Other" && (
-                        <input
-                          type="text"
-                          placeholder="Enter your college name"
-                          className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
-                          value={dev.otherCollege || ""}
-                          onChange={(e) =>
-                            setDev({ ...dev, otherCollege: e.target.value })
-                          }
-                        />
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        University CGPA
-                      </label>
-
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="10"
-                        placeholder="Enter your CGPA (0 - 10)"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.cgpa || ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-
-                          // Allow only valid CGPA between 0 and 10
-                          if (value === "" || (Number(value) >= 0 && Number(value) <= 10)) {
-                            setDev({ ...dev, cgpa: value });
-                          }
-                        }}
-                      />
-
-                      {dev.cgpa && (Number(dev.cgpa) < 0 || Number(dev.cgpa) > 10) && (
-                        <p className="text-red-500 text-sm mt-1">
-                          CGPA must be between 0 and 10
-                        </p>
-                      )}
-                    </div>
-
-                  </div>
-                </Section>
-              )}
-
-              {devStep === 3 && (
-                <Section title="Technical Skills">
-                  <TagPicker
-                    label="Stack for Computer Science"
-                    placeholder="Search a stack (e.g., MERN)"
-                    catalog={CS_STACKS}
-                    values={dev.stacks}
-                    setValues={(v) => setDev({ ...dev, stacks: v })}
-                  />
-                  <TagPicker
-                    label="Mentioned Skills"
-                    placeholder="Search skills (e.g., React)"
-                    catalog={SKILLS}
-                    values={dev.skills}
-                    setValues={(v) => setDev({ ...dev, skills: v })}
-                  />
-                  <div className="text-sm text-indigo-700">
-                    Active skills will be auto-filled later. They start at{" "}
-                    <span className="font-semibold">0%</span> and increase with
-                    your activity.
-                  </div>
-                </Section>
-              )}
-
-              {devStep === 4 && (
-                <Section title="Portfolio">
-                  <div className="grid md:grid-cols-2 gap-4">
-
-                    {/* Resume Upload */}
-                    <div>
-                      <label className="block text-sm font-medium text-indigo-900">
-                        Upload Resume (PDF / DOC / DOCX)
-                      </label>
-
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="file"
-                          accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              const validTypes = [
-                                "application/pdf",
-                                "application/msword",
-                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                              ];
-
-                              if (validTypes.includes(file.type)) {
-                                setDev({ ...dev, resume: file });
-                              } else {
-                                alert("Only PDF or DOC/DOCX files are allowed");
+                            value={dev.phone}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              // Allow only digits and up to 10 characters
+                              if (/^\d{0,10}$/.test(value)) {
+                                setDev({ ...dev, phone: value });
                               }
-                            }
-                          }}
-                        />
+                            }}
+                            maxLength={10}
+                            placeholder="Enter 10-digit number"
+                          />
 
-                        {/* Remove Resume Button */}
-                        {dev.resume && (
                           <button
                             type="button"
-                            onClick={() => setDev({ ...dev, resume: null })}
-                            className="text-red-500 text-xl font-bold"
+                            onClick={() => {
+                              if (dev.phone.length === 10) {
+                                sendOtp();
+                              }
+                            }}
+                            disabled={dev.phone.length !== 10}
+                            className={`rounded-xl px-4 py-2 text-white ${dev.phone.length === 10
+                              ? "bg-indigo-600 hover:bg-indigo-700"
+                              : "bg-indigo-300 cursor-not-allowed"
+                              }`}
                           >
-                            ✕
+                            Send OTP
                           </button>
+                        </div>
+
+                        {/* Optional validation message */}
+                        {dev.phone.length > 0 && dev.phone.length < 10 && (
+                          <p className="text-red-500 text-sm mt-1">
+                            Please enter a valid 10-digit phone number
+                          </p>
+                        )}
+
+                        {otpSent && (
+                          <div className="mt-2 flex gap-2">
+                            <input
+                              placeholder="Enter OTP"
+                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                              value={otpInput}
+                              onChange={(e) => setOtpInput(e.target.value)}
+                            />
+                            <button
+                              type="button"
+                              onClick={verifyOtp}
+                              className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
+                            >
+                              Verify
+                            </button>
+
+                            {otpVerified && (
+                              <span className="rounded-full bg-green-100 px-3 py-1 text-green-700 text-sm">
+                                Verified
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Create DC Password
+                        </label>
+                        <input
+                          type="password"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.dcPassword}
+                          onChange={(e) =>
+                            setDev({ ...dev, dcPassword: e.target.value })
+                          }
+                          placeholder="Enter your DC password"
+                        />
+                      </div>
+                    </div>
+                  </Section>
+                )}
+
+                {devStep === 1 && (
+                  <Section title="Personal Details">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Date of Birth
+                        </label>
+                        <input
+                          type="date"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.dob}
+                          onChange={handleDOBChange}
+                        />
+                        {dev.age && (
+                          <p className="mt-2 text-gray-700">Age: {dev.age} years</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Location
+                        </label>
+                        <input
+                          placeholder="City, State"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.location}
+                          onChange={(e) =>
+                            setDev({ ...dev, location: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </Section>
+                )}
+
+                {devStep === 2 && (
+                  <Section title="Education">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          10th Marks (%)
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.tenth}
+                          onChange={(e) =>
+                            setDev({ ...dev, tenth: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          12th Marks (%)
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.twelfth}
+                          onChange={(e) =>
+                            setDev({ ...dev, twelfth: e.target.value })
+                          }
+                        />
+                      </div>
+                      {/* DEGREE + DOMAIN (Same Column) */}
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Degree
+                        </label>
+
+                        <select
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.degree}
+                          onChange={(e) =>
+                            setDev({ ...dev, degree: e.target.value, domain: "" }) // reset domain when degree changes
+                          }
+                        >
+                          <option value="">Select Degree</option>
+                          {DEGREE_OPTIONS.map((d) => (
+                            <option key={d} value={d}>
+                              {d}
+                            </option>
+                          ))}
+                          <option value="Other">Other</option>
+                        </select>
+
+                        {/* Other Degree Input */}
+                        {dev.degree === "Other" && (
+                          <input
+                            type="text"
+                            placeholder="Enter your degree"
+                            className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
+                            value={dev.otherDegree || ""}
+                            onChange={(e) =>
+                              setDev({ ...dev, otherDegree: e.target.value })
+                            }
+                          />
+                        )}
+
+                        {/* DOMAIN DROPDOWN */}
+                        {dev.degree && (
+                          <div className="mt-3">
+                            <label className="block text-sm font-medium text-indigo-900">
+                              Domain
+                            </label>
+
+                            <select
+                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                              value={dev.domain}
+                              onChange={(e) =>
+                                setDev({ ...dev, domain: e.target.value })
+                              }
+                            >
+                              <option value="">Select Domain</option>
+                              {(DOMAIN_OPTIONS[dev.degree] || []).map((d) => (
+                                <option key={d} value={d}>
+                                  {d}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         )}
                       </div>
 
-                      {dev.resume && (
-                        <p className="text-sm text-green-600 mt-1">
-                          {dev.resume.name}
-                        </p>
-                      )}
-                    </div>
+                      {/* COLLEGE - New Row */}
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-indigo-900">
+                          College
+                        </label>
 
-                    {/* Links Section */}
-                    <div>
-                      {/* GitHub */}
-                      <label className="block text-sm font-medium text-indigo-900">
-                        GitHub Link
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://github.com/username"
-                        pattern="https?://.+"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.github}
-                        onChange={(e) =>
-                          setDev({ ...dev, github: e.target.value })
-                        }
-                      />
+                        <select
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.college}
+                          onChange={(e) =>
+                            setDev({ ...dev, college: e.target.value })
+                          }
+                        >
+                          <option value="">Select College</option>
+                          {COLLEGE_OPTIONS.map((c) => (
+                            <option key={c} value={c}>
+                              {c}
+                            </option>
+                          ))}
+                          <option value="Other">Other</option>
+                        </select>
 
-                      {/* LinkedIn */}
-                      <label className="block text-sm font-medium text-indigo-900 mt-4">
-                        LinkedIn Profile
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://linkedin.com/in/username"
-                        pattern="https?://.+"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.linkedin}
-                        onChange={(e) =>
-                          setDev({ ...dev, linkedin: e.target.value })
-                        }
-                      />
-
-                      {/* Personal Portfolio (Optional) */}
-                      <label className="block text-sm font-medium text-indigo-900 mt-4">
-                        Personal Portfolio (Optional)
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://yourportfolio.com"
-                        pattern="https?://.+"
-                        className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                        value={dev.portfolio}
-                        onChange={(e) =>
-                          setDev({ ...dev, portfolio: e.target.value })
-                        }
-                      />
-
-                      {/* Competitive Profiles */}
-                      <div className="mt-4 grid md:grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-sm font-medium text-indigo-900">
-                            LeetCode Profile
-                          </label>
+                        {dev.college === "Other" && (
                           <input
-                            type="url"
-                            placeholder="https://leetcode.com/username"
-                            pattern="https?://.+"
-                            className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={dev.lc}
+                            type="text"
+                            placeholder="Enter your college name"
+                            className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
+                            value={dev.otherCollege || ""}
                             onChange={(e) =>
-                              setDev({ ...dev, lc: e.target.value })
+                              setDev({ ...dev, otherCollege: e.target.value })
                             }
                           />
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-indigo-900">
-                            Codeforces Profile <span className="text-gray-500">(Optional)</span>
-                          </label>
-
-                          <input
-                            type="url"
-                            placeholder="https://codeforces.com/profile/handle"
-                            className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={dev.cf}
-                            onChange={(e) =>
-                              setDev({ ...dev, cf: e.target.value })
-                            }
-                          />
-
-                          {/* Show error only if user types something invalid */}
-                          {dev.cf && !/^https?:\/\/.+/.test(dev.cf) && (
-                            <p className="text-red-500 text-sm mt-1">
-                              Please enter a valid URL (must start with http or https)
-                            </p>
-                          )}
-                        </div>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                </Section>
-              )}
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          University CGPA
+                        </label>
 
-              {devStep === 5 && (
-                <Section title="Aim on Developer Chowk (choose any)">
-                  <div className="grid md:grid-cols-2 gap-2">
-                    {[
-                      "Post Projects",
-                      "Collaborate",
-                      "Earn Money",
-                      "Use Every Feature",
-                    ].map((a) => (
-                      <label
-                        key={a}
-                        className="flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2"
-                      >
                         <input
-                          type="checkbox"
-                          checked={dev.aims.includes(a)}
-                          onChange={() => toggleAim(a)}
-                        />
-                        <span className="text-indigo-900">{a}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <div className="text-sm text-indigo-700">
-                    These choices will customize the suggestions on your home
-                    page.
-                  </div>
-                </Section>
-              )}
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="10"
+                          placeholder="Enter your CGPA (0 - 10)"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.cgpa || ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
 
-              {devStep === 6 && (
-                <Section title="Achievements & Projects">
-                  <div className="space-y-4">
-                    {dev.projects.map((p, idx) => (
-                      <div
-                        key={idx}
-                        className="rounded-xl border border-indigo-200 p-4 grid gap-3"
-                      >
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-indigo-900">
-                              Project Title
-                            </label>
-                            <input
-                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                              value={p.title}
-                              onChange={(e) => {
-                                const arr = [...dev.projects];
-                                arr[idx].title = e.target.value;
-                                setDev({ ...dev, projects: arr });
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-indigo-900">
-                              Project Link
-                            </label>
-                            <input
-                              placeholder="https://..."
-                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                              value={p.link}
-                              onChange={(e) => {
-                                const arr = [...dev.projects];
-                                arr[idx].link = e.target.value;
-                                setDev({ ...dev, projects: arr });
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-indigo-900">
-                            Description
-                          </label>
-                          <textarea
-                            rows={3}
+                            // Allow only valid CGPA between 0 and 10
+                            if (value === "" || (Number(value) >= 0 && Number(value) <= 10)) {
+                              setDev({ ...dev, cgpa: value });
+                            }
+                          }}
+                        />
+
+                        {dev.cgpa && (Number(dev.cgpa) < 0 || Number(dev.cgpa) > 10) && (
+                          <p className="text-red-500 text-sm mt-1">
+                            CGPA must be between 0 and 10
+                          </p>
+                        )}
+                      </div>
+
+                    </div>
+                  </Section>
+                )}
+
+                {devStep === 3 && (
+                  <Section title="Technical Skills">
+                    <TagPicker
+                      label="Stack for Computer Science"
+                      placeholder="Search a stack (e.g., MERN)"
+                      catalog={CS_STACKS}
+                      values={dev.stacks}
+                      setValues={(v) => setDev({ ...dev, stacks: v })}
+                    />
+                    <TagPicker
+                      label="Mentioned Skills"
+                      placeholder="Search skills (e.g., React)"
+                      catalog={SKILLS}
+                      values={dev.skills}
+                      setValues={(v) => setDev({ ...dev, skills: v })}
+                    />
+                    <div className="text-sm text-indigo-700">
+                      Active skills will be auto-filled later. They start at{" "}
+                      <span className="font-semibold">0%</span> and increase with
+                      your activity.
+                    </div>
+                  </Section>
+                )}
+
+                {devStep === 4 && (
+                  <Section title="Portfolio">
+                    <div className="grid md:grid-cols-2 gap-4">
+
+                      {/* Resume Upload */}
+                      <div>
+                        <label className="block text-sm font-medium text-indigo-900">
+                          Upload Resume (PDF / DOC / DOCX)
+                        </label>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                             className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={p.description}
                             onChange={(e) => {
-                              const arr = [...dev.projects];
-                              arr[idx].description = e.target.value;
-                              setDev({ ...dev, projects: arr });
+                              const file = e.target.files[0];
+                              if (file) {
+                                const validTypes = [
+                                  "application/pdf",
+                                  "application/msword",
+                                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                ];
+
+                                if (validTypes.includes(file.type)) {
+                                  setDev({ ...dev, resume: file });
+                                } else {
+                                  alert("Only PDF or DOC/DOCX files are allowed");
+                                }
+                              }
                             }}
                           />
-                        </div>
-                        <div className="flex justify-end">
-                          {dev.projects.length > 1 && (
+
+                          {/* Remove Resume Button */}
+                          {dev.resume && (
                             <button
                               type="button"
-                              onClick={() =>
-                                setDev({
-                                  ...dev,
-                                  projects: dev.projects.filter(
-                                    (_, i) => i !== idx
-                                  ),
-                                })
-                              }
-                              className="rounded-xl border border-indigo-200 px-4 py-2 text-indigo-700 hover:bg-indigo-50"
+                              onClick={() => setDev({ ...dev, resume: null })}
+                              className="text-red-500 text-xl font-bold"
                             >
-                              Remove
+                              ✕
                             </button>
                           )}
                         </div>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDev({
-                          ...dev,
-                          projects: [
-                            ...dev.projects,
-                            { title: "", link: "", description: "" },
-                          ],
-                        })
-                      }
-                      className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
-                    >
-                      + Add another project
-                    </button>
-                  </div>
-                </Section>
-              )}
 
-              {devStep === 7 && (
-                <Section title="Certifications">
-                  <div className="space-y-4">
-                    {dev.certs.map((c, idx) => (
-                      <div
-                        key={idx}
-                        className="space-y-3 p-4 rounded-xl border border-indigo-200 bg-indigo-50"
-                      >
-                        {/* Certification Name */}
-                        <input
-                          placeholder="Certification name"
-                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                          value={c.name}
-                          onChange={(e) => {
-                            const arr = [...dev.certs];
-                            arr[idx].name = e.target.value;
-                            setDev({ ...dev, certs: arr });
-                          }}
-                        />
-
-                        {/* Upload Certificate */}
-                        <input
-                          type="file"
-                          accept=".pdf,.doc,.docx"
-                          className="w-full rounded-xl border border-indigo-200 px-3 py-2 bg-white"
-                          onChange={(e) => {
-                            const arr = [...dev.certs];
-                            arr[idx].file = e.target.files[0];
-                            setDev({ ...dev, certs: arr });
-                          }}
-                        />
-
-                        {/* Show selected file name */}
-                        {c.file && (
-                          <p className="text-sm text-green-600">
-                            Uploaded: {c.file.name}
+                        {dev.resume && (
+                          <p className="text-sm text-green-600 mt-1">
+                            {dev.resume.name}
                           </p>
                         )}
-
-                        {/* Remove Button */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDev({
-                              ...dev,
-                              certs: dev.certs.filter((_, i) => i !== idx),
-                            })
-                          }
-                          className="rounded-xl border border-red-200 px-3 py-2 text-red-600 hover:bg-red-50"
-                        >
-                          Remove
-                        </button>
                       </div>
-                    ))}
 
-                    {/* Add Certification */}
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDev({
-                          ...dev,
-                          certs: [...dev.certs, { name: "", file: null }],
-                        })
-                      }
-                      className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
-                    >
-                      + Add certification
-                    </button>
-                  </div>
-                </Section>
-              )}
-
-              {devStep === 8 && (
-                <Section title="🚀 Profile Review">
-                  <div className="space-y-8">
-
-                    {/* ===== Profile Header ===== */}
-                    <div className="flex items-center gap-6 bg-indigo-50 p-6 rounded-2xl border border-indigo-100 shadow-sm">
-                      <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
-                        {dev.name?.charAt(0)}
-                      </div>
+                      {/* Links Section */}
                       <div>
-                        <h2 className="text-2xl font-bold text-indigo-900">{dev.name}</h2>
-                        <p className="text-sm text-indigo-600">{dev.email}</p>
-                        <p className="text-sm text-indigo-600">{dev.location}</p>
-                      </div>
-                    </div>
-
-                    {/* ===== Main Grid ===== */}
-                    <div className="grid md:grid-cols-2 gap-6">
-
-                      {/* LEFT SIDE */}
-                      <div className="bg-white rounded-2xl shadow-md p-6 border border-indigo-100 space-y-4">
-                        <h3 className="text-lg font-semibold text-indigo-700">
-                          📌 Personal Information
-                        </h3>
-
-                        <PreviewBlock title="Phone" value={dev.phone} />
-                        <PreviewBlock title="Age" value={dev.age} />
-                        <PreviewBlock
-                          title="Education"
-                          value={`${dev.degree} @ ${dev.college}`}
-                        />
-                        <PreviewBlock
-                          title="10th / 12th"
-                          value={`${dev.tenth}% / ${dev.twelfth}%`}
+                        {/* GitHub */}
+                        <label className="block text-sm font-medium text-indigo-900">
+                          GitHub Link
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://github.com/username"
+                          pattern="https?://.+"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.github}
+                          onChange={(e) =>
+                            setDev({ ...dev, github: e.target.value })
+                          }
                         />
 
-                        <div>
-                          <div className="text-sm font-medium text-indigo-600 mb-2">
-                            💻 Tech Stacks
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {dev.stacks.map((stack, i) => (
-                              <span
-                                key={i}
-                                className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium"
-                              >
-                                {stack}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
+                        {/* LinkedIn */}
+                        <label className="block text-sm font-medium text-indigo-900 mt-4">
+                          LinkedIn Profile
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://linkedin.com/in/username"
+                          pattern="https?://.+"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.linkedin}
+                          onChange={(e) =>
+                            setDev({ ...dev, linkedin: e.target.value })
+                          }
+                        />
 
-                        <div>
-                          <div className="text-sm font-medium text-indigo-600 mb-2">
-                            ⚡ Skills
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {dev.skills.map((skill, i) => (
-                              <span
-                                key={i}
-                                className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+                        {/* Personal Portfolio (Optional) */}
+                        <label className="block text-sm font-medium text-indigo-900 mt-4">
+                          Personal Portfolio (Optional)
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://yourportfolio.com"
+                          pattern="https?://.+"
+                          className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                          value={dev.portfolio}
+                          onChange={(e) =>
+                            setDev({ ...dev, portfolio: e.target.value })
+                          }
+                        />
 
-                      {/* RIGHT SIDE */}
-                      <div className="bg-white rounded-2xl shadow-md p-6 border border-indigo-100 space-y-4">
-                        <h3 className="text-lg font-semibold text-indigo-700">
-                          🌐 Professional Links
-                        </h3>
-
-                        <PreviewBlock title="GitHub" value={dev.github} />
-                        <PreviewBlock title="LeetCode" value={dev.lc} />
-                        <PreviewBlock title="Codeforces" value={dev.cf} />
-
-                        <div>
-                          <div className="text-sm font-medium text-indigo-600 mb-2">
-                            🎯 Aims
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {dev.aims.map((aim, i) => (
-                              <span
-                                key={i}
-                                className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium"
-                              >
-                                {aim}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Projects Card Style */}
-                        <div>
-                          <div className="text-sm font-medium text-indigo-600 mb-2">
-                            📂 Projects
-                          </div>
-                          <div className="space-y-3">
-                            {dev.projects.map((p, i) => (
-                              <div
-                                key={i}
-                                className="p-4 rounded-xl border border-indigo-100 bg-indigo-50 hover:shadow-md transition"
-                              >
-                                <div className="font-semibold text-indigo-800">
-                                  {p.title}
-                                </div>
-                                {p.link && (
-                                  <a
-                                    href={p.link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-indigo-600 hover:underline"
-                                  >
-                                    🔗 View Project
-                                  </a>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="text-sm font-medium text-indigo-600 mb-2">
-                            🎓 Certifications
+                        {/* Competitive Profiles */}
+                        <div className="mt-4 grid md:grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-sm font-medium text-indigo-900">
+                              LeetCode Profile
+                            </label>
+                            <input
+                              type="url"
+                              placeholder="https://leetcode.com/username"
+                              pattern="https?://.+"
+                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                              value={dev.lc}
+                              onChange={(e) =>
+                                setDev({ ...dev, lc: e.target.value })
+                              }
+                            />
                           </div>
 
-                          <div className="space-y-3">
-                            {dev.certs
-                              .filter((c) => c.name)
-                              .map((c, i) => (
-                                <div
-                                  key={i}
-                                  className="p-4 rounded-xl border border-indigo-100 bg-indigo-50"
-                                >
-                                  <div className="font-semibold text-indigo-800">
-                                    {c.name}
-                                  </div>
+                          <div>
+                            <label className="block text-sm font-medium text-indigo-900">
+                              Codeforces Profile <span className="text-gray-500">(Optional)</span>
+                            </label>
 
-                                  {c.file && (
-                                    <div className="text-sm text-green-600 mt-1">
-                                      📄 {c.file.name}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
+                            <input
+                              type="url"
+                              placeholder="https://codeforces.com/profile/handle"
+                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                              value={dev.cf}
+                              onChange={(e) =>
+                                setDev({ ...dev, cf: e.target.value })
+                              }
+                            />
 
-                            {dev.certs.filter((c) => c.name).length === 0 && (
-                              <p className="text-sm text-gray-400">No certifications added</p>
+                            {/* Show error only if user types something invalid */}
+                            {dev.cf && !/^https?:\/\/.+/.test(dev.cf) && (
+                              <p className="text-red-500 text-sm mt-1">
+                                Please enter a valid URL (must start with http or https)
+                              </p>
                             )}
                           </div>
                         </div>
-
-                        {dev.resume && (
-                          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
-                            <div className="text-sm font-medium text-indigo-600">
-                              📄 Resume Uploaded
-                            </div>
-                            <div className="text-sm text-indigo-800 font-medium">
-                              {dev.resume.name}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
-                  </div>
-                </Section>
-              )}
+                  </Section>
+                )}
 
-              <div className="flex justify-between mt-8">
-                <button
-                  disabled={devStep === 0}
-                  onClick={() => setDevStep((s) => Math.max(0, s - 1))}
-                  className={`rounded-xl px-5 py-2 font-medium transition-all duration-200 ${devStep === 0
-                    ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400"
-                    : "bg-white border border-indigo-300 text-indigo-700 hover:bg-indigo-50"
-                    }`}
-                >
-                  ← Back
-                </button>
+                {devStep === 5 && (
+                  <Section title="Aim on Developer Chowk (choose any)">
+                    <div className="grid md:grid-cols-2 gap-2">
+                      {[
+                        "Post Projects",
+                        "Collaborate",
+                        "Earn Money",
+                        "Use Every Feature",
+                      ].map((a) => (
+                        <label
+                          key={a}
+                          className="flex items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={dev.aims.includes(a)}
+                            onChange={() => toggleAim(a)}
+                          />
+                          <span className="text-indigo-900">{a}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <div className="text-sm text-indigo-700">
+                      These choices will customize the suggestions on your home
+                      page.
+                    </div>
+                  </Section>
+                )}
 
-                {devStep < DEV_STEPS.length - 1 ? (
+                {devStep === 6 && (
+                  <Section title="Achievements & Projects">
+                    <div className="space-y-4">
+                      {dev.projects.map((p, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-xl border border-indigo-200 p-4 grid gap-3"
+                        >
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-indigo-900">
+                                Project Title
+                              </label>
+                              <input
+                                className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                                value={p.title}
+                                onChange={(e) => {
+                                  const arr = [...dev.projects];
+                                  arr[idx].title = e.target.value;
+                                  setDev({ ...dev, projects: arr });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-indigo-900">
+                                Project Link
+                              </label>
+                              <input
+                                placeholder="https://..."
+                                className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                                value={p.link}
+                                onChange={(e) => {
+                                  const arr = [...dev.projects];
+                                  arr[idx].link = e.target.value;
+                                  setDev({ ...dev, projects: arr });
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-indigo-900">
+                              Description
+                            </label>
+                            <textarea
+                              rows={3}
+                              className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                              value={p.description}
+                              onChange={(e) => {
+                                const arr = [...dev.projects];
+                                arr[idx].description = e.target.value;
+                                setDev({ ...dev, projects: arr });
+                              }}
+                            />
+                          </div>
+                          <div className="flex justify-end">
+                            {(dev.projects || []).length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setDev({
+                                    ...dev,
+                                    projects: dev.projects.filter(
+                                      (_, i) => i !== idx
+                                    ),
+                                  })
+                                }
+                                className="rounded-xl border border-indigo-200 px-4 py-2 text-indigo-700 hover:bg-indigo-50"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDev({
+                            ...dev,
+                            projects: [
+                              ...dev.projects,
+                              { title: "", link: "", description: "" },
+                            ],
+                          })
+                        }
+                        className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
+                      >
+                        + Add another project
+                      </button>
+                    </div>
+                  </Section>
+                )}
+
+                {devStep === 7 && (
+                  <Section title="Certifications">
+                    <div className="space-y-4">
+                      {dev.certs.map((c, idx) => (
+                        <div
+                          key={idx}
+                          className="space-y-3 p-4 rounded-xl border border-indigo-200 bg-indigo-50"
+                        >
+                          {/* Certification Name */}
+                          <input
+                            placeholder="Certification name"
+                            className="w-full rounded-xl border border-indigo-200 px-3 py-2"
+                            value={c.name}
+                            onChange={(e) => {
+                              const arr = [...dev.certs];
+                              arr[idx].name = e.target.value;
+                              setDev({ ...dev, certs: arr });
+                            }}
+                          />
+
+                          {/* Upload Certificate */}
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            className="w-full rounded-xl border border-indigo-200 px-3 py-2 bg-white"
+                            onChange={(e) => {
+                              const arr = [...dev.certs];
+                              arr[idx].file = e.target.files[0];
+                              setDev({ ...dev, certs: arr });
+                            }}
+                          />
+
+                          {/* Show selected file name */}
+                          {c.file && (
+                            <p className="text-sm text-green-600">
+                              Uploaded: {c.file.name}
+                            </p>
+                          )}
+
+                          {/* Remove Button */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDev({
+                                ...dev,
+                                certs: dev.certs.filter((_, i) => i !== idx),
+                              })
+                            }
+                            className="rounded-xl border border-red-200 px-3 py-2 text-red-600 hover:bg-red-50"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Add Certification */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDev({
+                            ...dev,
+                            certs: [...dev.certs, { name: "", file: null }],
+                          })
+                        }
+                        className="rounded-xl bg-white px-4 py-2 text-indigo-700 border border-indigo-200 hover:bg-indigo-50"
+                      >
+                        + Add certification
+                      </button>
+                    </div>
+                  </Section>
+                )}
+
+                {devStep === 8 && (
+                  <Section title="🚀 Profile Review">
+                    <div className="space-y-8">
+
+                      {/* ===== Profile Header ===== */}
+                      <div className="flex items-center gap-6 bg-indigo-50 p-6 rounded-2xl border border-indigo-100 shadow-sm">
+                        <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white text-2xl font-bold">
+                          {dev.name?.charAt(0)}
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold text-indigo-900">{dev.name}</h2>
+                          <p className="text-sm text-indigo-600">{dev.email}</p>
+                          <p className="text-sm text-indigo-600">{dev.location}</p>
+                        </div>
+                      </div>
+
+                      {/* ===== Main Grid ===== */}
+                      <div className="grid md:grid-cols-2 gap-6">
+
+                        {/* LEFT SIDE */}
+                        <div className="bg-white rounded-2xl shadow-md p-6 border border-indigo-100 space-y-4">
+                          <h3 className="text-lg font-semibold text-indigo-700">
+                            📌 Personal Information
+                          </h3>
+
+                          <PreviewBlock title="Phone" value={dev.phone} />
+                          <PreviewBlock title="Age" value={dev.age} />
+                          <PreviewBlock
+                            title="Education"
+                            value={`${dev.degree} @ ${dev.college}`}
+                          />
+                          <PreviewBlock
+                            title="10th / 12th"
+                            value={`${dev.tenth}% / ${dev.twelfth}%`}
+                          />
+
+                          <div>
+                            <div className="text-sm font-medium text-indigo-600 mb-2">
+                              💻 Tech Stacks
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {dev.stacks.map((stack, i) => (
+                                <span
+                                  key={i}
+                                  className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-medium"
+                                >
+                                  {stack}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="text-sm font-medium text-indigo-600 mb-2">
+                              ⚡ Skills
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {dev.skills.map((skill, i) => (
+                                <span
+                                  key={i}
+                                  className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium"
+                                >
+                                  {skill}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* RIGHT SIDE */}
+                        <div className="bg-white rounded-2xl shadow-md p-6 border border-indigo-100 space-y-4">
+                          <h3 className="text-lg font-semibold text-indigo-700">
+                            🌐 Professional Links
+                          </h3>
+
+                          <PreviewBlock title="GitHub" value={dev.github} />
+                          <PreviewBlock title="LeetCode" value={dev.lc} />
+                          <PreviewBlock title="Codeforces" value={dev.cf} />
+
+                          <div>
+                            <div className="text-sm font-medium text-indigo-600 mb-2">
+                              🎯 Aims
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {dev.aims.map((aim, i) => (
+                                <span
+                                  key={i}
+                                  className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium"
+                                >
+                                  {aim}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Projects Card Style */}
+                          <div>
+                            <div className="text-sm font-medium text-indigo-600 mb-2">
+                              📂 Projects
+                            </div>
+                            <div className="space-y-3">
+                              {dev.projects.map((p, i) => (
+                                <div
+                                  key={i}
+                                  className="p-4 rounded-xl border border-indigo-100 bg-indigo-50 hover:shadow-md transition"
+                                >
+                                  <div className="font-semibold text-indigo-800">
+                                    {p.title}
+                                  </div>
+                                  {p.link && (
+                                    <a
+                                      href={p.link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-sm text-indigo-600 hover:underline"
+                                    >
+                                      🔗 View Project
+                                    </a>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="text-sm font-medium text-indigo-600 mb-2">
+                              🎓 Certifications
+                            </div>
+
+                            <div className="space-y-3">
+                              {dev.certs
+                                .filter((c) => c.name)
+                                .map((c, i) => (
+                                  <div
+                                    key={i}
+                                    className="p-4 rounded-xl border border-indigo-100 bg-indigo-50"
+                                  >
+                                    <div className="font-semibold text-indigo-800">
+                                      {c.name}
+                                    </div>
+
+                                    {c.file && (
+                                      <div className="text-sm text-green-600 mt-1">
+                                        📄 {c.file.name}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+
+                              {dev.certs.filter((c) => c.name).length === 0 && (
+                                <p className="text-sm text-gray-400">No certifications added</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {dev.resume && (
+                            <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                              <div className="text-sm font-medium text-indigo-600">
+                                📄 Resume Uploaded
+                              </div>
+                              <div className="text-sm text-indigo-800 font-medium">
+                                {dev.resume.name}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Section>
+                )}
+
+                <div className="flex justify-between mt-8">
                   <button
-                    disabled={!canContinue}
-                    onClick={() =>
-                      setDevStep((s) => Math.min(DEV_STEPS.length - 1, s + 1))
-                    }
-                    className={`rounded-xl px-6 py-2 font-semibold text-white transition-all duration-200 ${canContinue
-                      ? "bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg"
-                      : "bg-indigo-300"
+                    disabled={devStep === 0}
+                    onClick={() => setDevStep((s) => Math.max(0, s - 1))}
+                    className={`rounded-xl px-5 py-2 font-medium transition-all duration-200 ${devStep === 0
+                      ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400"
+                      : "bg-white border border-indigo-300 text-indigo-700 hover:bg-indigo-50"
                       }`}
                   >
-                    Continue →
+                    ← Back
                   </button>
-                ) : (
-                  <button
-                    onClick={submitAll}
-                    className="rounded-xl px-8 py-3 font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-105 transition-transform shadow-lg"
-                  >
-                    🚀 Submit & Create Developer Account
-                  </button>
-                )}
-              </div>
-            </div>
-          ) : (
 
+                  {devStep < DEV_STEPS.length - 1 ? (
+                    <button
+                      disabled={!canContinue}
+                      onClick={() =>
+                        setDevStep((s) => Math.min(DEV_STEPS.length - 1, s + 1))
+                      }
+                      className={`-mt-2 rounded-xl px-5 py-2 font-semibold text-white transition-all duration-200 ${canContinue
+                        ? "bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg"
+                        : "bg-indigo-300"
+                        }`}
+                    >
+                      Continue →
+                    </button>
+                  ) : (
+                    <button
+                      onClick={submitAll}
+                      className="rounded-xl px-8 py-3 font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-105 transition-transform shadow-lg"
+                    >
+                      🚀 Submit & Create Developer Account
+                    </button>
+                  )}
+                </div>
+              </div>
+                <div className="mt-6 flex justify-end pr-[290px]">
+                  <p className="text-s text-black">
+                    Already have an account?{" "}
+                    <button
+                      type="button"
+                      onClick={() => setIsSignin(true)}
+                      className="font-semibold text-indigo-700 hover:underline transition"
+                    >
+                      Sign In
+                    </button>
+                  </p>
+                </div>
+              </>
+
+            ) : (
+
+              /* ================= SIGNIN FORM ================= */
+
+              <div className="bg-white  p-10 max-w-xl mx-auto">
+
+                <h2 className="text-3xl font-bold text-indigo-700 mb-8">
+                  Welcome Back 👋
+                </h2>
+
+                <div className="grid gap-5">
+
+                  <div>
+                    <label className="block text-sm font-medium text-indigo-900">
+                      Email / Mobile Number
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="Enter email or mobile number"
+                      value={signinData.emailOrPhone}
+                      onChange={(e) =>
+                        setSigninData({
+                          ...signinData,
+                          emailOrPhone: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-xl border border-indigo-200 px-4 py-3"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-indigo-900">
+                      Password
+                    </label>
+
+                    <input
+                      type="password"
+                      placeholder="Enter password"
+                      value={signinData.password}
+                      onChange={(e) =>
+                        setSigninData({
+                          ...signinData,
+                          password: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-xl border border-indigo-200 px-4 py-3"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSignin}
+                    className="mt-4 rounded-xl bg-indigo-600 py-3 text-white font-semibold hover:bg-indigo-700"
+                  >
+                    Sign In
+                  </button>
+
+                  <p className="text-center text-gray-600">
+                    Don’t have an account?{" "}
+                    <button
+                      onClick={() => setIsSignin(false)}
+                      className="text-indigo-600 font-semibold hover:underline"
+                    >
+                      Create Account
+                    </button>
+                  </p>
+
+                </div>
+              </div>
+            )
+
+          ) : (
 
             // --- HR FLOW --- //
             <div className="grid gap-6">
@@ -2321,8 +2167,69 @@ export default function DeveloperChowkAuth() {
             </div>
           )}
         </div>
+        <div className="absolute inset-0 rotate-y-180 backface-hidden bg-white rounded-[32px] p-10 shadow-2xl">
+          <h2 className="text-3xl font-bold text-indigo-700 mb-8">
+            Welcome Back 👋
+          </h2>
+
+          <div className="grid gap-5">
+            <div>
+              <label className="block text-sm font-medium text-indigo-900">
+                Email / Mobile Number
+              </label>
+
+              <input
+                type="text"
+                placeholder="Enter email or mobile number"
+                className="w-full rounded-xl border border-indigo-200 px-4 py-3"
+                value={signinData.emailOrPhone}
+                onChange={(e) =>
+                  setSigninData({
+                    ...signinData,
+                    emailOrPhone: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-indigo-900">
+                Password
+              </label>
+
+              <input
+                type="password"
+                placeholder="Enter password"
+                className="w-full rounded-xl border border-indigo-200 px-4 py-3"
+                value={signinData.password}
+                onChange={(e) =>
+                  setSigninData({
+                    ...signinData,
+                    password: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <button className="mt-4 rounded-xl bg-indigo-600 py-3 text-white font-semibold hover:bg-indigo-700">
+              Sign In
+            </button>
+
+            <p className="text-center text-gray-600">
+              Don’t have an account?{" "}
+              <button
+                onClick={() => setIsSignin(false)}
+                className="text-indigo-600 font-semibold hover:underline"
+              >
+                Create Account
+              </button>
+            </p>
+          </div>
+        </div>
       </main>
 
+
+
     </div>
-  );
+  )
 }

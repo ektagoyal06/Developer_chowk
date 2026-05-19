@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   TrophyIcon,
@@ -73,12 +74,21 @@ export default function Home() {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const user = localStorage.getItem("dcUser");
-    if (user) {
-      const parsedUser = JSON.parse(user);
-      setUserName(parsedUser.name);
-    }
+    fetchUser();
   }, []);
+
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/developer/current-user"
+      );
+
+      setUserName(response.data.name);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const stats = [
     {

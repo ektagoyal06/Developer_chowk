@@ -3,6 +3,8 @@ import { Menu, X, Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { MdDashboard } from "react-icons/md";
+import axios from "axios";
 
 export default function LandingPage() {
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -15,19 +17,30 @@ export default function LandingPage() {
   const [user, setUser] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(false);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("dcUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+ useEffect(() => {
+  const fetchUser = async () => {
+    try {
+
+      const response = await axios.get(
+        "http://localhost:5000/api/developer/current-user"
+      );
+
+      setUser(response.data);
+
+    } catch (error) {
+      console.log(error);
     }
-  }, []);
+  };
+
+  fetchUser();
+}, []);
 
   const toggleTheme = () => {
     setDarkMode(!darkMode);
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem("dcUser");
+    localStorage.removeItem("dcUserId");
     setUser(null);
     setOpenDropdown(false);
   };
@@ -137,7 +150,7 @@ export default function LandingPage() {
                     <div className="absolute right-0 mt-2 w-56 bg-gray-900 shadow-lg rounded-lg  text-sm overflow-hidden">
 
                       <button
-                        onClick={() => navigate("/developer-dashboard")}
+                        onClick={() => navigate("/project")}
                         className="block w-full text-left px-4 py-2 hover:text-blue-500"
                       >
                         <span>📝</span> <span>My Projects Contribution</span>
@@ -157,6 +170,13 @@ export default function LandingPage() {
                         <span>🛡️</span> <span>My Bugs Contribution</span>
                       </button>
 
+                      <button
+                        onClick={() => navigate("/developer-dashboard")}
+                        className="block w-full text-left px-4 py-2 hover:text-blue-500 flex items-center gap-2"
+                      >
+                        <MdDashboard size={20} />
+                        <span>My Dashboard</span>
+                      </button>
                       <hr />
 
                       <button
@@ -174,7 +194,7 @@ export default function LandingPage() {
                   onClick={() => navigate("/signup")}
                   className="transition text-white hover:text-blue-500"
                 >
-                  Sign Up / Login
+                  Sign Up / Signin
                 </button>
               )}
             </div>

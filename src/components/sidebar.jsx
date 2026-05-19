@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
   HomeIcon,
@@ -54,6 +55,25 @@ export default function Sidebar() {
 
   }, []);
 
+  const [userName, setUserName] = useState("");
+  
+    useEffect(() => {
+      fetchUser();
+    }, []);
+  
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/developer/current-user"
+        );
+  
+        setUserName(response.data.name);
+  
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900 ">
       <div className="w-64 bg-white flex flex-col border-r border-gray-300 w-[240px]">
@@ -92,11 +112,13 @@ export default function Sidebar() {
         </nav>
 
         {/* ===== USER PROFILE CARD ===== */}
-        <div className="m-4 p-4 bg-white rounded-lg shadow text-gray-700">
+        <div className="m-4 p-4 bg-purple-200 rounded-lg shadow text-gray-700">
           <div className="flex items-center space-x-3">
             <div
               onClick={() => {
-                if (user) {
+                const currentUser = JSON.parse(localStorage.getItem("dcUser"));
+
+                if (currentUser && currentUser.role === "developer") {
                   navigate("/developer-dashboard");
                 } else {
                   navigate("/signup");
@@ -109,7 +131,7 @@ export default function Sidebar() {
             <div>
               {/* 👇 DYNAMIC NAME */}
               <h2 className="font-bold">
-                {user?.name || "Guest User"}
+                {userName || "Guest User"}
               </h2>
               <span className="text-xs px-2 py-1 bg-gray-200 rounded-full">
                 Developer
