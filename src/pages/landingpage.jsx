@@ -263,7 +263,7 @@ export default function LandingPage() {
                 Join Now
               </a>
               <a
-                href="#features"
+                href="/home"
                 className="px-6 py-3 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-500 font-bold transition"
               >
                 Learn More
