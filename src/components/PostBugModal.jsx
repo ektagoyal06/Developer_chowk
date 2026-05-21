@@ -117,13 +117,13 @@ export default function PostBugModal({ closeModal, onPostBug }) {
                                 className="w-full border rounded-lg p-2"
                             >
                                 <option>All Domains</option>
-                                <option>Web Development</option>
-                                <option>Full stack development</option>
-                                <option>Mobile App</option>
-                                <option>Blockchain</option>
-                                <option>AI/ML</option>
-                                <option>Game Development</option>
-                                <option>Data Scientist</option>
+                                <option>React</option>
+                                <option>Flutter</option>
+                                <option>MongoDB</option>
+                                <option>Node.js</option>
+                                <option>JavaScript</option>
+                                <option>WebSocket</option>
+                                <option>Android</option>
                             </select>
                         </div>
                     </div>

@@ -2,7 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import jobRoutes from "./routes/jobRoutes.js";
+import studyMaterialRoutes from "./routes/studyMaterialRoutes.js";
+import noteRoutes from "./routes/noteRoutes.js";
+import mentorRoutes from "./routes/mentorRoutes.js";
+import bugRoutes from "./routes/bugRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";  //prolance
 import teamRoutes from "./routes/teamRoutes.js";
 import developerRoutes from "./routes/developerRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js"; // ⭐ IMPORT PROJECT ROUTES
@@ -17,8 +21,12 @@ app.use(express.json());
 
 /* ROUTES */
 app.use("/api/developer", developerRoutes);
+app.use("/api/materials", studyMaterialRoutes);
 app.use("/api/teams", teamRoutes);
+app.use("/api/mentors", mentorRoutes);
+app.use("/api/bugs", bugRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/notes", noteRoutes);
 app.use("/api/projects", projectRoutes); // ⭐ PROJECT ROUTE
 
 /* DATABASE */

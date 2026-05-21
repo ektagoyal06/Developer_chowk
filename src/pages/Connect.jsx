@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
+import axios from "axios";
 import CreateMentorshipModal from "../components/CreateMentorshipModal";
 import BookSessionModal from "../components/BookSessionModal";
 import Sidebar from "../components/Sidebar";
@@ -75,33 +76,74 @@ export default function Dashboard() {
   const [showMentorshipForm, setShowMentorshipForm] = React.useState(false);
   const [openBooking, setOpenBooking] = useState(false);
   const [mySessions, setMySessions] = React.useState([]); // empty for now
-  const [mentorList, setMentorList] = useState(initialMentors);
+  const [mentorList, setMentorList] = useState([]);
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [mentorToDelete, setMentorToDelete] = useState(null);
 
+  useEffect(() => {
+  fetchMentors();
+}, []);
+
+const fetchMentors = async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/api/mentors"
+    );
+
+    setMentorList(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   /* ===== ADD MENTOR FROM MODAL ===== */
-  const handleAddMentor = (mentor) => {
-    setMentorList(prev => [
-      {
-        ...mentor,
-        id: Date.now(),
-        rating: 0,
-        sessions: 0,
-      },
-      ...prev
+  const handleAddMentor = async (mentor) => {
+  try {
+    const payload = {
+      ...mentor,
+      postedBy: "anjaliaroraa100",
+    };
+
+    const res = await axios.post(
+      "http://localhost:5000/api/mentors",
+      payload
+    );
+
+    setMentorList((prev) => [
+      res.data,
+      ...prev,
     ]);
-  };
-  const handleDeleteClick = (id) => {
+
+    setShowMentorshipForm(false);
+  } catch (error) {
+    console.log(error);
+  }
+};
+  const handleDeleteClick = (_id) => {
     setMentorToDelete(id);
     setShowDeleteModal(true);
   };
 
-  const confirmDeleteMentor = () => {
-    setMentorList(prev => prev.filter(m => m.id !== mentorToDelete));
+  const confirmDeleteMentor = async () => {
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/mentors/${mentorToDelete}`
+    );
+
+    setMentorList((prev) =>
+      prev.filter(
+        (mentor) =>
+          mentor._id !== mentorToDelete
+      )
+    );
+
     setShowDeleteModal(false);
     setMentorToDelete(null);
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const handleBookSession = (mentor) => {
     const user = localStorage.getItem("dcUser");
@@ -248,7 +290,7 @@ export default function Dashboard() {
             ) : (
               filteredMentors.map((mentor) => (
                 <div
-                  key={mentor.id}
+                  key={mentor._id}
                   className="bg-white rounded-xl shadow p-6 flex flex-col justify-between"
                 >
                   <div>
@@ -299,7 +341,7 @@ export default function Dashboard() {
                     {/* Trash (only if posted by current user) */}
 
                     <button
-                      onClick={() => handleDeleteClick(mentor.id)}
+                      onClick={() => handleDeleteClick(mentor._id)}
                       className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
                     >
                       <TrashIcon className="w-5 h-5" />

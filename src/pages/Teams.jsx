@@ -11,44 +11,7 @@ import {
 import { Link } from "react-router-dom";
 
 // Default projects
-const defaultProjects = [
-  {
-    title: "Real-time Collaboration Whiteboard",
-    description:
-      "Developing an interactive whiteboard application for remote teams with real-time collaboration, video chat integration, and cloud sync.",
-    level: "intermediate",
-    type: "web development",
-    members: "1/3 members",
-    due: "Due by Aug 1, 2024",
-    tags: ["React", "WebSockets", "Canvas API"],
-    recruiting: true,
-    poster: "Anjali Arora",
-  },
-  {
-    title: "E-Commerce Platform with AI Recommendations",
-    description:
-      "Building a full-featured e-commerce platform with AI-powered product recommendations, real-time inventory management, and secure payment integration.",
-    level: "advanced",
-    type: "web development",
-    members: "2/5 members",
-    due: "Due by Aug 15, 2024",
-    tags: ["React", "Node.js", "MongoDB"],
-    recruiting: true,
-    poster: "Anjali Arora",
-  },
-  {
-    title: "Social Media App for College Students",
-    description:
-      "Creating a mobile-first social networking app specifically designed for college students with features like study groups, event planning, and messaging.",
-    level: "intermediate",
-    type: "mobile app",
-    members: "1/4 members",
-    due: "Due by Jul 30, 2024",
-    tags: ["React Native", "Firebase", "Node.js"],
-    recruiting: true,
-    poster: "Anjali Arora",
-  },
-];
+
 
 export default function Dashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);

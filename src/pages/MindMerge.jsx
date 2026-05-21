@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, {useEffect, useState } from "react";
+import axios from "axios";
 import SellNoteModal from "../components/SellNoteModal";
 import Sidebar from "../components/Sidebar";
 import {
@@ -54,7 +55,7 @@ const initialNotes = [
 
 export default function Dashboard() {
   /* ===================== STATES ===================== */
-  const [notes, setNotes] = useState(initialNotes);
+  const [notes, setNotes] = useState([]);
   const [search, setSearch] = useState("");
   const [domain, setDomain] = useState("All");
   const [type, setType] = useState("All");
@@ -63,15 +64,43 @@ export default function Dashboard() {
   const [selectedNote, setSelectedNote] = useState(null);
   const [openSellModal, setOpenSellModal] = useState(false);
 
+  useEffect(() => {
+  fetchNotes();
+}, []);
+
+const fetchNotes = async () => {
+  try {
+
+    const res = await axios.get(
+      "http://localhost:5000/api/notes"
+    );
+
+    setNotes(res.data);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
   /* ===================== ADD NOTE ===================== */
-  const handleAddNote = (newNote) => {
-    const noteWithId = {
+  const handleAddNote = async (newNote) => {
+  try {
+
+    const payload = {
       ...newNote,
-      id: Date.now(), // unique id
+      postedBy: "anjaliaroraa100",
     };
 
-    setNotes(prev => [noteWithId, ...prev]);
-  };
+    const res = await axios.post(
+      "http://localhost:5000/api/notes",
+      payload
+    );
+
+    setNotes((prev) => [res.data, ...prev]);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 
   /* ===================== FILTER LOGIC ===================== */
@@ -98,11 +127,24 @@ export default function Dashboard() {
     setShowConfirm(true);
   };
 
-  const confirmDelete = () => {
-    setNotes(notes.filter((n) => n.id !== selectedNote.id));
+  const confirmDelete = async () => {
+  try {
+
+    await axios.delete(
+      `http://localhost:5000/api/notes/${selectedNote._id}`
+    );
+
+    setNotes((prev) =>
+      prev.filter((n) => n._id !== selectedNote._id)
+    );
+
     setShowConfirm(false);
     setSelectedNote(null);
-  };
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900">
@@ -181,7 +223,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[330px]">
           {filteredNotes.map((note) => (
             <div
-              key={note.id}
+              key={note._id}
               className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between min-h-[300px] hover:shadow-md transition"
             >
               {/* Top */}
