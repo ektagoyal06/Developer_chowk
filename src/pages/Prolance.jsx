@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import PostProjectModal from "../components/PostProjectModal";
 import ApplyProposalModal from "../components/ApplyProposalModal";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
 import {
   TrashIcon,
   EyeIcon,
@@ -45,7 +46,7 @@ const initialJobs = [
 ];
 
 export default function ProlanceDashboard() {
-  const [jobs, setJobs] = useState(initialJobs);
+  const [jobs, setJobs] = useState([]);
   const [viewJob, setViewJob] = useState(null);
   const [search, setSearch] = useState("");
   const [filterDomain, setFilterDomain] = useState("All Domains");
@@ -58,7 +59,28 @@ export default function ProlanceDashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
 
-  const handleAddProject = (project) => {
+  useEffect(() => {
+  fetchJobs();
+}, []);
+
+const fetchJobs = async () => {
+  try {
+
+    const res = await axios.get(
+      "http://localhost:5000/api/jobs"
+    );
+
+    setJobs(res.data);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+  const handleAddProject = async (project) => {
+
+  try {
+
     const formattedProject = {
       ...project,
       price:
@@ -67,21 +89,42 @@ export default function ProlanceDashboard() {
           : `$${project.budget}`,
       level: project.difficulty.toLowerCase(),
       tags: project.skills || [],
-      // poster: currentUser, // ✅ ADDED
     };
 
-    setJobs((prev) => [formattedProject, ...prev]);
-  };
+    await axios.post(
+      "http://localhost:5000/api/jobs",
+      formattedProject
+    );
+
+    fetchJobs();
+
+  } catch (error) {
+    console.log(error);
+  }
+};
   const handleDeleteClick = (index) => {
     setJobToDelete(index);
     setShowDeleteModal(true);
   };
 
-  const confirmDeleteJob = () => {
-    setJobs((prev) => prev.filter((_, i) => i !== jobToDelete));
+  const confirmDeleteJob = async () => {
+
+  try {
+
+    await axios.delete(
+      `http://localhost:5000/api/jobs/${jobs[jobToDelete]._id}`
+    );
+
+    fetchJobs();
+
     setShowDeleteModal(false);
+
     setJobToDelete(null);
-  };
+
+  } catch (error) {
+    console.log(error);
+  }
+};
   // ✅ FILTER LOGIC (ADDED)
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CreateProjectModal from "../components/CreateProjectModal";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
 // import { Link } from "react-router-dom";
 
 import {
@@ -12,49 +13,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 
-/* Default Projects */
-const initialProjects = [
-  {
-    title: "Real-time Chat Application",
-    level: "intermediate",
-    domain: "web development",
-    description:
-      "Create a modern chat application with features like group chats, file sharing, video calls, and message encryption.",
-    members: "1/3 members",
-    applications: "0 applications",
-    due: "Due by Mar 30, 2025",
-  },
-  {
-    title: "Campus Event Management...",
-    level: "intermediate",
-    domain: "web development",
-    description:
-      "Create a platform for managing college events, registrations, notifications, and feedback.",
-    members: "1/3 members",
-    applications: "0 applications",
-    due: "Due by Feb 28, 2025",
-  },
-  {
-    title: "Blockchain-Based Voting...",
-    level: "advanced",
-    domain: "blockchain",
-    description:
-      "Decentralized voting system using blockchain ensuring secure and tamper-proof voting.",
-    members: "5/10 members",
-    applications: "2 applications",
-    due: "Due by Apr 10, 2025",
-  },
-  {
-    title: "AI-Powered Study Assistant",
-    level: "advanced",
-    domain: "ai/ml",
-    description:
-      "Smart assistant helping students with quizzes, summaries, and study schedules.",
-    members: "3/6 members",
-    applications: "1 application",
-    due: "Due by May 15, 2025",
-  },
-];
+
 
 function SellProjectModal({ isOpen, onClose, onSubmit }) {
   const [title, setTitle] = useState("");
@@ -223,7 +182,7 @@ function SellProjectModal({ isOpen, onClose, onSubmit }) {
 }
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState(initialProjects);
+  const [projects, setProjects] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openSellModal, setOpenSellModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -237,27 +196,62 @@ export default function Dashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
 
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/projects"
+      );
+
+      setProjects(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   /* ⭐ CREATE PROJECT HANDLER ⭐ */
-  const handleCreate = (newProj) => {
-    setProjects([...projects, newProj]);
+  const handleCreate = async (newProj) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/projects",
+        newProj
+      );
+
+      fetchProjects();
+      setOpenModal(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   /* Handle Sell Project Submission */
-  const handleListForSale = (newProject) => {
-    const projectObj = {
-      title: newProject.title,
-      level: "N/A",
-      domain: newProject.domain.toLowerCase(),
-      description: newProject.description,
-      members: "N/A",
-      applications: "N/A",
-      due: "N/A",
-      price: newProject.price,
-      techStack: newProject.techStack,
-      coverImage: newProject.coverImage,
-    };
-    setProjects([...projects, projectObj]);
-    setOpenSellModal(false);
+  const handleListForSale = async (newProject) => {
+    try {
+      const projectObj = {
+        title: newProject.title,
+        level: "N/A",
+        domain: newProject.domain.toLowerCase(),
+        description: newProject.description,
+        members: "N/A",
+        applications: "N/A",
+        due: "N/A",
+        price: newProject.price,
+        techStack: newProject.techStack,
+        coverImage: newProject.coverImage,
+      };
+
+      await axios.post(
+        "http://localhost:5000/api/projects",
+        projectObj
+      );
+
+      fetchProjects();
+      setOpenSellModal(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleApply = () => {
@@ -702,9 +696,17 @@ export default function Dashboard() {
               </button>
 
               <button
-                onClick={() => {
-                  setProjects(projects.filter((_, i) => i !== deleteIndex));
-                  setShowDeleteModal(false);
+                onClick={async () => {
+                  try {
+                    await axios.delete(
+                      `http://localhost:5000/api/projects/${projects[deleteIndex]._id}`
+                    );
+
+                    fetchProjects();
+                    setShowDeleteModal(false);
+                  } catch (error) {
+                    console.log(error);
+                  }
                 }}
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
               >

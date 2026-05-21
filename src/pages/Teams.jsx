@@ -1,9 +1,10 @@
 // Dashboard.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CreateTeamRoomModal from "../components/CreateTeamRoomModal";
 import LookingForMembersModal from "../components/LookingForMembersModal";
 import Sidebar from "../components/Sidebar";
 import { EyeIcon, UserPlusIcon } from "lucide-react";
+import axios from "axios";
 import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
@@ -53,20 +54,46 @@ export default function Dashboard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("Browse Projects");
-  const [projects, setProjects] = useState(defaultProjects);
+  const [projects, setProjects] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLookingModalOpen, setIsLookingModalOpen] = useState(false);
   const [selectedBrowseProject, setSelectedBrowseProject] = useState(null);
   const [showBrowseModal, setShowBrowseModal] = useState(false);
+  
   const currentUser = "Anjali Arora";
 
+  useEffect(() => {
+  fetchTeams();
+}, []);
+
+const fetchTeams = async () => {
+  try {
+    const res = await axios.get("http://localhost:5000/api/teams");
+
+    setProjects(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
   // ADD NEW PROJECT FROM MODAL
-  const handleAddProject = (newProject) => {
-    setProjects((prev) => [
-      { ...newProject, poster: currentUser }, // ✅ ensure poster saved
-      ...prev,
-    ]);
-  };
+  const handleAddProject = async (newProject) => {
+  try {
+    const projectObj = {
+      ...newProject,
+      poster: currentUser,
+    };
+
+    await axios.post(
+      "http://localhost:5000/api/teams",
+      projectObj
+    );
+
+    fetchTeams();
+  } catch (error) {
+    console.log(error);
+  }
+};
   // ✅ DELETE FUNCTION
   const handleDeleteProject = (index) => {
     const confirmDelete = window.confirm(
@@ -82,11 +109,20 @@ export default function Dashboard() {
     setShowDeleteModal(true);
   };
 
-  const confirmDeleteProject = () => {
-    setProjects((prev) => prev.filter((_, i) => i !== projectToDelete));
+  const confirmDeleteProject = async () => {
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/teams/${projects[projectToDelete]._id}`
+    );
+
+    fetchTeams();
+
     setShowDeleteModal(false);
     setProjectToDelete(null);
-  };
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const handleJoinTeam = () => {
     const user = localStorage.getItem("dcUser");
