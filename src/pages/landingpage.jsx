@@ -17,33 +17,85 @@ export default function LandingPage() {
   const [user, setUser] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(false);
 
- useEffect(() => {
-  const fetchUser = async () => {
+//   const fetchUser = async () => {
+//   try {
+
+//     const response = await axios.get(
+//       "http://localhost:5000/api/developer/current-user",
+//       {
+//         withCredentials: true,
+//       }
+//     );
+
+//     setUser(response.data);
+
+//   } catch (error) {
+
+//     if (error.response?.status === 401) {
+//       setUser(null);
+//       return;
+//     }
+
+//     console.log(error);
+
+//   }
+// };
+
+  useEffect(() => {
+
+  const checkAuth = async () => {
+
     try {
 
       const response = await axios.get(
-        "http://localhost:5000/api/developer/current-user"
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
       );
 
       setUser(response.data);
 
     } catch (error) {
-      console.log(error);
+
+      // Ignore unauthorized errors
+      if (error.response?.status !== 401) {
+        console.log(error);
+      }
+
+      setUser(null);
     }
   };
 
-  fetchUser();
+  checkAuth();
+
 }, []);
+
+  
 
   const toggleTheme = () => {
     setDarkMode(!darkMode);
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem("dcUserId");
-    setUser(null);
-    setOpenDropdown(false);
-  };
+  const handleSignOut = async () => {
+  try {
+
+    await axios.post(
+      "http://localhost:5000/api/developer/logout",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+
+    localStorage.removeItem("isLoggedIn");
+
+    navigate("/signup");
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   useEffect(() => {
     if (darkMode) {

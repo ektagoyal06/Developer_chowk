@@ -32,51 +32,42 @@ const sidebarLinks = [
 
 export default function Sidebar() {
   const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+  fetchUser();
+}, []);
 
-    const loadUser = () => {
-      const storedUser = localStorage.getItem("dcUser");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      } else {
-        setUser(null);
+  const fetchUser = async () => {
+  try {
+
+    const response = await axios.get(
+      "http://localhost:5000/api/developer/current-user",
+      {
+        withCredentials: true,
       }
-    };
+    );
 
-    loadUser();
+    setUser(response.data);
 
-    window.addEventListener("userAuthChanged", loadUser);
+  } catch (error) {
 
-    return () => {
-      window.removeEventListener("userAuthChanged", loadUser);
-    };
+    if (error.response?.status === 401) {
 
-  }, []);
+      setUser(null);
 
-  const [userName, setUserName] = useState("");
-  
-    useEffect(() => {
-      fetchUser();
-    }, []);
-  
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/api/developer/current-user"
-        );
-  
-        setUserName(response.data.name);
-  
-      } catch (error) {
-        console.log(error);
-      }
-    };
+      return;
+    }
+
+    console.log(error);
+  }
+};
 
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900 ">
       <div className="w-64 bg-white flex flex-col border-r border-gray-300 w-[240px]">
+
         <div className="flex items-center p-4 space-x-3 border-b border-gray-200 mt-3">
           <div
             onClick={() => navigate("/")}
@@ -84,9 +75,12 @@ export default function Sidebar() {
           >
             &lt;/&gt;
           </div>
+
           <div>
             <h1 className="font-bold text-lg">Developer Chowk</h1>
-            <p className="text-xs text-gray-600">Build. Collaborate. Grow.</p>
+            <p className="text-xs text-gray-600">
+              Build. Collaborate. Grow.
+            </p>
           </div>
         </div>
 
@@ -103,9 +97,12 @@ export default function Sidebar() {
               }
             >
               <Icon className="w-5 h-5" />
+
               <div className="text-1xl">
-                <p className="font-semibold ">{title}</p>
-                <p className="text-xs text-gray-600 font-semibold">{subtitle}</p>
+                <p className="font-semibold">{title}</p>
+                <p className="text-xs text-gray-600 font-semibold">
+                  {subtitle}
+                </p>
               </div>
             </NavLink>
           ))}
@@ -113,49 +110,73 @@ export default function Sidebar() {
 
         {/* ===== USER PROFILE CARD ===== */}
         <div className="m-4 p-4 bg-purple-200 rounded-lg shadow text-gray-700">
-          <div className="flex items-center space-x-3">
-            <div
-              onClick={() => {
-                const currentUser = JSON.parse(localStorage.getItem("dcUser"));
 
-                if (currentUser && currentUser.role === "developer") {
-                  navigate("/developer-dashboard");
-                } else {
+          <div className="flex items-center space-x-3">
+
+            <div
+              onClick={async () => {
+                try {
+
+                  // Check if user is logged in
+                  const response = await axios.get(
+                    "http://localhost:5000/api/developer/current-user",
+                    {
+                      withCredentials: true,
+                    }
+                  );
+
+                  // If user exists → dashboard
+                  if (response.data) {
+                    navigate("/developer-dashboard");
+                  }
+
+                } catch (error) {
+
+                  // If not logged in → signup
                   navigate("/signup");
+
                 }
               }}
               className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-full flex items-center justify-center text-white text-2xl cursor-pointer hover:scale-105 transition"
             >
               <UserCircleIcon className="w-7 h-7" />
             </div>
+
             <div>
               {/* 👇 DYNAMIC NAME */}
               <h2 className="font-bold">
-                {userName || "Guest User"}
+                {user?.name || "Guest User"}
               </h2>
+
               <span className="text-xs px-2 py-1 bg-gray-200 rounded-full">
-                Developer
+                {user ? "Developer" : "Guest"}
               </span>
             </div>
+
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
+
             <p className="flex items-center text-green-600 space-x-1">
               <BoltIcon className="w-4 h-4" />
               <span>Streak: 0</span>
             </p>
+
             <p className="flex items-center text-orange-500 space-x-1">
               <StarIcon className="w-4 h-4" />
               <span>Rating: 0</span>
             </p>
+
             <p className="flex items-center text-blue-700 space-x-1">
               <ChartBarIcon className="w-4 h-4" />
               <span>Projects: 0</span>
             </p>
+
             <p className="flex items-center text-red-600 space-x-1">
               <BoltIcon className="w-4 h-4" />
               <span>Bugs: 0</span>
             </p>
+
           </div>
         </div>
       </div>

@@ -1,99 +1,183 @@
 // src/components/CreateProjectModal.jsx
+
 import React, { useState } from "react";
 
-export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
-  if (!isOpen) return null;
-
+export default function CreateProjectModal({
+  isOpen,
+  onClose,
+  onCreate,
+}) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-  const [domain, setDomain] = useState("");
-  const [level, setLevel] = useState("");
+  const [domain, setDomain] = useState("Web Development");
+  const [level, setLevel] = useState("Beginner");
   const [teamSize, setTeamSize] = useState("");
   const [deadline, setDeadline] = useState("");
 
-  const handleSubmit = () => {
-    if (!title || !desc) {
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // VALIDATION
+    if (
+      !title ||
+      !desc ||
+      !domain ||
+      !level ||
+      !teamSize ||
+      !deadline
+    ) {
       alert("Please fill all fields");
       return;
     }
 
-    onCreate({
-      title,
-      desc,
-      domain,
-      level,
-      teamSize,
-      deadline,
-    });
+    try {
 
-    onClose();
+      // CHECK LOGIN
+      const res = await fetch(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      // USER NOT LOGGED IN
+      if (!res.ok) {
+        alert("Signup/Signin first");
+        return;
+      }
+
+      // USER DATA
+      const user = await res.json();
+
+      // PROJECT DATA
+      const projectData = {
+        title,
+        description: desc,
+        domain,
+        level,
+
+        members: `0/${teamSize} members`,
+        applications: "0 applications",
+        due: deadline,
+
+        postedBy: user.username,
+        postedByName: user.name,
+        postedById: user._id,
+      };
+
+      // CREATE PROJECT
+      await onCreate(projectData);
+
+      // RESET FORM
+      setTitle("");
+      setDesc("");
+      setDomain("Web Development");
+      setLevel("Beginner");
+      setTeamSize("");
+      setDeadline("");
+
+      // CLOSE MODAL
+      onClose();
+
+      alert("Project Created Successfully 🚀");
+
+    } catch (error) {
+
+      console.log(error);
+
+      alert("Server Error");
+
+    }
   };
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+    <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50">
       <div className="bg-white w-[750px] rounded-xl shadow-xl p-6">
 
-        {/* Title & Close */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Create New Project</h2>
-          <button onClick={onClose} className="text-gray-500 text-xl hover:text-black">×</button>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-2xl font-bold">
+            Create New Project
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="text-2xl text-gray-500 hover:text-black"
+          >
+            ×
+          </button>
         </div>
 
-        {/* Form */}
-        <div className="space-y-4">
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* Project Title */}
+          {/* TITLE */}
           <div>
-            <label className="font-medium">Project Title</label>
+            <label className="font-medium">
+              Project Title
+            </label>
+
             <input
-              className="w-full mt-1 p-2 border rounded-md"
+              type="text"
               placeholder="Enter project title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              className="w-full mt-1 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* Description */}
+          {/* DESCRIPTION */}
           <div>
-            <label className="font-medium">Description</label>
+            <label className="font-medium">
+              Description
+            </label>
+
             <textarea
-              className="w-full mt-1 p-2 border rounded-md"
-              rows="3"
+              rows="4"
               placeholder="Describe your project..."
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
+              className="w-full mt-1 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* 2 Column Fields */}
+          {/* GRID */}
           <div className="grid grid-cols-2 gap-4">
 
-            {/* Domain */}
+            {/* DOMAIN */}
             <div>
-              <label className="font-medium">Domain</label>
+              <label className="font-medium">
+                Domain
+              </label>
+
               <select
-                className="w-full mt-1 p-2 border rounded-md"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
+                className="w-full mt-1 p-3 border rounded-lg"
               >
-                <option>Select domain</option>
                 <option>Web Development</option>
-                <option>Full stack Development</option>
+                <option>Full stack development</option>
                 <option>Mobile App</option>
-                <option>AI/ML</option>
                 <option>Blockchain</option>
+                <option>AI/ML</option>
                 <option>Game Development</option>
                 <option>Data Scientist</option>
               </select>
             </div>
 
-            {/* Difficulty */}
+            {/* LEVEL */}
             <div>
-              <label className="font-medium">Difficulty Level</label>
+              <label className="font-medium">
+                Difficulty Level
+              </label>
+
               <select
-                className="w-full mt-1 p-2 border rounded-md"
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
+                className="w-full mt-1 p-3 border rounded-lg"
               >
                 <option>Beginner</option>
                 <option>Intermediate</option>
@@ -101,38 +185,46 @@ export default function CreateProjectModal({ isOpen, onClose, onCreate }) {
               </select>
             </div>
 
-            {/* Team Size */}
+            {/* TEAM SIZE */}
             <div>
-              <label className="font-medium">Team Size</label>
+              <label className="font-medium">
+                Team Size
+              </label>
+
               <input
                 type="number"
-                className="w-full mt-1 p-2 border rounded-md"
                 placeholder="2"
                 value={teamSize}
                 onChange={(e) => setTeamSize(e.target.value)}
+                className="w-full mt-1 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
-            {/* Deadline */}
+            {/* DEADLINE */}
             <div>
-              <label className="font-medium">Deadline</label>
+              <label className="font-medium">
+                Deadline
+              </label>
+
               <input
                 type="date"
-                className="w-full mt-1 p-2 border rounded-md"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
+                className="w-full mt-1 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
-          </div>
-        </div>
 
-        {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          className="w-full mt-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded-md font-semibold"
-        >
-          Create Project
-        </button>
+          </div>
+
+          {/* BUTTON */}
+          <button
+            type="submit"
+            className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:brightness-110 transition"
+          >
+            Create Project
+          </button>
+
+        </form>
       </div>
     </div>
   );

@@ -646,20 +646,30 @@ export default function DeveloperChowkAuth() {
 
   const handleSignin = async () => {
   try {
+
     const response = await axios.post(
       "http://localhost:5000/api/developer/login",
-      signinData
+      signinData,
+      {
+        withCredentials: true,
+      }
     );
 
     alert(response.data.message);
 
-    // save logged user
-    setDev(response.data.developer);
+    localStorage.setItem(
+      "dcUser",
+      JSON.stringify(response.data.developer)
+    );
 
-    // redirect to dashboard
+    window.dispatchEvent(
+      new Event("userAuthChanged")
+    );
+
     navigate("/developer-dashboard");
 
   } catch (error) {
+
     console.log(error);
 
     alert(

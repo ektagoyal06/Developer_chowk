@@ -14,6 +14,7 @@ import {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("all");
+  const [user, setUser] = useState(null);
 
   // FILTER STATES
   const [search, setSearch] = useState("");
@@ -32,8 +33,32 @@ export default function Dashboard() {
 
   // ================= FETCH BUGS =================
   useEffect(() => {
-    fetchBugs();
-  }, []);
+  fetchUser();
+  fetchBugs();
+}, []);
+
+const fetchUser = async () => {
+  try {
+
+    const res = await axios.get(
+      "http://localhost:5000/api/developer/current-user",
+      {
+        withCredentials: true,
+      }
+    );
+
+    setUser(res.data);
+
+  } catch (error) {
+
+    if (error.response?.status === 401) {
+      setUser(null);
+      return;
+    }
+
+    console.log(error);
+  }
+};
 
   const fetchBugs = async () => {
     try {
@@ -156,9 +181,21 @@ export default function Dashboard() {
           </div>
 
           <button
-            onClick={() => setOpenBugModal(true)}
-            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 transition"
-          >
+  onClick={() => {
+
+    // NOT LOGGED IN
+    if (!user) {
+
+      alert("⚠️ Please Signup/Login first");
+
+      return;
+    }
+
+    // LOGGED IN
+    setOpenBugModal(true);
+  }}
+  className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 transition"
+>
             <PlusIcon className="w-5 h-5" />
             Post a Bug
           </button>

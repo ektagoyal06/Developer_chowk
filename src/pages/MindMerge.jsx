@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import SellNoteModal from "../components/SellNoteModal";
 import Sidebar from "../components/Sidebar";
@@ -13,46 +13,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";   // <-- ADDED
 
-const initialNotes = [
-  {
-    id: 1,
-    title: "Data Structures & Algorithms Cheatsheet",
-    desc: "All major DS&A concepts in a concise, easy-to-read format.",
-    tags: ["dsa", "algorithms"],
-    domain: "Data Scientist",
-    type: "Free",
-    price: 0,
-  },
-  {
-    id: 2,
-    title: "Comprehensive React Hooks Guide",
-    desc: "Deep dive into every React hook with examples.",
-    tags: ["react", "hooks"],
-    domain: "Web Development",
-    type: "Paid",
-    price: 299,
-  },
-  {
-    id: 3,
-    title: "Introduction to Python for AI/ML",
-    desc: "Beginner-friendly Python, NumPy & Pandas notes.",
-    tags: ["python", "ai"],
-    domain: "AI/ML",
-    type: "Paid",
-    price: 499,
-  },
-  {
-    id: 4,
-    title: "Machine Learning Notes - Complete Course",
-    desc: "Supervised & unsupervised learning explained.",
-    tags: ["ml", "ai"],
-    domain: "AI/ML",
-    type: "Paid",
-    price: 799,
-  },
-];
-
-
 export default function Dashboard() {
   /* ===================== STATES ===================== */
   const [notes, setNotes] = useState([]);
@@ -63,44 +23,69 @@ export default function Dashboard() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
   const [openSellModal, setOpenSellModal] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-  fetchNotes();
-}, []);
+    fetchNotes();
+    fetchUser();
+  }, []);
 
-const fetchNotes = async () => {
-  try {
+  const fetchNotes = async () => {
+    try {
 
-    const res = await axios.get(
-      "http://localhost:5000/api/notes"
-    );
+      const res = await axios.get(
+        "http://localhost:5000/api/notes"
+      );
 
-    setNotes(res.data);
+      setNotes(res.data);
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchUser = async () => {
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setUser(res.data);
+
+    } catch (error) {
+
+      if (error.response?.status === 401) {
+        setUser(null);
+        return;
+      }
+
+      console.log(error);
+    }
+  };
   /* ===================== ADD NOTE ===================== */
   const handleAddNote = async (newNote) => {
-  try {
+    try {
 
-    const payload = {
-      ...newNote,
-      postedBy: "anjaliaroraa100",
-    };
+      const payload = {
+        ...newNote,
+        postedBy: "anjaliaroraa100",
+      };
 
-    const res = await axios.post(
-      "http://localhost:5000/api/notes",
-      payload
-    );
+      const res = await axios.post(
+        "http://localhost:5000/api/notes",
+        payload
+      );
 
-    setNotes((prev) => [res.data, ...prev]);
+      setNotes((prev) => [res.data, ...prev]);
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
   /* ===================== FILTER LOGIC ===================== */
@@ -128,23 +113,23 @@ const fetchNotes = async () => {
   };
 
   const confirmDelete = async () => {
-  try {
+    try {
 
-    await axios.delete(
-      `http://localhost:5000/api/notes/${selectedNote._id}`
-    );
+      await axios.delete(
+        `http://localhost:5000/api/notes/${selectedNote._id}`
+      );
 
-    setNotes((prev) =>
-      prev.filter((n) => n._id !== selectedNote._id)
-    );
+      setNotes((prev) =>
+        prev.filter((n) => n._id !== selectedNote._id)
+      );
 
-    setShowConfirm(false);
-    setSelectedNote(null);
+      setShowConfirm(false);
+      setSelectedNote(null);
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900">
@@ -163,7 +148,19 @@ const fetchNotes = async () => {
             </p>
           </div>
           <button
-            onClick={() => setOpenSellModal(true)}
+            onClick={() => {
+
+              // USER NOT LOGGED IN
+              if (!user) {
+
+                alert("⚠️ Please Signup/Login first");
+
+                return;
+              }
+
+              // USER LOGGED IN
+              setOpenSellModal(true);
+            }}
             className="flex items-center gap-1 bg-green-600 text-white px-3 h-10 rounded font-bold text-sm mt-5"
           >
             <PlusIcon className="w-5 h-5" />

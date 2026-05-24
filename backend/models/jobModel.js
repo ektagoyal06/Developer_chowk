@@ -2,11 +2,30 @@ import mongoose from "mongoose";
 
 const jobSchema = new mongoose.Schema(
   {
-    title: String,
-    level: String,
-    price: String,
-    description: String,
-    tags: [String],
+    title: {
+      type: String,
+      required: true,
+    },
+
+    level: {
+      type: String,
+      default: "beginner",
+    },
+
+    price: {
+      type: String,
+      default: "$0",
+    },
+
+    description: {
+      type: String,
+      default: "",
+    },
+
+    tags: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );

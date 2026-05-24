@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-
+import { useEffect, useState } from "react";
 import ContributeModal from "../components/ContributeModal";
 import Sidebar from "../components/Sidebar";
 
@@ -16,6 +16,7 @@ export default function Dashboard() {
 
   // ================= STATES =================
   const [search, setSearch] = React.useState("");
+  const [user, setUser] = useState(null);
   const [domain, setDomain] = React.useState("All Domains");
   const [type, setType] = React.useState("All Types");
   const [level, setLevel] = React.useState("All Levels");
@@ -30,6 +31,7 @@ export default function Dashboard() {
   // ================= FETCH MATERIALS =================
   React.useEffect(() => {
     fetchMaterials();
+    fetchUser();
   }, []);
 
   const fetchMaterials = async () => {
@@ -43,6 +45,28 @@ export default function Dashboard() {
 
     } catch (error) {
       console.log("Fetch Error:", error);
+    }
+  };
+  const fetchUser = async () => {
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setUser(res.data);
+
+    } catch (error) {
+
+      if (error.response?.status === 401) {
+        setUser(null);
+        return;
+      }
+
+      console.log(error);
     }
   };
 
@@ -168,7 +192,19 @@ export default function Dashboard() {
           </div>
 
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+
+              // USER NOT LOGGED IN
+              if (!user) {
+
+                alert("⚠️ Please Signup/Login first");
+
+                return;
+              }
+
+              // USER LOGGED IN
+              setShowModal(true);
+            }}
             className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-lg flex items-center gap-2 shadow hover:opacity-90 transition"
           >
             <span className="text-lg">+</span>

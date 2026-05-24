@@ -3,6 +3,7 @@ import PostProjectModal from "../components/PostProjectModal";
 import ApplyProposalModal from "../components/ApplyProposalModal";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 import {
   TrashIcon,
   EyeIcon,
@@ -58,22 +59,55 @@ export default function ProlanceDashboard() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
+  const [user, setUser] = useState(null);
 
-  useEffect(() => {
+useEffect(() => {
+
+  fetchUser();
+
   fetchJobs();
+
 }, []);
+const fetchUser = async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5000/api/developer/current-user",
+      {
+        withCredentials: true,
+      }
+    );
+
+    setUser(res.data);
+
+  } catch (error) {
+
+    if (error.response?.status === 401) {
+      setUser(null);
+      return;
+    }
+
+    console.log(error);
+  }
+};
 
 const fetchJobs = async () => {
   try {
 
     const res = await axios.get(
-      "http://localhost:5000/api/jobs"
+      "http://localhost:5000/api/jobs",
+      {
+        withCredentials: true,
+      }
     );
+
+    console.log("Jobs:", res.data);
 
     setJobs(res.data);
 
   } catch (error) {
+
     console.log(error);
+
   }
 };
 
@@ -135,13 +169,15 @@ const fetchJobs = async () => {
       filterLevel === "All Levels" ||
       job.level.toLowerCase() === filterLevel.toLowerCase();
 
-    const isHourly = job.price.includes("/ hr");
+    const isHourly = job.price?.includes("/ hr");
     const matchesType =
       filterType === "All Types" ||
       (filterType === "Hourly Rate" && isHourly) ||
       (filterType === "Fixed Price" && !isHourly);
 
-    let numericPrice = parseInt(job.price.replace(/[^0-9]/g, ""));
+    let numericPrice = parseInt(
+  (job.price || "0").replace(/[^0-9]/g, "")
+);
     const matchesBudget =
       filterBudget === "All Budgets" ||
       (filterBudget === "$0 - $500" && numericPrice <= 500) ||
@@ -165,11 +201,23 @@ const fetchJobs = async () => {
             <p className="text-gray-500">Find your next gig or hire top talent.</p>
           </div>
           <button
-            onClick={() => setOpenPostModal(true)}
-            className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
-          >
-            + Post a Project
-          </button>
+  onClick={() => {
+
+    // USER NOT LOGGED IN
+    if (!user) {
+
+      alert("⚠️ Please Signup/Login first");
+
+      return;
+    }
+
+    // USER LOGGED IN
+    setOpenPostModal(true);
+  }}
+  className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+>
+  + Post a Project
+</button>
         </div>
 
         {/* Filters (UNCHANGED UI) */}
@@ -244,7 +292,7 @@ const fetchJobs = async () => {
                   <p className="text-green-600 font-semibold mb-2">{job.price}</p>
                   <p className="text-gray-600 text-sm mb-4">{job.description}</p>
                   <div className="flex flex-wrap gap-2">
-                    {job.tags.map((tag) => (
+                    {(job.tags || []).map((tag) => (
                       <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
                         {tag}
                       </span>

@@ -10,6 +10,7 @@ const projectSchema = new mongoose.Schema(
     level: {
       type: String,
       required: true,
+      default: "Beginner",
     },
 
     domain: {
@@ -50,6 +51,26 @@ const projectSchema = new mongoose.Schema(
     coverImage: {
       type: String,
       default: "",
+    },
+
+    // =========================
+    // USER INFO
+    // =========================
+
+    postedBy: {
+      type: String,
+      default: "Unknown User",
+    },
+
+    postedByName: {
+      type: String,
+      default: "Anonymous",
+    },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Developer",
+      default: null,
     },
   },
   { timestamps: true }

@@ -191,14 +191,36 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("Projects");
   const [selectedProject, setSelectedProject] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   /* ⭐ Delete Modal State ⭐ */
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+ useEffect(() => {
+
+  fetchProjects(); // ALWAYS FETCH PROJECTS
+
+}, []);
+
+  const fetchCurrentUser = async () => {
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setCurrentUser(res.data);
+
+    } catch (error) {
+
+      setCurrentUser(null);
+
+    }
+  };
 
   const fetchProjects = async () => {
     try {
@@ -214,15 +236,56 @@ export default function Dashboard() {
   /* ⭐ CREATE PROJECT HANDLER ⭐ */
   const handleCreate = async (newProj) => {
     try {
+
+      // Check logged in user from backend
+      const authRes = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      const user = authRes.data;
+
+      // If not logged in
+      if (!user) {
+        alert("Signup/Signin first");
+        return;
+      }
+
+      const payload = {
+        title: newProj.title,
+        level: newProj.level,
+        domain: newProj.domain,
+        description: newProj.description,
+
+        members: `${newProj.teamSize} members`,
+        applications: "0 applications",
+        due: newProj.deadline,
+
+        postedBy: user.username,
+        postedByName: user.name,
+        userId: user._id,
+      };
+
       await axios.post(
         "http://localhost:5000/api/projects",
-        newProj
+        payload,
+        {
+          withCredentials: true,
+        }
       );
 
       fetchProjects();
+
       setOpenModal(false);
+
     } catch (error) {
+
+      alert("Signup/Signin first");
+
       console.log(error);
+
     }
   };
 
@@ -244,7 +307,10 @@ export default function Dashboard() {
 
       await axios.post(
         "http://localhost:5000/api/projects",
-        projectObj
+        projectObj,
+        {
+          withCredentials: true,
+        }
       );
 
       fetchProjects();
@@ -254,18 +320,33 @@ export default function Dashboard() {
     }
   };
 
-  const handleApply = () => {
-    const user = localStorage.getItem("dcUser");
+  const handleApply = async () => {
+    try {
 
-    if (!user) {
-      alert("⚠️ Please Sign Up / Login first to apply.");
-      return;
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      const user = res.data;
+
+      if (!user) {
+        alert("Signup/Signin first");
+        return;
+      }
+
+      alert(`✅ ${user.name}, your application submitted successfully!`);
+
+    } catch (error) {
+
+      alert("Signup/Signin first");
+
+      console.log(error);
+
     }
-
-    // If user exists
-    alert("✅ Application submitted successfully!");
   };
-
   /* ---------------------- FILTER LOGIC ---------------------- */
   const filteredProjects = projects.filter((p) => {
     const matchesSearch =
@@ -301,7 +382,31 @@ export default function Dashboard() {
           {/* Conditional Button: Create Project or Sell Project */}
           {activeTab === "Projects" && (
             <button
-              onClick={() => setOpenModal(true)}
+              onClick={async () => {
+                try {
+
+                  const res = await fetch(
+                    "http://localhost:5000/api/developer/current-user",
+                    {
+                      credentials: "include",
+                    }
+                  );
+
+                  if (!res.ok) {
+                    alert("Signup/Signin first");
+                    return;
+                  }
+
+                  setOpenModal(true);
+
+                } catch (error) {
+
+                  alert("Signup/Signin first");
+
+                  console.log(error);
+
+                }
+              }}
               className="inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 font-semibold hover:brightness-110 transition"
             >
               <PlusIcon className="w-5 h-5" />
@@ -311,7 +416,30 @@ export default function Dashboard() {
 
           {activeTab === "ProjMart" && (
             <button
-              onClick={() => setOpenSellModal(true)}
+              onClick={async () => {
+                try {
+
+                  const res = await axios.get(
+                    "http://localhost:5000/api/developer/current-user",
+                    {
+                      withCredentials: true,
+                    }
+                  );
+
+                  if (!res.data) {
+                    alert("Signup/Signin first");
+                    return;
+                  }
+
+                  setOpenSellModal(true);
+
+                } catch (error) {
+
+                  alert("Signup/Signin first");
+                  console.log(error);
+
+                }
+              }}
               className="inline-flex items-center gap-2 rounded-md bg-green-600 text-white px-5 py-2 font-semibold hover:bg-green-700 transition"
             >
               <svg
@@ -410,81 +538,108 @@ export default function Dashboard() {
         {/* PROJECT CARDS */}
         {activeTab === "Projects" && (
           <div className="grid grid-cols-3 gap-6">
-            {filteredProjects.map(
-              (
-                { title, level, domain, description, members, applications, due },
-                idx
-              ) => (
-                <div
-                  key={idx}
-                  className="bg-white p-6 rounded-lg shadow flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="font-semibold text-lg">{title}</h3>
-                      <span className="px-3 py-0.5 rounded-full bg-blue-100 text-blue-600 text-xs">
-                        open
-                      </span>
+            {filteredProjects.map((project) => (
+              <div
+                key={project._id}
+                className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition"
+              >
+                <div>
+                  {/* TOP */}
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-semibold text-lg line-clamp-1">
+                      {project.title}
+                    </h3>
+
+                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-medium">
+                      Open
+                    </span>
+                  </div>
+
+                  {/* POSTED BY */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm">
+                      {project.postedByName?.charAt(0)?.toUpperCase()}
                     </div>
 
-                    <div className="flex gap-2 flex-wrap mb-2">
-                      <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs capitalize">
-                        {level}
-                      </span>
-                      <span className="px-2 py-1 rounded-full bg-gray-200 text-gray-700 text-xs lowercase">
-                        {domain}
-                      </span>
-                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">
+                        Posted by: {project.postedByName}
+                      </p>
 
-                    <p className="text-sm text-gray-600 line-clamp-3">
-                      {description}
-                    </p>
 
-                    <div className="mt-4 text-xs text-gray-500 space-y-1">
-                      <div className="flex items-center gap-1">
-                        <UsersIcon className="w-4 h-4" /> {members}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <UserPlusIcon className="w-4 h-4" /> {applications}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CalendarIcon className="w-4 h-4" /> {due}
-                      </div>
                     </div>
                   </div>
 
-                  <div className="flex space-x-3 mt-6">
-                    <button
-                      onClick={handleApply}
-                      className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 rounded-md hover:brightness-110"
-                    >
-                      Apply
-                    </button>
+                  {/* TAGS */}
+                  <div className="flex gap-2 flex-wrap mb-3">
+                    <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs capitalize">
+                      {project.level}
+                    </span>
 
-                    <button
-                      onClick={() => {
-                        setSelectedProject(filteredProjects[idx]);
-                        setShowProjectModal(true);
-                      }}
-                      className="w-10 h-10 border rounded-md flex items-center justify-center hover:bg-gray-100"
-                    >
-                      <EyeIcon className="w-5 h-5 text-gray-800 " />
-                    </button>
+                    <span className="px-2 py-1 rounded-full bg-gray-200 text-gray-700 text-xs">
+                      {project.domain}
+                    </span>
+                  </div>
 
-                    {/* DELETE BUTTON */}
-                    <button
-                      onClick={() => {
-                        setDeleteIndex(idx);
-                        setShowDeleteModal(true);
-                      }}
-                      className="w-10 h-10 border border-red-400 rounded-md flex items-center justify-center hover:bg-red-100"
-                    >
-                      <TrashIcon className="w-5 h-5 text-red-600" />
-                    </button>
+                  {/* DESCRIPTION */}
+                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                    {project.description}
+                  </p>
+
+                  {/* DETAILS */}
+                  <div className="mt-5 text-xs text-gray-500 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <UsersIcon className="w-4 h-4" />
+                      <span>{project.members}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <UserPlusIcon className="w-4 h-4" />
+                      <span>{project.applications}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="w-4 h-4" />
+                      <span>{project.due}</span>
+                    </div>
                   </div>
                 </div>
-              )
-            )}
+
+                {/* BUTTONS */}
+                <div className="flex space-x-3 mt-6">
+                  <button
+                    onClick={handleApply}
+                    className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 rounded-md hover:brightness-110 transition"
+                  >
+                    Apply
+                  </button>
+
+                  {/* VIEW */}
+                  <button
+                    onClick={() => {
+                      setSelectedProject(project);
+                      setShowProjectModal(true);
+                    }}
+                    className="w-10 h-10 border rounded-md flex items-center justify-center hover:bg-gray-100 transition"
+                  >
+                    <EyeIcon className="w-5 h-5 text-gray-800" />
+                  </button>
+
+                  {/* DELETE */}
+                  {currentUser?._id === project.userId && (
+
+                    <button
+                      onClick={() => {
+                        setDeleteIndex(project._id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="w-10 h-10 border border-red-300 rounded-md flex items-center justify-center hover:bg-red-50 transition"
+                    >
+                      <TrashIcon className="w-5 h-5 text-red-600" />
+                    </button>)}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -698,16 +853,27 @@ export default function Dashboard() {
               <button
                 onClick={async () => {
                   try {
+
                     await axios.delete(
-                      `http://localhost:5000/api/projects/${projects[deleteIndex]._id}`
+                      `http://localhost:5000/api/projects/${deleteIndex}`
                     );
 
                     fetchProjects();
+
                     setShowDeleteModal(false);
+
                   } catch (error) {
+
+                    if (error.response?.status === 401) {
+                      setUser(null);
+                      return;
+                    }
+
                     console.log(error);
+
                   }
-                }}
+                }
+                }
                 className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
               >
                 Delete

@@ -14,6 +14,8 @@ import { Link } from "react-router-dom";
 
 
 export default function Dashboard() {
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [user, setUser] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState(null);
   const [activeTab, setActiveTab] = useState("Browse Projects");
@@ -22,82 +24,143 @@ export default function Dashboard() {
   const [isLookingModalOpen, setIsLookingModalOpen] = useState(false);
   const [selectedBrowseProject, setSelectedBrowseProject] = useState(null);
   const [showBrowseModal, setShowBrowseModal] = useState(false);
-  
-  const currentUser = "Anjali Arora";
+
+  const currentUser = user?.name || null;
+
+  const fetchUser = async () => {
+
+  try {
+
+    const res = await axios.get(
+      "http://localhost:5000/api/developer/current-user",
+      {
+        withCredentials: true,
+      }
+    );
+
+    setUser(res.data);
+
+  } catch (error) {
+
+    setUser(null);
+
+    if (error.response?.status !== 401) {
+      console.log(error);
+    }
+
+  } finally {
+
+    setLoadingUser(false);
+
+  }
+};
 
   useEffect(() => {
+
+  fetchUser();
+
   fetchTeams();
+
 }, []);
 
-const fetchTeams = async () => {
+  const fetchTeams = async () => {
   try {
-    const res = await axios.get("http://localhost:5000/api/teams");
+
+    const res = await axios.get(
+      "http://localhost:5000/api/teams",
+      {
+        withCredentials: true,
+      }
+    );
 
     setProjects(res.data);
+
   } catch (error) {
+
+    if (error.response?.status === 401) {
+
+      setProjects([]);
+
+      return;
+    }
+
     console.log(error);
   }
 };
 
   // ADD NEW PROJECT FROM MODAL
   const handleAddProject = async (newProject) => {
-  try {
-    const projectObj = {
-      ...newProject,
-      poster: currentUser,
-    };
+    try {
+      const projectObj = {
+        ...newProject,
+        poster: currentUser,
+      };
 
-    await axios.post(
-      "http://localhost:5000/api/teams",
-      projectObj
-    );
-
-    fetchTeams();
-  } catch (error) {
-    console.log(error);
+      await axios.post(
+  "http://localhost:5000/api/teams",
+  projectObj,
+  {
+    withCredentials: true,
   }
-};
-  // ✅ DELETE FUNCTION
-  const handleDeleteProject = (index) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
+);
 
-    if (confirmDelete) {
-      setProjects((prev) => prev.filter((_, i) => i !== index));
+      fetchTeams();
+    } catch (error) {
+      console.log(error);
     }
   };
+  // ✅ DELETE FUNCTION
+  
   const handleDeleteClick = (index) => {
     setProjectToDelete(index);
     setShowDeleteModal(true);
   };
 
   const confirmDeleteProject = async () => {
-  try {
-    await axios.delete(
-      `http://localhost:5000/api/teams/${projects[projectToDelete]._id}`
-    );
-
-    fetchTeams();
-
-    setShowDeleteModal(false);
-    setProjectToDelete(null);
-  } catch (error) {
-    console.log(error);
+    try {
+      await axios.delete(
+  `http://localhost:5000/api/teams/${projects[projectToDelete]._id}`,
+  {
+    withCredentials: true,
   }
-};
+);
 
-  const handleJoinTeam = () => {
-    const user = localStorage.getItem("dcUser");
+      fetchTeams();
 
-    if (!user) {
-      alert("⚠️ Please Sign Up / Login first to join a team.");
-      navigate("/signup"); // redirect to signup page
-      return;
+      setShowDeleteModal(false);
+      setProjectToDelete(null);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const handleJoinTeam = async () => {
+
+  if (!user) {
+
+    alert("⚠️ Please Sign Up / Login first to join a team.");
+
+    return;
+  }
+
+  try {
 
     alert("✅ Request sent to join the team!");
-  };
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
+if (loadingUser) {
+
+  return (
+    <div className="h-screen flex items-center justify-center">
+      Loading...
+    </div>
+  );
+}
 
   return (
     <div className="flex h-screen bg-blue-50 text-gray-900">
@@ -123,7 +186,14 @@ const fetchTeams = async () => {
             {/* Create Team Room */}
             <button
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                if (!user) {
+                  alert("⚠️ Please Signup/Login first");
+                  return;
+                }
+
+                setIsOpen(true);
+              }}
             >
               + Create Team Room
             </button>
@@ -131,7 +201,14 @@ const fetchTeams = async () => {
             {/* Looking for Team Members */}
             <button
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
-              onClick={() => setIsLookingModalOpen(true)}
+              onClick={() => {
+                if (!user) {
+                  alert("⚠️ Please Signup/Login first");
+                  return;
+                }
+
+                setIsLookingModalOpen(true);
+              }}
             >
               + Looking for Team Members
             </button>
@@ -223,7 +300,7 @@ const fetchTeams = async () => {
 
 
                   {/* ✅ DUSTBIN BUTTON (Only Poster Can See) */}
-                  {proj.poster === currentUser && (
+                  {currentUser && proj.poster === currentUser && (
                     <button
                       onClick={() => handleDeleteClick(idx)}
                       className="px-3 py-2 border border-red-400 rounded-lg hover:bg-red-100 transition flex items-center justify-center text-red-600"
@@ -351,11 +428,11 @@ const fetchTeams = async () => {
                 Contact Team
               </button>
               <button
-                    onClick={handleJoinTeam}
-                    className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
-                  >
-                    <UserPlusIcon size={16} /> Join Team
-                  </button>
+                onClick={handleJoinTeam}
+                className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
+              >
+                <UserPlusIcon size={16} /> Join Team
+              </button>
             </div>
 
           </div>

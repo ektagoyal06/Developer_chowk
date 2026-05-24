@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CreateMentorshipModal from "../components/CreateMentorshipModal";
 import BookSessionModal from "../components/BookSessionModal";
@@ -24,49 +24,6 @@ import {
 } from "@heroicons/react/24/outline";
 
 
-const initialMentors = [
-
-  {
-    id: 1,
-    name: "Anjali Arora",
-    rating: 0,
-    sessions: 0,
-    title: "Interview preparation",
-    description: "Effective tips for cracking technical & HR interviews.",
-    duration: 60,
-    price: 500,
-    type: "One-on-One",
-    expertise: "Interview",
-    tags: ["communication", "body language"],
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    rating: 4.8,
-    sessions: 45,
-    title: "React & Redux Mastery",
-    description: "Advanced React patterns and performance optimization.",
-    duration: 60,
-    price: 800,
-    type: "One-on-One",
-    expertise: "Technical",
-    tags: ["React", "Redux", "JavaScript"],
-  },
-  {
-    id: 3,
-    name: "Rahul Verma",
-    rating: 4.9,
-    sessions: 67,
-    title: "Full Stack Career Path",
-    description: "Personalized guidance to become a full stack developer.",
-    duration: 45,
-    price: 500,
-    type: "One-on-One",
-    expertise: "Career",
-    tags: ["Career", "Full Stack", "Node.js"],
-  },
-];
-
 export default function Dashboard() {
   const [search, setSearch] = React.useState("");
   const [expertise, setExpertise] = React.useState("All");
@@ -80,70 +37,95 @@ export default function Dashboard() {
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [mentorToDelete, setMentorToDelete] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-  fetchMentors();
-}, []);
+    fetchMentors();
+    fetchUser();
+  }, []);
 
-const fetchMentors = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/mentors"
-    );
+  const fetchMentors = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/mentors"
+      );
 
-    setMentorList(res.data);
-  } catch (error) {
-    console.log(error);
-  }
-};
+      setMentorList(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchUser = async () => {
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setUser(res.data);
+
+    } catch (error) {
+
+      if (error.response?.status === 401) {
+        setUser(null);
+        return;
+      }
+
+      console.log(error);
+    }
+  };
 
   /* ===== ADD MENTOR FROM MODAL ===== */
   const handleAddMentor = async (mentor) => {
-  try {
-    const payload = {
-      ...mentor,
-      postedBy: "anjaliaroraa100",
-    };
+    try {
+      const payload = {
+        ...mentor,
+        postedBy: "anjaliaroraa100",
+      };
 
-    const res = await axios.post(
-      "http://localhost:5000/api/mentors",
-      payload
-    );
+      const res = await axios.post(
+        "http://localhost:5000/api/mentors",
+        payload
+      );
 
-    setMentorList((prev) => [
-      res.data,
-      ...prev,
-    ]);
+      setMentorList((prev) => [
+        res.data,
+        ...prev,
+      ]);
 
-    setShowMentorshipForm(false);
-  } catch (error) {
-    console.log(error);
-  }
-};
+      setShowMentorshipForm(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleDeleteClick = (_id) => {
     setMentorToDelete(id);
     setShowDeleteModal(true);
   };
 
   const confirmDeleteMentor = async () => {
-  try {
-    await axios.delete(
-      `http://localhost:5000/api/mentors/${mentorToDelete}`
-    );
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/mentors/${mentorToDelete}`
+      );
 
-    setMentorList((prev) =>
-      prev.filter(
-        (mentor) =>
-          mentor._id !== mentorToDelete
-      )
-    );
+      setMentorList((prev) =>
+        prev.filter(
+          (mentor) =>
+            mentor._id !== mentorToDelete
+        )
+      );
 
-    setShowDeleteModal(false);
-    setMentorToDelete(null);
-  } catch (error) {
-    console.log(error);
-  }
-};
+      setShowDeleteModal(false);
+      setMentorToDelete(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleBookSession = (mentor) => {
     const user = localStorage.getItem("dcUser");
@@ -204,7 +186,19 @@ const fetchMentors = async () => {
           </div>
 
           <button
-            onClick={() => setShowMentorshipForm(true)}
+            onClick={() => {
+
+              // USER NOT LOGGED IN
+              if (!user) {
+
+                alert("⚠️ Please Signup/Login first");
+
+                return;
+              }
+
+              // USER LOGGED IN
+              setShowMentorshipForm(true);
+            }}
             className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700"
           >
             + Offer Mentorship
