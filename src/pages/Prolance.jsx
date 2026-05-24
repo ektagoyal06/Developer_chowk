@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import PostProjectModal from "../components/PostProjectModal";
 import ApplyProposalModal from "../components/ApplyProposalModal";
 import Sidebar from "../components/Sidebar";
@@ -10,41 +10,6 @@ import {
 } from "@heroicons/react/24/outline";
 // import { Link } from "react-router-dom";
 
-// Sample jobs
-const initialJobs = [
-  {
-    title: "Mobile App UI/UX Design",
-    level: "beginner",
-    price: "$400",
-    description:
-      "Need a talented designer to create mockups and prototypes for a fitness tracking mobile app. Should include user onboarding,...",
-    tags: ["UI/UX Design", "Figma", "Mobile Design", "Prototyping"],
-  },
-  {
-    title: "WordPress Plugin Development",
-    level: "intermediate",
-    price: "$600",
-    description:
-      "Develop a custom WordPress plugin for appointment booking with calendar integration, email notifications, and payment...",
-    tags: ["WordPress", "PHP", "MySQL", "JavaScript"],
-  },
-  {
-    title: "Data Analysis and Visualization",
-    level: "intermediate",
-    price: "$45 / hr",
-    description:
-      "Analyze sales data and create interactive dashboards using Python and visualization libraries. Need insights on customer behavior,...",
-    tags: ["Python", "Pandas", "Matplotlib", "Data Analysis"],
-  },
-  {
-    title: "AI Chatbot Integration",
-    level: "advanced",
-    price: "$75 / hr",
-    description:
-      "Integrate an AI chatbot into existing customer support system. Should handle common queries, escalate complex issues, and integration...",
-    tags: ["Machine Learning", "Natural Language Processing", "API Integration", "Python"],
-  },
-];
 
 export default function ProlanceDashboard() {
   const [jobs, setJobs] = useState([]);
@@ -61,81 +26,102 @@ export default function ProlanceDashboard() {
   const [jobToDelete, setJobToDelete] = useState(null);
   const [user, setUser] = useState(null);
 
-useEffect(() => {
+  useEffect(() => {
 
-  fetchUser();
-
-  fetchJobs();
-
-}, []);
-const fetchUser = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/developer/current-user",
-      {
-        withCredentials: true,
-      }
-    );
-
-    setUser(res.data);
-
-  } catch (error) {
-
-    if (error.response?.status === 401) {
-      setUser(null);
-      return;
-    }
-
-    console.log(error);
-  }
-};
-
-const fetchJobs = async () => {
-  try {
-
-    const res = await axios.get(
-      "http://localhost:5000/api/jobs",
-      {
-        withCredentials: true,
-      }
-    );
-
-    console.log("Jobs:", res.data);
-
-    setJobs(res.data);
-
-  } catch (error) {
-
-    console.log(error);
-
-  }
-};
-
-  const handleAddProject = async (project) => {
-
-  try {
-
-    const formattedProject = {
-      ...project,
-      price:
-        project.budgetType === "Hourly"
-          ? `$${project.budget} / hr`
-          : `$${project.budget}`,
-      level: project.difficulty.toLowerCase(),
-      tags: project.skills || [],
-    };
-
-    await axios.post(
-      "http://localhost:5000/api/jobs",
-      formattedProject
-    );
+    fetchUser();
 
     fetchJobs();
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+  }, []);
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setUser(res.data);
+
+    } catch (error) {
+
+      if (error.response?.status === 401) {
+        setUser(null);
+        return;
+      }
+
+      console.log(error);
+    }
+  };
+
+  const fetchJobs = async () => {
+    try {
+
+      const res = await axios.get(
+        "http://localhost:5000/api/jobs",
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Jobs:", res.data);
+
+      setJobs(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
+
+  // ================= HANDLE ADD PROJECT =================
+  const handleAddProject = async (project) => {
+
+    try {
+
+      console.log("Current User:", user);
+
+      const formattedProject = {
+        ...project,
+
+        // ✅ FIXED POSTER NAME
+        poster:
+          user?.fullName ||
+          user?.name ||
+          user?.username,
+
+        posterUsername: user?.username,
+
+        price:
+          project.budgetType === "Hourly"
+            ? `$${project.budget} / hr`
+            : `$${project.budget}`,
+
+        level: project.difficulty.toLowerCase(),
+
+        tags: project.skills || [],
+      };
+
+      console.log("Sending Project:", formattedProject);
+
+      await axios.post(
+        "http://localhost:5000/api/jobs",
+        formattedProject,
+        {
+          withCredentials: true,
+        }
+      );
+
+      fetchJobs();
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
   const handleDeleteClick = (index) => {
     setJobToDelete(index);
     setShowDeleteModal(true);
@@ -143,22 +129,22 @@ const fetchJobs = async () => {
 
   const confirmDeleteJob = async () => {
 
-  try {
+    try {
 
-    await axios.delete(
-      `http://localhost:5000/api/jobs/${jobs[jobToDelete]._id}`
-    );
+      await axios.delete(
+        `http://localhost:5000/api/jobs/${jobs[jobToDelete]._id}`
+      );
 
-    fetchJobs();
+      fetchJobs();
 
-    setShowDeleteModal(false);
+      setShowDeleteModal(false);
 
-    setJobToDelete(null);
+      setJobToDelete(null);
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // ✅ FILTER LOGIC (ADDED)
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
@@ -176,8 +162,8 @@ const fetchJobs = async () => {
       (filterType === "Fixed Price" && !isHourly);
 
     let numericPrice = parseInt(
-  (job.price || "0").replace(/[^0-9]/g, "")
-);
+      (job.price || "0").replace(/[^0-9]/g, "")
+    );
     const matchesBudget =
       filterBudget === "All Budgets" ||
       (filterBudget === "$0 - $500" && numericPrice <= 500) ||
@@ -201,23 +187,23 @@ const fetchJobs = async () => {
             <p className="text-gray-500">Find your next gig or hire top talent.</p>
           </div>
           <button
-  onClick={() => {
+            onClick={() => {
 
-    // USER NOT LOGGED IN
-    if (!user) {
+              // USER NOT LOGGED IN
+              if (!user) {
 
-      alert("⚠️ Please Signup/Login first");
+                alert("⚠️ Please Signup/Login first");
 
-      return;
-    }
+                return;
+              }
 
-    // USER LOGGED IN
-    setOpenPostModal(true);
-  }}
-  className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
->
-  + Post a Project
-</button>
+              // USER LOGGED IN
+              setOpenPostModal(true);
+            }}
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+          >
+            + Post a Project
+          </button>
         </div>
 
         {/* Filters (UNCHANGED UI) */}
@@ -290,7 +276,20 @@ const fetchJobs = async () => {
                     </span>
                   </div>
                   <p className="text-green-600 font-semibold mb-2">{job.price}</p>
-                  <p className="text-gray-600 text-sm mb-4">{job.description}</p>
+                  <div className="mb-4">
+
+                    <p className="text-gray-600 text-sm">
+                      {job.description}
+                    </p>
+
+                    <p className="text-sm text-gray-500 mt-3">
+                      👤 Posted by{" "}
+                      <span className="font-semibold text-indigo-600">
+                        {job.poster}
+                      </span>
+                    </p>
+
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {(job.tags || []).map((tag) => (
                       <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
@@ -410,45 +409,51 @@ const fetchJobs = async () => {
             </div>
 
             {/* Description */}
+            {/* Description */}
             <div className="mb-6">
-              <h3 className="font-semibold mb-2">Project Description</h3>
-              <p className="text-gray-600 leading-relaxed text-sm">
-                {viewJob.description}
-              </p>
-            </div>
 
-            {/* Skills */}
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2">Required Skills</h3>
-              <div className="flex flex-wrap gap-2">
-                {viewJob.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-gray-200 rounded-full text-xs"
-                  >
-                    {tag}
+              <div className="mb-4">
+                <p className="text-sm text-gray-500">
+                  👤 Posted by{" "}
+                  <span className="font-semibold text-indigo-600">
+                    {viewJob.poster}
                   </span>
-                ))}
+                </p>
               </div>
+
+              {/* Skills */}
+              <div className="mb-6">
+                <h3 className="font-semibold mb-2">Required Skills</h3>
+                <div className="flex flex-wrap gap-2">
+                  {viewJob.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-gray-200 rounded-full text-xs"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setViewJob(null);
+                    setSelectedJob(viewJob);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+                >
+                  Apply for this task
+                </button>
+
+              </div>
+
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setViewJob(null);
-                  setSelectedJob(viewJob);
-                }}
-                className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
-              >
-                Apply for this task
-              </button>
-
-            </div>
-
           </div>
         </div>
-      )}
+      )};
     </div>
-  );
+  )
 }

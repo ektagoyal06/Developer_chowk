@@ -71,9 +71,9 @@ export default function Dashboard() {
     try {
 
       const payload = {
-        ...newNote,
-        postedBy: "anjaliaroraa100",
-      };
+  ...newNote,
+  postedBy: user?.name || user?.username,
+};
 
       const res = await axios.post(
         "http://localhost:5000/api/notes",
@@ -236,8 +236,8 @@ export default function Dashboard() {
                 </div>
 
                 <p className="text-xs text-gray-500 mt-2">
-                  by anjaliaroraa100
-                </p>
+  by {note.postedBy || "Unknown User"}
+</p>
 
                 <p className="text-sm text-gray-600 mt-4 line-clamp-3">
                   {note.desc}

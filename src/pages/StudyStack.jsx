@@ -71,27 +71,30 @@ export default function Dashboard() {
   };
 
   // ================= ADD MATERIAL =================
-  const handleAddMaterial = async (item) => {
-    try {
+  // ================= ADD MATERIAL =================
+const handleAddMaterial = async (item) => {
+  try {
 
-      const payload = {
-        ...item,
-        postedBy: "anjaliaroraa100",
-      };
+    const payload = {
+      ...item,
 
-      const res = await axios.post(
-        "http://localhost:5000/api/materials",
-        payload
-      );
+      // ✅ actual logged in user's name
+      postedBy: user?.name || user?.username,
+    };
 
-      setMaterials((prev) => [res.data, ...prev]);
+    const res = await axios.post(
+      "http://localhost:5000/api/materials",
+      payload
+    );
 
-      setShowModal(false);
+    setMaterials((prev) => [res.data, ...prev]);
 
-    } catch (error) {
-      console.log("Add Error:", error);
-    }
-  };
+    setShowModal(false);
+
+  } catch (error) {
+    console.log("Add Error:", error);
+  }
+};
 
   // ================= DELETE MATERIAL =================
   const confirmDelete = async () => {

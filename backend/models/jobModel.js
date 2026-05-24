@@ -26,6 +26,18 @@ const jobSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+
+    // ✅ ADD THESE
+    poster: {
+      type: String,
+      default: "",
+    },
+
+    posterUsername: {
+      type: String,
+      default: "",
+    },
+
   },
   { timestamps: true }
 );

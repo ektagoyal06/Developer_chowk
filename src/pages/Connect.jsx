@@ -81,29 +81,37 @@ export default function Dashboard() {
 
   /* ===== ADD MENTOR FROM MODAL ===== */
   const handleAddMentor = async (mentor) => {
-    try {
-      const payload = {
-        ...mentor,
-        postedBy: "anjaliaroraa100",
-      };
+  try {
 
-      const res = await axios.post(
-        "http://localhost:5000/api/mentors",
-        payload
-      );
+    const payload = {
+      ...mentor,
 
-      setMentorList((prev) => [
-        res.data,
-        ...prev,
-      ]);
+      // ✅ USE LOGGED-IN USER NAME
+      name: user?.name,
 
-      setShowMentorshipForm(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      postedBy: user?.name,
+
+      postedUsername: user?.username,
+    };
+
+    const res = await axios.post(
+      "http://localhost:5000/api/mentors",
+      payload
+    );
+
+    setMentorList((prev) => [
+      res.data,
+      ...prev,
+    ]);
+
+    setShowMentorshipForm(false);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
   const handleDeleteClick = (_id) => {
-    setMentorToDelete(id);
+    setMentorToDelete(_id);
     setShowDeleteModal(true);
   };
 

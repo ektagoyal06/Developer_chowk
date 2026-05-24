@@ -29,64 +29,64 @@ export default function Dashboard() {
 
   const fetchUser = async () => {
 
-  try {
+    try {
 
-    const res = await axios.get(
-      "http://localhost:5000/api/developer/current-user",
-      {
-        withCredentials: true,
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setUser(res.data);
+
+    } catch (error) {
+
+      setUser(null);
+
+      if (error.response?.status !== 401) {
+        console.log(error);
       }
-    );
 
-    setUser(res.data);
+    } finally {
 
-  } catch (error) {
+      setLoadingUser(false);
 
-    setUser(null);
-
-    if (error.response?.status !== 401) {
-      console.log(error);
     }
-
-  } finally {
-
-    setLoadingUser(false);
-
-  }
-};
+  };
 
   useEffect(() => {
 
-  fetchUser();
+    fetchUser();
 
-  fetchTeams();
+    fetchTeams();
 
-}, []);
+  }, []);
 
   const fetchTeams = async () => {
-  try {
+    try {
 
-    const res = await axios.get(
-      "http://localhost:5000/api/teams",
-      {
-        withCredentials: true,
+      const res = await axios.get(
+        "http://localhost:5000/api/teams",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setProjects(res.data);
+
+    } catch (error) {
+
+      if (error.response?.status === 401) {
+
+        setProjects([]);
+
+        return;
       }
-    );
 
-    setProjects(res.data);
-
-  } catch (error) {
-
-    if (error.response?.status === 401) {
-
-      setProjects([]);
-
-      return;
+      console.log(error);
     }
-
-    console.log(error);
-  }
-};
+  };
 
   // ADD NEW PROJECT FROM MODAL
   const handleAddProject = async (newProject) => {
@@ -97,12 +97,12 @@ export default function Dashboard() {
       };
 
       await axios.post(
-  "http://localhost:5000/api/teams",
-  projectObj,
-  {
-    withCredentials: true,
-  }
-);
+        "http://localhost:5000/api/teams",
+        projectObj,
+        {
+          withCredentials: true,
+        }
+      );
 
       fetchTeams();
     } catch (error) {
@@ -110,7 +110,7 @@ export default function Dashboard() {
     }
   };
   // ✅ DELETE FUNCTION
-  
+
   const handleDeleteClick = (index) => {
     setProjectToDelete(index);
     setShowDeleteModal(true);
@@ -119,11 +119,11 @@ export default function Dashboard() {
   const confirmDeleteProject = async () => {
     try {
       await axios.delete(
-  `http://localhost:5000/api/teams/${projects[projectToDelete]._id}`,
-  {
-    withCredentials: true,
-  }
-);
+        `http://localhost:5000/api/teams/${projects[projectToDelete]._id}`,
+        {
+          withCredentials: true,
+        }
+      );
 
       fetchTeams();
 
@@ -136,31 +136,31 @@ export default function Dashboard() {
 
   const handleJoinTeam = async () => {
 
-  if (!user) {
+    if (!user) {
 
-    alert("⚠️ Please Sign Up / Login first to join a team.");
+      alert("⚠️ Please Sign Up / Login first to join a team.");
 
-    return;
+      return;
+    }
+
+    try {
+
+      alert("✅ Request sent to join the team!");
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
+  if (loadingUser) {
+
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
-
-  try {
-
-    alert("✅ Request sent to join the team!");
-
-  } catch (error) {
-
-    console.log(error);
-
-  }
-};
-if (loadingUser) {
-
-  return (
-    <div className="h-screen flex items-center justify-center">
-      Loading...
-    </div>
-  );
-}
 
   return (
     <div className="flex h-screen bg-blue-50 text-gray-900">
@@ -249,9 +249,18 @@ if (loadingUser) {
 
                   <h2 className="text-lg font-bold mb-2">{proj.title}</h2>
 
-                  <p className="text-gray-600 mb-4">
-                    {proj.description}
-                  </p>
+                  <div className="mb-4">
+                    <p className="text-gray-600">
+                      {proj.description}
+                    </p>
+
+                    <p className="text-sm text-gray-500 mt-3">
+                      👤 Posted by{" "}
+                      <span className="font-semibold text-indigo-600">
+                        {proj.poster}
+                      </span>
+                    </p>
+                  </div>
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     <span className="px-2 py-1 rounded-full text-xs bg-yellow-100">
@@ -408,9 +417,20 @@ if (loadingUser) {
             </div>
 
             {/* Members + Due */}
+            {/* Members + Due */}
             <div className="text-gray-600 text-sm space-y-2 mb-5">
+
+              <p>
+                👤 Posted by{" "}
+                <span className="font-semibold text-indigo-600">
+                  {selectedBrowseProject.poster}
+                </span>
+              </p>
+
               <p>👥 {selectedBrowseProject.members}</p>
+
               <p>📅 {selectedBrowseProject.due}</p>
+
             </div>
 
             {/* Tags */}

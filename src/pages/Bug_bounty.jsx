@@ -33,32 +33,32 @@ export default function Dashboard() {
 
   // ================= FETCH BUGS =================
   useEffect(() => {
-  fetchUser();
-  fetchBugs();
-}, []);
+    fetchUser();
+    fetchBugs();
+  }, []);
 
-const fetchUser = async () => {
-  try {
+  const fetchUser = async () => {
+    try {
 
-    const res = await axios.get(
-      "http://localhost:5000/api/developer/current-user",
-      {
-        withCredentials: true,
+      const res = await axios.get(
+        "http://localhost:5000/api/developer/current-user",
+        {
+          withCredentials: true,
+        }
+      );
+
+      setUser(res.data);
+
+    } catch (error) {
+
+      if (error.response?.status === 401) {
+        setUser(null);
+        return;
       }
-    );
 
-    setUser(res.data);
-
-  } catch (error) {
-
-    if (error.response?.status === 401) {
-      setUser(null);
-      return;
+      console.log(error);
     }
-
-    console.log(error);
-  }
-};
+  };
 
   const fetchBugs = async () => {
     try {
@@ -72,24 +72,28 @@ const fetchUser = async () => {
 
   // ================= ADD BUG =================
   const handleAddBug = async (bugData) => {
-    try {
-      const payload = {
-        ...bugData,
-        postedBy: "anjaliaroraa100",
-      };
+  try {
 
-      const res = await axios.post(
-        "http://localhost:5000/api/bugs",
-        payload
-      );
+    const payload = {
+      ...bugData,
 
-      setBugs((prev) => [res.data, ...prev]);
+      // ACTUAL LOGGED IN USER NAME
+      postedBy: user?.name,
+    };
 
-      setOpenBugModal(false);
-    } catch (error) {
-      console.log("Add Bug Error:", error);
-    }
-  };
+    const res = await axios.post(
+      "http://localhost:5000/api/bugs",
+      payload
+    );
+
+    setBugs((prev) => [res.data, ...prev]);
+
+    setOpenBugModal(false);
+
+  } catch (error) {
+    console.log("Add Bug Error:", error);
+  }
+};
 
   // ================= DELETE BUG =================
   const handleDeleteClick = (index) => {
@@ -181,21 +185,21 @@ const fetchUser = async () => {
           </div>
 
           <button
-  onClick={() => {
+            onClick={() => {
 
-    // NOT LOGGED IN
-    if (!user) {
+              // NOT LOGGED IN
+              if (!user) {
 
-      alert("⚠️ Please Signup/Login first");
+                alert("⚠️ Please Signup/Login first");
 
-      return;
-    }
+                return;
+              }
 
-    // LOGGED IN
-    setOpenBugModal(true);
-  }}
-  className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 transition"
->
+              // LOGGED IN
+              setOpenBugModal(true);
+            }}
+            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg shadow hover:bg-orange-600 transition"
+          >
             <PlusIcon className="w-5 h-5" />
             Post a Bug
           </button>
@@ -262,8 +266,8 @@ const fetchUser = async () => {
           <button
             onClick={() => setActiveTab("all")}
             className={`flex-1 py-3 font-semibold ${activeTab === "all"
-                ? "border-b-2 border-black"
-                : "text-gray-500"
+              ? "border-b-2 border-black"
+              : "text-gray-500"
               }`}
           >
             All Bugs
@@ -272,8 +276,8 @@ const fetchUser = async () => {
           <button
             onClick={() => setActiveTab("my")}
             className={`flex-1 py-3 font-semibold ${activeTab === "my"
-                ? "border-b-2 border-black"
-                : "text-gray-500"
+              ? "border-b-2 border-black"
+              : "text-gray-500"
               }`}
           >
             My Bugs
@@ -303,11 +307,15 @@ const fetchUser = async () => {
                       {bug.title}
                     </h2>
 
+
                     <span className="inline-flex items-center text-xs px-2.5 py-1 rounded-md bg-orange-100 text-orange-600 leading-none">
                       {bug.level}
                     </span>
                   </div>
 
+                  <p className="text-xs text-gray-500 mt-2 mb-2">
+                    👤 {bug.postedBy}
+                  </p>
                   {/* REWARD */}
                   <p className="text-green-600 font-semibold mb-3">
                     ⚡ {bug.reward} pts
@@ -348,14 +356,14 @@ const fetchUser = async () => {
                   </button>
 
                   {/* DELETE */}
-                  {bug.postedBy === "anjaliaroraa100" && (
+                  
                     <button
                       onClick={() => handleDeleteClick(idx)}
                       className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
                     >
                       <TrashIcon className="w-5 h-5" />
                     </button>
-                  )}
+                  
                 </div>
               </div>
             ))}
