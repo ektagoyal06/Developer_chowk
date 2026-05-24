@@ -71,9 +71,9 @@ export default function Dashboard() {
     try {
 
       const payload = {
-  ...newNote,
-  postedBy: user?.name || user?.username,
-};
+        ...newNote,
+        postedBy: user?.name || user?.username,
+      };
 
       const res = await axios.post(
         "http://localhost:5000/api/notes",
@@ -217,11 +217,11 @@ export default function Dashboard() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[330px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {filteredNotes.map((note) => (
             <div
               key={note._id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between min-h-[300px] hover:shadow-md transition"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between min-h-[240px] hover:shadow-md transition"
             >
               {/* Top */}
               <div>
@@ -229,15 +229,17 @@ export default function Dashboard() {
                   <h3 className="font-semibold text-lg leading-snug">
                     {note.title}
                   </h3>
-                  <TrashIcon
-                    onClick={() => handleDelete(note)}
-                    className="w-7 h-7 text-red-500 cursor-pointer hover:text-red-600"
-                  />
+                  {user?.name === note.postedBy && (
+                    <TrashIcon
+                      onClick={() => handleDelete(note)}
+                      className="w-7 h-7 text-red-500 cursor-pointer hover:text-red-600"
+                    />
+                  )}
                 </div>
 
                 <p className="text-xs text-gray-500 mt-2">
-  by {note.postedBy || "Unknown User"}
-</p>
+                  by {note.postedBy || "Unknown User"}
+                </p>
 
                 <p className="text-sm text-gray-600 mt-4 line-clamp-3">
                   {note.desc}
@@ -258,12 +260,12 @@ export default function Dashboard() {
 
               {/* Bottom Button */}
               {note.type === "Free" ? (
-                <button className="mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-medium">
+                <button className="mt-6 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-medium">
                   <ArrowDownTrayIcon className="w-4 h-4" />
                   Download
                 </button>
               ) : (
-                <button className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-medium">
+                <button className="mt-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-medium">
                   <ShoppingCartIcon className="w-4 h-4" />
                   Buy Now
                 </button>

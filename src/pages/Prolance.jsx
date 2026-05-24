@@ -318,12 +318,20 @@ export default function ProlanceDashboard() {
                     </button>
 
                     {/* Delete Button */}
-                    <button
-                      onClick={() => handleDeleteClick(idx)}
-                      className="p-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 flex items-center justify-center"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                    {(
+                      user?.fullName ||
+                      user?.name ||
+                      user?.username
+                    ) === job.poster && (
+
+                        <button
+                          onClick={() => handleDeleteClick(idx)}
+                          className="p-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 flex items-center justify-center"
+                        >
+                          <TrashIcon className="w-5 h-5" />
+                        </button>
+
+                      )}
 
                   </div>
                 </div>

@@ -72,29 +72,29 @@ export default function Dashboard() {
 
   // ================= ADD MATERIAL =================
   // ================= ADD MATERIAL =================
-const handleAddMaterial = async (item) => {
-  try {
+  const handleAddMaterial = async (item) => {
+    try {
 
-    const payload = {
-      ...item,
+      const payload = {
+        ...item,
 
-      // ✅ actual logged in user's name
-      postedBy: user?.name || user?.username,
-    };
+        // ✅ actual logged in user's name
+        postedBy: user?.name || user?.username,
+      };
 
-    const res = await axios.post(
-      "http://localhost:5000/api/materials",
-      payload
-    );
+      const res = await axios.post(
+        "http://localhost:5000/api/materials",
+        payload
+      );
 
-    setMaterials((prev) => [res.data, ...prev]);
+      setMaterials((prev) => [res.data, ...prev]);
 
-    setShowModal(false);
+      setShowModal(false);
 
-  } catch (error) {
-    console.log("Add Error:", error);
-  }
-};
+    } catch (error) {
+      console.log("Add Error:", error);
+    }
+  };
 
   // ================= DELETE MATERIAL =================
   const confirmDelete = async () => {
@@ -391,15 +391,17 @@ const handleAddMaterial = async (item) => {
                   </a>
 
                   {/* DELETE */}
-                  <button
-                    onClick={() => {
-                      setDeleteId(card._id);
-                      setShowDeleteModal(true);
-                    }}
-                    className="p-2 rounded-lg hover:bg-red-50 transition"
-                  >
-                    <Trash2 className="w-5 h-5 text-red-600 hover:text-red-700" />
-                  </button>
+                  {user?.name === card.postedBy && (
+                    <button
+                      onClick={() => {
+                        setDeleteId(card._id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="p-2 rounded-lg hover:bg-red-50 transition"
+                    >
+                      <Trash2 className="w-5 h-5 text-red-600 hover:text-red-700" />
+                    </button>
+                  )}
 
                 </div>
 

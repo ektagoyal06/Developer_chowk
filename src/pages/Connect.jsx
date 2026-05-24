@@ -342,12 +342,14 @@ export default function Dashboard() {
                     </button>
                     {/* Trash (only if posted by current user) */}
 
-                    <button
-                      onClick={() => handleDeleteClick(mentor._id)}
-                      className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                    {user?.name === mentor.postedBy && (
+  <button
+    onClick={() => handleDeleteClick(mentor._id)}
+    className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+  >
+    <TrashIcon className="w-5 h-5" />
+  </button>
+)}
 
                   </div>
                 </div>

@@ -357,12 +357,14 @@ export default function Dashboard() {
 
                   {/* DELETE */}
                   
-                    <button
-                      onClick={() => handleDeleteClick(idx)}
-                      className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                    {user?.name === bug.postedBy && (
+  <button
+    onClick={() => handleDeleteClick(idx)}
+    className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+  >
+    <TrashIcon className="w-5 h-5" />
+  </button>
+)}
                   
                 </div>
               </div>
