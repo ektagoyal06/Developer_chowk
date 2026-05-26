@@ -320,7 +320,8 @@ export default function DeveloperChowkAuth() {
       },
     ],
 
-    resume: null,
+    resumeLink: "",
+    resumeFile: null,
   });
 
 
@@ -507,7 +508,7 @@ export default function DeveloperChowkAuth() {
       case 3:
         return (dev.stacks || []).length > 0; // at least one stack
       case 4:
-        return !!dev.resume && dev.github;
+        return !!dev.resumeLink && dev.github;
       case 5:
         return (dev.aims || []).length > 0;
       case 6:
@@ -608,29 +609,29 @@ export default function DeveloperChowkAuth() {
 
 
   const submitAll = async () => {
-  try {
-    const response = await axios.post(
-      "http://localhost:5000/api/developer/register",
-      dev
-    );
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/developer/register",
+        dev
+      );
 
-    alert(response.data.message);
+      alert(response.data.message);
 
-    // save current user
-    setDev(response.data.developer);
+      // save current user
+      setDev(response.data.developer);
 
-    // redirect dashboard
-    navigate("/developer-dashboard");
+      // redirect dashboard
+      navigate("/developer-dashboard");
 
-  } catch (error) {
-    console.log(error);
+    } catch (error) {
+      console.log(error);
 
-    alert(
-      error.response?.data?.message ||
-      "Something went wrong"
-    );
-  }
-};
+      alert(
+        error.response?.data?.message ||
+        "Something went wrong"
+      );
+    }
+  };
   // Dashboards (simple)
   if (submitted && role === "developer") {
     return (
@@ -645,39 +646,39 @@ export default function DeveloperChowkAuth() {
   }
 
   const handleSignin = async () => {
-  try {
+    try {
 
-    const response = await axios.post(
-      "http://localhost:5000/api/developer/login",
-      signinData,
-      {
-        withCredentials: true,
-      }
-    );
+      const response = await axios.post(
+        "http://localhost:5000/api/developer/login",
+        signinData,
+        {
+          withCredentials: true,
+        }
+      );
 
-    alert(response.data.message);
+      alert(response.data.message);
 
-    localStorage.setItem(
-      "dcUser",
-      JSON.stringify(response.data.developer)
-    );
+      localStorage.setItem(
+        "dcUser",
+        JSON.stringify(response.data.developer)
+      );
 
-    window.dispatchEvent(
-      new Event("userAuthChanged")
-    );
+      window.dispatchEvent(
+        new Event("userAuthChanged")
+      );
 
-    navigate("/developer-dashboard");
+      navigate("/developer-dashboard");
 
-  } catch (error) {
+    } catch (error) {
 
-    console.log(error);
+      console.log(error);
 
-    alert(
-      error.response?.data?.message ||
-      "Login failed"
-    );
-  }
-};
+      alert(
+        error.response?.data?.message ||
+        "Login failed"
+      );
+    }
+  };
 
   return (
     <div
@@ -1131,6 +1132,7 @@ export default function DeveloperChowkAuth() {
                             className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                             onChange={(e) => {
                               const file = e.target.files[0];
+
                               if (file) {
                                 const validTypes = [
                                   "application/pdf",
@@ -1139,7 +1141,14 @@ export default function DeveloperChowkAuth() {
                                 ];
 
                                 if (validTypes.includes(file.type)) {
-                                  setDev({ ...dev, resume: file });
+
+                                  // STORE FILE NAME ONLY
+                                  setDev({
+                                    ...dev,
+                                    resumeLink: file.name,
+                                    resumeFile: file,
+                                  });
+
                                 } else {
                                   alert("Only PDF or DOC/DOCX files are allowed");
                                 }
@@ -1148,10 +1157,10 @@ export default function DeveloperChowkAuth() {
                           />
 
                           {/* Remove Resume Button */}
-                          {dev.resume && (
+                          {dev.resumeLink && (
                             <button
                               type="button"
-                              onClick={() => setDev({ ...dev, resume: null })}
+                              onClick={() => setDev({ ...dev, resumeLink: "" })}
                               className="text-red-500 text-xl font-bold"
                             >
                               ✕
@@ -1159,9 +1168,9 @@ export default function DeveloperChowkAuth() {
                           )}
                         </div>
 
-                        {dev.resume && (
+                        {dev.resumeLink && (
                           <p className="text-sm text-green-600 mt-1">
-                            {dev.resume.name}
+                            {dev.resumeLink}
                           </p>
                         )}
                       </div>
@@ -1608,13 +1617,13 @@ export default function DeveloperChowkAuth() {
                             </div>
                           </div>
 
-                          {dev.resume && (
+                          {dev.resumeLink && (
                             <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
                               <div className="text-sm font-medium text-indigo-600">
                                 📄 Resume Uploaded
                               </div>
                               <div className="text-sm text-indigo-800 font-medium">
-                                {dev.resume.name}
+                                {dev.resumeLink.name}
                               </div>
                             </div>
                           )}

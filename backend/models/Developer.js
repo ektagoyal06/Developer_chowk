@@ -32,19 +32,33 @@ const developerSchema = new mongoose.Schema(
 
     location: String,
 
+    // ===== EDUCATION =====
+
     tenth: Number,
 
     twelfth: Number,
 
     degree: String,
 
+    degreeDomain: String,
+
     college: String,
 
+    actualCollegeName: String,
+
     cgpa: Number,
+
+    // ===== TECH STACK =====
 
     stacks: [String],
 
     skills: [String],
+
+    // ===== GOALS ON DC =====
+
+    aims: [String],
+
+    // ===== SOCIAL LINKS =====
 
     github: String,
 
@@ -52,9 +66,15 @@ const developerSchema = new mongoose.Schema(
 
     portfolio: String,
 
+    // ===== RESUME =====
+
+    resumeLink: String,
+
     lc: String,
 
     cf: String,
+
+    // ===== PROJECTS =====
 
     projects: [
       {
@@ -63,6 +83,8 @@ const developerSchema = new mongoose.Schema(
         description: String,
       },
     ],
+
+    // ===== CERTIFICATIONS =====
 
     certs: [
       {
