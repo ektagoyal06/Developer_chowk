@@ -72,28 +72,28 @@ export default function Dashboard() {
 
   // ================= ADD BUG =================
   const handleAddBug = async (bugData) => {
-  try {
+    try {
 
-    const payload = {
-      ...bugData,
+      const payload = {
+        ...bugData,
 
-      // ACTUAL LOGGED IN USER NAME
-      postedBy: user?.name,
-    };
+        // ACTUAL LOGGED IN USER NAME
+        postedBy: user?.name,
+      };
 
-    const res = await axios.post(
-      "http://localhost:5000/api/bugs",
-      payload
-    );
+      const res = await axios.post(
+        "http://localhost:5000/api/bugs",
+        payload
+      );
 
-    setBugs((prev) => [res.data, ...prev]);
+      setBugs((prev) => [res.data, ...prev]);
 
-    setOpenBugModal(false);
+      setOpenBugModal(false);
 
-  } catch (error) {
-    console.log("Add Bug Error:", error);
-  }
-};
+    } catch (error) {
+      console.log("Add Bug Error:", error);
+    }
+  };
 
   // ================= DELETE BUG =================
   const handleDeleteClick = (index) => {
@@ -349,23 +349,36 @@ export default function Dashboard() {
 
                   {/* APPLY */}
                   <button
-                    onClick={() => setSelectedBug(bug)}
-                    className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:opacity-90"
-                  >
-                    Apply
-                  </button>
+  onClick={() => {
+
+    // USER NOT LOGGED IN
+    if (!user) {
+
+      alert("⚠️ Please Signup/Login first to apply");
+
+      return;
+    }
+
+    // USER LOGGED IN
+    setSelectedBug(bug);
+
+  }}
+  className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:opacity-90"
+>
+  Apply
+</button>
 
                   {/* DELETE */}
-                  
-                    {user?.name === bug.postedBy && (
-  <button
-    onClick={() => handleDeleteClick(idx)}
-    className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
-  >
-    <TrashIcon className="w-5 h-5" />
-  </button>
-)}
-                  
+
+                  {user?.name === bug.postedBy && (
+                    <button
+                      onClick={() => handleDeleteClick(idx)}
+                      className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </button>
+                  )}
+
                 </div>
               </div>
             ))}

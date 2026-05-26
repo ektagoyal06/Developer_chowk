@@ -81,35 +81,35 @@ export default function Dashboard() {
 
   /* ===== ADD MENTOR FROM MODAL ===== */
   const handleAddMentor = async (mentor) => {
-  try {
+    try {
 
-    const payload = {
-      ...mentor,
+      const payload = {
+        ...mentor,
 
-      // ✅ USE LOGGED-IN USER NAME
-      name: user?.name,
+        // ✅ USE LOGGED-IN USER NAME
+        name: user?.name,
 
-      postedBy: user?.name,
+        postedBy: user?.name,
 
-      postedUsername: user?.username,
-    };
+        postedUsername: user?.username,
+      };
 
-    const res = await axios.post(
-      "http://localhost:5000/api/mentors",
-      payload
-    );
+      const res = await axios.post(
+        "http://localhost:5000/api/mentors",
+        payload
+      );
 
-    setMentorList((prev) => [
-      res.data,
-      ...prev,
-    ]);
+      setMentorList((prev) => [
+        res.data,
+        ...prev,
+      ]);
 
-    setShowMentorshipForm(false);
+      setShowMentorshipForm(false);
 
-  } catch (error) {
-    console.log(error);
-  }
-};
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleDeleteClick = (_id) => {
     setMentorToDelete(_id);
     setShowDeleteModal(true);
@@ -335,7 +335,20 @@ export default function Dashboard() {
 
                     {/* Book */}
                     <button
-                      onClick={() => handleBookSession(mentor)}
+                      onClick={() => {
+
+                        // USER NOT LOGGED IN
+                        if (!user) {
+
+                          alert("⚠️ Please Signup/Login first to book a session");
+
+                          return;
+                        }
+
+                        // USER LOGGED IN
+                        handleBookSession(mentor);
+
+                      }}
                       className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:brightness-110 transition"
                     >
                       Book Session
@@ -343,13 +356,13 @@ export default function Dashboard() {
                     {/* Trash (only if posted by current user) */}
 
                     {user?.name === mentor.postedBy && (
-  <button
-    onClick={() => handleDeleteClick(mentor._id)}
-    className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
-  >
-    <TrashIcon className="w-5 h-5" />
-  </button>
-)}
+                      <button
+                        onClick={() => handleDeleteClick(mentor._id)}
+                        className="px-3 py-2 border border-red-400 rounded-lg text-red-600 hover:bg-red-100 flex items-center justify-center"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    )}
 
                   </div>
                 </div>

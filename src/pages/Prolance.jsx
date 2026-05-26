@@ -303,11 +303,24 @@ export default function ProlanceDashboard() {
 
                     {/* Apply Button (Main Action) */}
                     <button
-                      onClick={() => setSelectedJob(job)}
-                      className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold hover:opacity-90 transition-all duration-200"
-                    >
-                      Apply Now →
-                    </button>
+  onClick={() => {
+
+    // USER NOT LOGGED IN
+    if (!user) {
+
+      alert("⚠️ Please Signup/Login first to apply");
+
+      return;
+    }
+
+    // USER LOGGED IN
+    setSelectedJob(job);
+
+  }}
+  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold hover:opacity-90 transition-all duration-200"
+>
+  Apply Now →
+</button>
 
                     {/* View Button */}
                     <button
