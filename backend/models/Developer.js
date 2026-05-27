@@ -40,10 +40,17 @@ const developerSchema = new mongoose.Schema(
 
     degree: String,
 
+    // actual degree if "Other" selected
+    actualDegree: String,
+
     degreeDomain: String,
+
+    // actual domain if "Other" selected
+    actualDomain: String,
 
     college: String,
 
+    // actual college if "Other" selected
     actualCollegeName: String,
 
     cgpa: Number,

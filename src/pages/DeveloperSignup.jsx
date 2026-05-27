@@ -973,32 +973,41 @@ export default function DeveloperChowkAuth() {
                           className="w-full rounded-xl border border-indigo-200 px-3 py-2"
                           value={dev.degree}
                           onChange={(e) =>
-                            setDev({ ...dev, degree: e.target.value, domain: "" }) // reset domain when degree changes
+                            setDev({
+                              ...dev,
+                              degree: e.target.value,
+                              degreeDomain: "",
+                            })
                           }
                         >
                           <option value="">Select Degree</option>
+
                           {DEGREE_OPTIONS.map((d) => (
                             <option key={d} value={d}>
                               {d}
                             </option>
                           ))}
+
                           <option value="Other">Other</option>
                         </select>
 
-                        {/* Other Degree Input */}
+                        {/* OTHER DEGREE */}
                         {dev.degree === "Other" && (
                           <input
                             type="text"
                             placeholder="Enter your degree"
                             className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={dev.otherDegree || ""}
+                            value={dev.actualDegree || ""}
                             onChange={(e) =>
-                              setDev({ ...dev, otherDegree: e.target.value })
+                              setDev({
+                                ...dev,
+                                actualDegree: e.target.value,
+                              })
                             }
                           />
                         )}
 
-                        {/* DOMAIN DROPDOWN */}
+                        {/* DOMAIN */}
                         {dev.degree && (
                           <div className="mt-3">
                             <label className="block text-sm font-medium text-indigo-900">
@@ -1007,18 +1016,40 @@ export default function DeveloperChowkAuth() {
 
                             <select
                               className="w-full rounded-xl border border-indigo-200 px-3 py-2"
-                              value={dev.domain}
+                              value={dev.degreeDomain}
                               onChange={(e) =>
-                                setDev({ ...dev, domain: e.target.value })
+                                setDev({
+                                  ...dev,
+                                  degreeDomain: e.target.value,
+                                })
                               }
                             >
                               <option value="">Select Domain</option>
+
                               {(DOMAIN_OPTIONS[dev.degree] || []).map((d) => (
                                 <option key={d} value={d}>
                                   {d}
                                 </option>
                               ))}
+
+                              <option value="Other">Other</option>
                             </select>
+
+                            {/* OTHER DOMAIN */}
+                            {dev.degreeDomain === "Other" && (
+                              <input
+                                type="text"
+                                placeholder="Enter your domain"
+                                className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
+                                value={dev.actualDomain || ""}
+                                onChange={(e) =>
+                                  setDev({
+                                    ...dev,
+                                    actualDomain: e.target.value,
+                                  })
+                                }
+                              />
+                            )}
                           </div>
                         )}
                       </div>
@@ -1037,11 +1068,13 @@ export default function DeveloperChowkAuth() {
                           }
                         >
                           <option value="">Select College</option>
+
                           {COLLEGE_OPTIONS.map((c) => (
                             <option key={c} value={c}>
                               {c}
                             </option>
                           ))}
+
                           <option value="Other">Other</option>
                         </select>
 
@@ -1050,9 +1083,12 @@ export default function DeveloperChowkAuth() {
                             type="text"
                             placeholder="Enter your college name"
                             className="mt-3 w-full rounded-xl border border-indigo-200 px-3 py-2"
-                            value={dev.otherCollege || ""}
+                            value={dev.actualCollegeName || ""}
                             onChange={(e) =>
-                              setDev({ ...dev, otherCollege: e.target.value })
+                              setDev({
+                                ...dev,
+                                actualCollegeName: e.target.value,
+                              })
                             }
                           />
                         )}
@@ -1491,7 +1527,7 @@ export default function DeveloperChowkAuth() {
                           <PreviewBlock title="Age" value={dev.age} />
                           <PreviewBlock
                             title="Education"
-                            value={`${dev.degree} @ ${dev.college}`}
+                            value={`${dev.degree} @ ${dev.college} | CGPA: ${dev.cgpa}`}
                           />
                           <PreviewBlock
                             title="10th / 12th"

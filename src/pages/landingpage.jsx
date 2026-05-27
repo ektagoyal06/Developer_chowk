@@ -923,7 +923,7 @@ export default function LandingPage() {
           <div>
             <h4 className="font-semibold mb-3">Quick Links</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#">Home</a></li>
+              <li><a href="/home">Home</a></li>
               <li><a href="#features">Features</a></li>
               <li><a href="#">Contact</a></li>
               <li><a href="#">Privacy Policy</a></li>

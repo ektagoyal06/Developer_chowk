@@ -104,8 +104,36 @@ const DeveloperDashboard = ({ dev = {} }) => {
 
                 <p>📍 {dev?.location || "Location not added"}</p>
 
-                <p>🎓 {dev?.college || "College not added"}</p>
+                {/* ===== COLLEGE ===== */}
+                <p>
+                  🎓{" "}
+                  {dev?.college === "Other"
+                    ? dev?.actualCollegeName
+                    : dev?.college || "College not added"}
+                </p>
 
+                {/* ===== DEGREE ===== */}
+                <p>
+                  📘 Degree:{" "}
+                  {dev?.degree === "Other"
+                    ? dev?.actualDegree
+                    : dev?.degree || "Degree not added"}
+                </p>
+
+                {/* ===== DOMAIN ===== */}
+                <p>
+                  💻 Domain:{" "}
+                  {dev?.degreeDomain === "Other"
+                    ? dev?.actualDomain
+                    : dev?.degreeDomain || "Domain not added"}
+                </p>
+
+                {/* ===== CGPA ===== */}
+                <p>
+                  📊 CGPA: {dev?.cgpa || "CGPA not added"}
+                </p>
+
+                {/* ===== GITHUB ===== */}
                 {dev?.github && (
                   <p>
                     🐙
@@ -120,6 +148,7 @@ const DeveloperDashboard = ({ dev = {} }) => {
                   </p>
                 )}
 
+                {/* ===== LINKEDIN ===== */}
                 {dev?.linkedin && (
                   <p>
                     💼
@@ -385,7 +414,7 @@ const DeveloperDashboard = ({ dev = {} }) => {
 
                           <div
                             key={j}
-                            className="w-[12px] h-[12px] bg-gray-500 rounded-sm hover:scale-110 transition"
+                            className="w-[12px] h-[12px] bg-gray-400 rounded-sm hover:scale-110 transition"
                           />
 
                         ))}
