@@ -5,11 +5,8 @@ import Developer from "../models/Developer.js";
 
 const router = express.Router();
 
-/* ================= REGISTER ================= */
-
 router.post("/register", async (req, res) => {
   try {
-
     const {
       name,
       email,
@@ -52,7 +49,6 @@ router.post("/register", async (req, res) => {
       // PROJECTS & CERTIFICATIONS
       projects,
       certs,
-
     } = req.body;
 
     /* ================= CHECK EXISTING USER ================= */
@@ -70,7 +66,7 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    /* ================= CREATE DEVELOPER ================= */
+    /* ================= CREATE USER ================= */
 
     const developer = new Developer({
       name,
@@ -120,6 +116,8 @@ router.post("/register", async (req, res) => {
 
     await developer.save();
 
+    /* ================= RESPONSE ================= */
+
     return res.status(201).json({
       success: true,
       message: "Developer registered successfully",
@@ -137,18 +135,21 @@ router.post("/register", async (req, res) => {
   }
 });
 
-/* ================= LOGIN ================= */
+/* =========================================================
+   LOGIN
+========================================================= */
 
 router.post("/login", async (req, res) => {
   try {
 
     const { emailOrPhone, password } = req.body;
 
-    // FIND USER
+    /* ================= FIND USER ================= */
+
     const developer = await Developer.findOne({
       $or: [
         { email: emailOrPhone },
-        { phone: emailOrPhone },
+        { phone: String(emailOrPhone) },
       ],
     });
 
@@ -159,7 +160,8 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // CHECK PASSWORD
+    /* ================= CHECK PASSWORD ================= */
+
     const isMatch = await bcrypt.compare(
       password,
       developer.password
@@ -172,7 +174,8 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // GENERATE TOKEN
+    /* ================= GENERATE TOKEN ================= */
+
     const token = jwt.sign(
       {
         id: developer._id,
@@ -183,13 +186,16 @@ router.post("/login", async (req, res) => {
       }
     );
 
-    // SAVE COOKIE
+    /* ================= SAVE COOKIE ================= */
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
+      secure: false, // TRUE ONLY IN PRODUCTION HTTPS
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    /* ================= RESPONSE ================= */
 
     return res.status(200).json({
       success: true,
@@ -208,10 +214,14 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* ================= CURRENT USER ================= */
+/* =========================================================
+   CURRENT USER
+========================================================= */
 
 router.get("/current-user", async (req, res) => {
   try {
+
+    /* ================= GET TOKEN ================= */
 
     const token = req.cookies?.token;
 
@@ -222,25 +232,28 @@ router.get("/current-user", async (req, res) => {
       });
     }
 
+    /* ================= VERIFY TOKEN ================= */
+
     const decoded = jwt.verify(
       token,
       "developerchowksecret"
     );
 
-    const developer = await Developer.findById(decoded.id)
+    /* ================= FIND USER ================= */
+
+    const user = await Developer.findById(decoded.id)
       .select("-password");
 
-    if (!developer) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      developer,
-    });
+    /* ================= RESPONSE ================= */
+
+    return res.status(200).json(user);
 
   } catch (error) {
 
@@ -253,7 +266,9 @@ router.get("/current-user", async (req, res) => {
   }
 });
 
-/* ================= LOGOUT ================= */
+/* =========================================================
+   LOGOUT
+========================================================= */
 
 router.post("/logout", (req, res) => {
 
@@ -269,5 +284,9 @@ router.post("/logout", (req, res) => {
     message: "Logged out successfully",
   });
 });
+
+/* =========================================================
+   EXPORT ROUTER
+========================================================= */
 
 export default router;
