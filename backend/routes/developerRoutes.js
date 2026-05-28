@@ -5,6 +5,11 @@ import Developer from "../models/Developer.js";
 
 const router = express.Router();
 
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
 router.post("/register", async (req, res) => {
   try {
     const {
@@ -289,4 +294,3 @@ router.post("/logout", (req, res) => {
    EXPORT ROUTER
 ========================================================= */
 
-export default router;
