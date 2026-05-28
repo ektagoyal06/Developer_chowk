@@ -20,12 +20,19 @@ The platform allows users to:
 🚀 Find Projects
 
 🐞 Solve Bugs
+
 🤝 Find Team Members
+
 💼 Get Freelance Work
+
 📚 Upload Notes
+
 🧠 Showcase Skills
+
 👨‍💻 Build Developer Profiles
+
 🔍 Filter Developers by Tech Stack
+
 💬 Collaborate with Other Developers
 
 Developer Chowk acts like a LinkedIn + Fiverr + GitHub + StackOverflow for developers in one ecosystem.
