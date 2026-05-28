@@ -18,6 +18,7 @@ Developer Chowk is an advanced MERN-stack based developer collaboration platform
 The platform allows users to:
 
 🚀 Find Projects
+
 🐞 Solve Bugs
 🤝 Find Team Members
 💼 Get Freelance Work
