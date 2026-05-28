@@ -37,147 +37,265 @@ The platform allows users to:
 
 Developer Chowk acts like a LinkedIn + Fiverr + GitHub + StackOverflow for developers in one ecosystem.
 
+
 ✨ Features
+
 👨‍💻 Developer Authentication
+
 > Secure Login & Signup
+
 > JWT Authentication
+
 > Cookie-based Session Handling
+
 > Password Encryption using bcrypt
 
+
 🧑‍🎓 Advanced Developer Profile
+
 > Developer Dashboard
+
 > CGPA & Education Details
+
 > Skills & Tech Stack
+
 > GitHub & LinkedIn Integration
+
 > Resume Upload
+
 > Certifications
+
 > Goals on Developer Chowk
+
 > Custom Degree / Domain / College Support
-> Activity heatmap
+
+> Activity heatmap\
+
 
 📂 Project Collaboration - Work on real world projects
+
 > Upload Projects
+
 > Add Project Description
+
 > Share Project Links
+
 > Find Collaborators
+
 > Display Projects on Dashboard
 
+
 🐞 Bug Solving System - path for learning and earning
+
 > Post Bugs
+
 > Apply to Solve Bugs
+
 > Developer Collaboration
+
 > Bug Tracking Interface
 
+
 💼 Freelancing System - path for learning and earning
+
 > Post Freelance Work
+
 > Apply for Freelance Projects
+
 > Mentor Session Booking
+
 > Developer Hiring System
 
+
 📚 Notes & Resources - your waste can be someones treasurer
+
 > Upload Study Notes
+
 > Share Learning Resources
+
 > Community Knowledge Sharing
 
+
 🔥 Let's Connect - Give and Take Mentorship
+
 > Placement ready mentorship
+
 > Technical mentoships
+
 > Non-technical mentorships
 
+
 🛠️ Tech Stack
+
 Frontend
+
 > React.js
+
 > Tailwind CSS
+
 > React Router DOM
+
 > Axios
 
+
 Backend
+
 > Node.js
+
 > Express.js
+
 > Database
+
 > MongoDB
+
 > Mongoose
+
 > Authentication & Security
+
 > JWT
+
 > bcryptjs
+
 > Cookies
 
+
 Deployment
+
 > Docker
+
 > Jenkins
+
 > Render
+
 > GitHub Pages
 
+
 ⚙️ Installation
-1️⃣ Clone Repository
-git clone https://github.com/your-username/developer-chowk.git
+
+1️⃣ Clone Repository: git clone https://github.com/your-username/developer-chowk.git
+
 
 2️⃣ Backend Setup
+
 -> cd backend
+
 -> npm install
+
 -> npm run dev
+
 -> Create .env
+
 -> PORT=5000
+
 -> MONGO_URI=your_mongodb_connection
+
 -> JWT_SECRET=your_secret
 
+
 3️⃣ Frontend Setup
+
 -> cd frontend
+
 -> npm install
+
 -> npm run dev
 
+
 🚀 Future Enhancements
+
 🔔 Real-time Notifications
+
 💬 Chat System
+
 🤖 AI-Based Team Matching
-📹 Video Calling
+
+📹 Chat rooms
+
 🧾 Payment Integration
+
 🏆 Developer Ranking System
+
 🌐 Public Developer Portfolios
 
+
 📁 Project Structure
+
 Developer-Chowk/
+
 │
+
 ├── frontend/
+
+
 │   ├── src/
+
 │   ├── components/
+
 │   ├── pages/
+
 │   └── assets/
+
 │
+
 ├── backend/
+
 │   ├── models/
+
 │   ├── routes/
+
 │   ├── controllers/
+
 │   └── middleware/
+
 │
+
 └── README.md
 
+
 🔐 Authentication Flow
+
 User Signup/Login
+
         ↓
+        
 JWT Token Generated
+
         ↓
+        
 Stored in HTTPOnly Cookie
+
         ↓
+        
 Protected Routes Access
+
 
 🌈 Key Highlights
 
 ✅ Fully Responsive UI
+
 ✅ Modern Glassmorphism Design
+
 ✅ Dynamic Dashboard
+
 ✅ Scalable MERN Architecture
+
 ✅ Real-World Collaboration System
+
 ✅ Production Deployment Ready
+
 ✅ Secure Authentication System
+
 
 ⭐ Support
 
 If you like this project:
 
 ⭐ Star the repository
+
 🍴 Fork the project
+
 📢 Share with developers
+
 
 💙 Developer Chowk
 
