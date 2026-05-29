@@ -273,14 +273,22 @@ export default function Dashboard() {
             All Bugs
           </button>
 
+          {/* MY BUGS TAB */}
           <button
             onClick={() => setActiveTab("my")}
-            className={`flex-1 py-3 font-semibold ${activeTab === "my"
-              ? "border-b-2 border-black"
-              : "text-gray-500"
+            className={`flex-1 py-3 font-semibold relative ${activeTab === "my"
+                ? "border-b-2 border-black"
+                : "text-gray-500"
               }`}
           >
             My Bugs
+
+            {/* COUNT BADGE */}
+            {myBugs.length > 0 && (
+              <span className="absolute top-2 right-[35%] bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {myBugs.length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -349,24 +357,24 @@ export default function Dashboard() {
 
                   {/* APPLY */}
                   <button
-  onClick={() => {
+                    onClick={() => {
 
-    // USER NOT LOGGED IN
-    if (!user) {
+                      // USER NOT LOGGED IN
+                      if (!user) {
 
-      alert("⚠️ Please Signup/Login first to apply");
+                        alert("⚠️ Please Signup/Login first to apply");
 
-      return;
-    }
+                        return;
+                      }
 
-    // USER LOGGED IN
-    setSelectedBug(bug);
+                      // USER LOGGED IN
+                      setSelectedBug(bug);
 
-  }}
-  className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:opacity-90"
->
-  Apply
-</button>
+                    }}
+                    className="flex-1 bg-gradient-to-r from-red-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:opacity-90"
+                  >
+                    Apply
+                  </button>
 
                   {/* DELETE */}
 
@@ -408,6 +416,13 @@ export default function Dashboard() {
                   ⚡ {bug.reward} pts
                 </p>
 
+                {/* STATUS */}
+                <div className="mb-3">
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">
+                    Pending
+                  </span>
+                </div>
+
                 <p className="text-gray-600 text-sm mb-4">
                   {bug.desc}
                 </p>
@@ -422,13 +437,6 @@ export default function Dashboard() {
                     </span>
                   ))}
                 </div>
-
-                <button
-                  onClick={() => setSelectedBug(bug)}
-                  className="w-full bg-orange-500 text-white py-2 rounded-lg"
-                >
-                  View Details
-                </button>
               </div>
             ))}
           </div>

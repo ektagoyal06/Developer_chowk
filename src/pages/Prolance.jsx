@@ -4,27 +4,36 @@ import ApplyProposalModal from "../components/ApplyProposalModal";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
 axios.defaults.withCredentials = true;
+
 import {
   TrashIcon,
   EyeIcon,
 } from "@heroicons/react/24/outline";
-// import { Link } from "react-router-dom";
-
 
 export default function ProlanceDashboard() {
+
+  const [contracts, setContracts] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [viewJob, setViewJob] = useState(null);
+
   const [search, setSearch] = useState("");
   const [filterDomain, setFilterDomain] = useState("All Domains");
   const [filterType, setFilterType] = useState("All Types");
   const [filterBudget, setFilterBudget] = useState("All Budgets");
   const [filterLevel, setFilterLevel] = useState("All Levels");
+
   const [openPostModal, setOpenPostModal] = useState(false);
+
   const [activeTab, setActiveTab] = useState("find");
+
   const [selectedJob, setSelectedJob] = useState(null);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
+
   const [user, setUser] = useState(null);
+
+  /* ================= FETCH USER ================= */
 
   useEffect(() => {
 
@@ -32,9 +41,18 @@ export default function ProlanceDashboard() {
 
     fetchJobs();
 
+    // LOAD CONTRACTS
+    const savedContracts =
+      JSON.parse(localStorage.getItem("dcContracts")) || [];
+
+    setContracts(savedContracts);
+
   }, []);
+
   const fetchUser = async () => {
+
     try {
+
       const res = await axios.get(
         "http://localhost:5000/api/developer/current-user",
         {
@@ -55,7 +73,10 @@ export default function ProlanceDashboard() {
     }
   };
 
+  /* ================= FETCH JOBS ================= */
+
   const fetchJobs = async () => {
+
     try {
 
       const res = await axios.get(
@@ -64,8 +85,6 @@ export default function ProlanceDashboard() {
           withCredentials: true,
         }
       );
-
-      console.log("Jobs:", res.data);
 
       setJobs(res.data);
 
@@ -76,17 +95,16 @@ export default function ProlanceDashboard() {
     }
   };
 
-  // ================= HANDLE ADD PROJECT =================
+  /* ================= POST PROJECT ================= */
+
   const handleAddProject = async (project) => {
 
     try {
 
-      console.log("Current User:", user);
-
       const formattedProject = {
+
         ...project,
 
-        // ✅ FIXED POSTER NAME
         poster:
           user?.fullName ||
           user?.name ||
@@ -99,12 +117,10 @@ export default function ProlanceDashboard() {
             ? `$${project.budget} / hr`
             : `$${project.budget}`,
 
-        level: project.difficulty.toLowerCase(),
+        level: project.difficulty,
 
         tags: project.skills || [],
       };
-
-      console.log("Sending Project:", formattedProject);
 
       await axios.post(
         "http://localhost:5000/api/jobs",
@@ -122,8 +138,13 @@ export default function ProlanceDashboard() {
 
     }
   };
+
+  /* ================= DELETE JOB ================= */
+
   const handleDeleteClick = (index) => {
+
     setJobToDelete(index);
+
     setShowDeleteModal(true);
   };
 
@@ -142,11 +163,55 @@ export default function ProlanceDashboard() {
       setJobToDelete(null);
 
     } catch (error) {
+
       console.log(error);
+
     }
   };
-  // ✅ FILTER LOGIC (ADDED)
+
+  /* ================= APPLY PROPOSAL ================= */
+
+  const handleApplyProposal = (proposalData) => {
+
+    const newContract = {
+
+      id: Date.now(),
+
+      title: proposalData.job.title,
+
+      description: proposalData.job.description,
+
+      price: proposalData.job.price,
+
+      poster: proposalData.job.poster,
+
+      status: "Pending",
+
+      techStack: proposalData.job.tags || [],
+
+      proposal: proposalData.proposal,
+
+      bid: proposalData.bid,
+
+      delivery: proposalData.delivery,
+    };
+
+    const updatedContracts = [...contracts, newContract];
+
+    setContracts(updatedContracts);
+
+    localStorage.setItem(
+      "dcContracts",
+      JSON.stringify(updatedContracts)
+    );
+
+    alert("✅ Your proposal sent successfully!");
+  };
+
+  /* ================= FILTER JOBS ================= */
+
   const filteredJobs = jobs.filter((job) => {
+
     const matchesSearch =
       job.title.toLowerCase().includes(search.toLowerCase()) ||
       job.description.toLowerCase().includes(search.toLowerCase());
@@ -156,6 +221,7 @@ export default function ProlanceDashboard() {
       job.level.toLowerCase() === filterLevel.toLowerCase();
 
     const isHourly = job.price?.includes("/ hr");
+
     const matchesType =
       filterType === "All Types" ||
       (filterType === "Hourly Rate" && isHourly) ||
@@ -164,32 +230,54 @@ export default function ProlanceDashboard() {
     let numericPrice = parseInt(
       (job.price || "0").replace(/[^0-9]/g, "")
     );
+
     const matchesBudget =
       filterBudget === "All Budgets" ||
       (filterBudget === "$0 - $500" && numericPrice <= 500) ||
-      (filterBudget === "$500 - $1000" && numericPrice > 500 && numericPrice <= 1000) ||
-      (filterBudget === "$1000+" && numericPrice > 1000);
+      (
+        filterBudget === "$500 - $1000" &&
+        numericPrice > 500 &&
+        numericPrice <= 1000
+      ) ||
+      (
+        filterBudget === "$1000+" &&
+        numericPrice > 1000
+      );
 
-    return matchesSearch && matchesLevel && matchesType && matchesBudget;
+    return (
+      matchesSearch &&
+      matchesLevel &&
+      matchesType &&
+      matchesBudget
+    );
   });
 
   return (
+
     <div className="flex h-screen bg-blue-50 text-gray-900">
-      {/* Sidebar */}
+
+      {/* SIDEBAR */}
       <Sidebar />
 
-      {/* Main Area */}
+      {/* MAIN */}
       <div className="flex-1 p-8 overflow-y-auto">
-        {/* Header */}
+
+        {/* HEADER */}
         <div className="flex justify-between items-center mb-8">
+
           <div>
-            <h1 className="text-3xl font-bold mb-1">Prolance</h1>
-            <p className="text-gray-500">Find your next gig or hire top talent.</p>
+            <h1 className="text-3xl font-bold mb-1">
+              Prolance
+            </h1>
+
+            <p className="text-gray-500">
+              Find your next gig or hire top talent.
+            </p>
           </div>
+
           <button
             onClick={() => {
 
-              // USER NOT LOGGED IN
               if (!user) {
 
                 alert("⚠️ Please Signup/Login first");
@@ -197,7 +285,6 @@ export default function ProlanceDashboard() {
                 return;
               }
 
-              // USER LOGGED IN
               setOpenPostModal(true);
             }}
             className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
@@ -206,8 +293,9 @@ export default function ProlanceDashboard() {
           </button>
         </div>
 
-        {/* Filters (UNCHANGED UI) */}
+        {/* FILTERS */}
         <div className="flex flex-wrap gap-3 mb-6 p-4 bg-white rounded-lg shadow">
+
           <input
             type="text"
             placeholder="Search jobs..."
@@ -216,7 +304,11 @@ export default function ProlanceDashboard() {
             className="px-3 py-2 border rounded-lg w-1/4"
           />
 
-          <select value={filterDomain} onChange={(e) => setFilterDomain(e.target.value)} className="px-3 py-2 border rounded-lg w-1/5">
+          <select
+            value={filterDomain}
+            onChange={(e) => setFilterDomain(e.target.value)}
+            className="px-3 py-2 border rounded-lg w-1/5"
+          >
             <option>All Domains</option>
             <option>Web Development</option>
             <option>Full stack development</option>
@@ -227,20 +319,32 @@ export default function ProlanceDashboard() {
             <option>Data Scientist</option>
           </select>
 
-          <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="px-3 py-2 border rounded-lg w-1/6">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-3 py-2 border rounded-lg w-1/6"
+          >
             <option>All Types</option>
             <option>Fixed Price</option>
             <option>Hourly Rate</option>
           </select>
 
-          <select value={filterBudget} onChange={(e) => setFilterBudget(e.target.value)} className="px-3 py-2 border rounded-lg w-1/6">
+          <select
+            value={filterBudget}
+            onChange={(e) => setFilterBudget(e.target.value)}
+            className="px-3 py-2 border rounded-lg w-1/6"
+          >
             <option>All Budgets</option>
             <option>$0 - $500</option>
             <option>$500 - $1000</option>
             <option>$1000+</option>
           </select>
 
-          <select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="px-3 py-2 border rounded-lg w-1/6">
+          <select
+            value={filterLevel}
+            onChange={(e) => setFilterLevel(e.target.value)}
+            className="px-3 py-2 border rounded-lg w-1/6"
+          >
             <option>All Levels</option>
             <option>Beginner</option>
             <option>Intermediate</option>
@@ -248,18 +352,41 @@ export default function ProlanceDashboard() {
           </select>
         </div>
 
-        {/* Toggle */}
+        {/* TABS */}
         <div className="mb-6 bg-white rounded-lg shadow flex">
-          <button onClick={() => setActiveTab("find")} className={`flex-1 py-3 font-semibold ${activeTab === "find" ? "border-b-2 border-black" : "text-gray-500"}`}>
+
+          <button
+            onClick={() => setActiveTab("find")}
+            className={`flex-1 py-3 font-semibold ${activeTab === "find"
+              ? "border-b-2 border-black"
+              : "text-gray-500"
+              }`}
+          >
             Find Work
           </button>
-          <button onClick={() => setActiveTab("contracts")} className={`flex-1 py-3 font-semibold ${activeTab === "contracts" ? "border-b-2 border-black" : "text-gray-500"}`}>
+
+          <button
+            onClick={() => setActiveTab("contracts")}
+            className={`flex-1 py-3 font-semibold relative ${activeTab === "contracts"
+              ? "border-b-2 border-black"
+              : "text-gray-500"
+              }`}
+          >
             My Contracts
+
+            {contracts.length > 0 && (
+              <span className="absolute top-2 right-[35%] bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {contracts.length}
+              </span>
+            )}
           </button>
         </div>
 
+        {/* FIND WORK */}
         {activeTab === "find" && (
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
             {filteredJobs.length === 0 && (
               <div className="col-span-full text-center text-gray-500">
                 No jobs match your filters.
@@ -267,123 +394,277 @@ export default function ProlanceDashboard() {
             )}
 
             {filteredJobs.map((job, idx) => (
-              <div key={idx} className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between">
+
+              <div
+                key={idx}
+                className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
+              >
+
                 <div>
+
                   <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-lg font-bold">{job.title}</h2>
+
+                    <h2 className="text-lg font-bold">
+                      {job.title}
+                    </h2>
+
                     <span className="px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-600">
                       {job.level}
                     </span>
                   </div>
-                  <p className="text-green-600 font-semibold mb-2">{job.price}</p>
-                  <div className="mb-4">
 
-                    <p className="text-gray-600 text-sm">
-                      {job.description}
-                    </p>
+                  <p className="text-green-600 font-semibold mb-2">
+                    {job.price}
+                  </p>
 
-                    <p className="text-sm text-gray-500 mt-3">
-                      👤 Posted by{" "}
-                      <span className="font-semibold text-indigo-600">
-                        {job.poster}
-                      </span>
-                    </p>
+                  <p className="text-gray-600 text-sm mb-4">
+                    {job.description}
+                  </p>
 
-                  </div>
+                  <p className="text-sm text-gray-500 mt-3 mb-4">
+                    👤 Posted by{" "}
+                    <span className="font-semibold text-indigo-600">
+                      {job.poster}
+                    </span>
+                  </p>
+
                   <div className="flex flex-wrap gap-2">
+
                     {(job.tags || []).map((tag) => (
-                      <span key={tag} className="px-2 py-1 bg-gray-200 rounded-full text-xs">
+
+                      <span
+                        key={tag}
+                        className="px-2 py-1 bg-gray-200 rounded-full text-xs"
+                      >
                         {tag}
                       </span>
                     ))}
                   </div>
                 </div>
-                <div className="mt-4">
-                  <div className="flex items-center gap-2">
 
-                    {/* Apply Button (Main Action) */}
-                    <button
-  onClick={() => {
+                {/* BUTTONS */}
+                <div className="mt-4 flex items-center gap-2">
 
-    // USER NOT LOGGED IN
-    if (!user) {
+                  {/* APPLY */}
+                  <button
+                    onClick={() => {
 
-      alert("⚠️ Please Signup/Login first to apply");
+                      if (!user) {
 
-      return;
-    }
+                        alert("⚠️ Please Signup/Login first to apply");
 
-    // USER LOGGED IN
-    setSelectedJob(job);
+                        return;
+                      }
 
-  }}
-  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold hover:opacity-90 transition-all duration-200"
->
-  Apply Now →
-</button>
+                      setSelectedJob(job);
+                    }}
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg font-semibold"
+                  >
+                    Apply Now →
+                  </button>
 
-                    {/* View Button */}
-                    <button
-                      onClick={() => setViewJob(job)}
-                      className="p-2 border text-gray rounded-lg hover:bg-gray-100 transition-all duration-200 flex items-center justify-center"
-                    >
-                      <EyeIcon className="w-5 h-5" />
-                    </button>
+                  {/* VIEW */}
+                  <button
+                    onClick={() => setViewJob(job)}
+                    className="p-2 border rounded-lg hover:bg-gray-100"
+                  >
+                    <EyeIcon className="w-5 h-5" />
+                  </button>
 
-                    {/* Delete Button */}
-                    {(
-                      user?.fullName ||
-                      user?.name ||
-                      user?.username
-                    ) === job.poster && (
+                  {/* DELETE */}
+                  {(
+                    user?.fullName ||
+                    user?.name ||
+                    user?.username
+                  ) === job.poster && (
 
-                        <button
-                          onClick={() => handleDeleteClick(idx)}
-                          className="p-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 flex items-center justify-center"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
-
-                      )}
-
-                  </div>
+                      <button
+                        onClick={() => handleDeleteClick(idx)}
+                        className="p-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-100"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    )}
                 </div>
               </div>
             ))}
           </div>
         )}
 
+        {/* MY CONTRACTS */}
         {activeTab === "contracts" && (
-          <div className="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-            No contracts yet.
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {contracts.length === 0 ? (
+
+              <div className="col-span-full bg-white p-6 rounded-lg shadow text-center text-gray-500">
+                No contracts yet.
+              </div>
+
+            ) : (
+
+              contracts.map((contract) => (
+
+                <div
+                  key={contract.id}
+                  className="bg-white p-6 rounded-xl shadow-md border"
+                >
+
+                  <div className="flex justify-between items-center mb-3">
+
+                    <h2 className="text-lg font-bold">
+                      {contract.title}
+                    </h2>
+
+                    <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
+                      {contract.status}
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 text-sm mb-3">
+                    {contract.description}
+                  </p>
+
+                  <p className="text-green-600 font-semibold mb-2">
+                    {contract.price}
+                  </p>
+
+                  <p className="text-sm text-gray-500 mb-4">
+                    👤 Posted by{" "}
+                    <span className="font-semibold text-indigo-600">
+                      {contract.poster}
+                    </span>
+                  </p>
+
+                  {/* TECH STACK */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+
+                    {contract.techStack.map((tech, index) => (
+
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-gray-200 rounded-full text-xs"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="border-t pt-3 text-sm text-gray-600">
+
+                    <p>
+                      💰 Bid: ${contract.bid}
+                    </p>
+
+                    <p>
+                      ⏳ Delivery: {contract.delivery}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>
+
+      {/* APPLY MODAL */}
+      {/* APPLY MODAL */}
       {selectedJob && (
+
         <ApplyProposalModal
           job={selectedJob}
+
           onClose={() => setSelectedJob(null)}
+
+          onSubmitProposal={(proposalData) => {
+
+            const newContract = {
+
+              id: Date.now(),
+
+              title:
+                proposalData.job.title,
+
+              description:
+                proposalData.job.description,
+
+              price:
+                proposalData.job.price,
+
+              poster:
+                proposalData.job.poster,
+
+              status: "Pending",
+
+              techStack:
+                proposalData.job.tags || [],
+
+              proposal:
+                proposalData.proposal,
+
+              bid:
+                proposalData.bid,
+
+              delivery:
+                proposalData.delivery,
+
+              fileName:
+                proposalData.fileName || null,
+            };
+
+            // UPDATE CONTRACTS
+            const updatedContracts = [
+              ...contracts,
+              newContract,
+            ];
+
+            // UPDATE STATE
+            setContracts(updatedContracts);
+
+            // SAVE TO LOCAL STORAGE
+            localStorage.setItem(
+              "dcContracts",
+              JSON.stringify(updatedContracts)
+            );
+
+            // SUCCESS ALERT
+            alert("✅ Your proposal sent successfully!");
+
+            // CLOSE MODAL
+            setSelectedJob(null);
+          }}
         />
       )}
 
+     
+
+      {/* POST PROJECT MODAL */}
       {openPostModal && (
+
         <PostProjectModal
           closeModal={() => setOpenPostModal(false)}
-          onAddProject={handleAddProject}   // ✅ IMPORTANT
+          onAddProject={handleAddProject}
         />
       )}
 
+      {/* DELETE MODAL */}
       {showDeleteModal && (
+
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+
           <div className="bg-white w-[500px] rounded-2xl shadow-xl p-8">
 
-            <h2 className="text-2xl font-bold mb-4">Are you sure?</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              Are you sure?
+            </h2>
 
             <p className="text-gray-700 mb-8 font-semibold">
-              This action cannot be undone. This will permanently delete this job.
+              This action cannot be undone.
             </p>
 
             <div className="flex justify-end gap-4">
+
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="px-6 py-2 border rounded-lg hover:bg-gray-100"
@@ -398,15 +679,17 @@ export default function ProlanceDashboard() {
                 Delete
               </button>
             </div>
-
           </div>
         </div>
       )}
+
+      {/* VIEW JOB MODAL */}
       {viewJob && (
+
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
           <div className="bg-white w-[700px] max-h-[90vh] overflow-y-auto rounded-xl shadow-xl p-6 relative">
 
-            {/* Close */}
             <button
               onClick={() => setViewJob(null)}
               className="absolute top-4 right-4 text-gray-500 hover:text-black text-lg"
@@ -414,67 +697,65 @@ export default function ProlanceDashboard() {
               ✕
             </button>
 
-            {/* Title */}
             <h2 className="text-2xl font-bold mb-2">
               {viewJob.title}
             </h2>
 
-            {/* Level + Price */}
             <div className="flex gap-3 items-center mb-4">
+
               <span className="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm">
                 {viewJob.level}
               </span>
+
               <span className="text-green-600 font-semibold text-lg">
                 {viewJob.price}
               </span>
             </div>
 
-            {/* Description */}
-            {/* Description */}
+            <div className="mb-4">
+
+              <p className="text-sm text-gray-500">
+                👤 Posted by{" "}
+                <span className="font-semibold text-indigo-600">
+                  {viewJob.poster}
+                </span>
+              </p>
+            </div>
+
             <div className="mb-6">
 
-              <div className="mb-4">
-                <p className="text-sm text-gray-500">
-                  👤 Posted by{" "}
-                  <span className="font-semibold text-indigo-600">
-                    {viewJob.poster}
+              <h3 className="font-semibold mb-2">
+                Required Skills
+              </h3>
+
+              <div className="flex flex-wrap gap-2">
+
+                {viewJob.tags.map((tag) => (
+
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-gray-200 rounded-full text-xs"
+                  >
+                    {tag}
                   </span>
-                </p>
+                ))}
               </div>
-
-              {/* Skills */}
-              <div className="mb-6">
-                <h3 className="font-semibold mb-2">Required Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {viewJob.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-gray-200 rounded-full text-xs"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setViewJob(null);
-                    setSelectedJob(viewJob);
-                  }}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
-                >
-                  Apply for this task
-                </button>
-
-              </div>
-
             </div>
+
+            <button
+              onClick={() => {
+
+                setViewJob(null);
+
+                setSelectedJob(viewJob);
+              }}
+              className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg"
+            >
+              Apply for this task
+            </button>
           </div>
         </div>
-      )};
+      )}
     </div>
-  )
+  );
 }

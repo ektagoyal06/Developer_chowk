@@ -5,7 +5,6 @@ import Developer from "../models/Developer.js";
 
 const router = express.Router();
 
-
 /* =========================================================
    REGISTER
 ========================================================= */

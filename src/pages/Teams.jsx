@@ -10,10 +10,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
-// Default projects
-
 
 export default function Dashboard() {
+  const [applications, setApplications] = useState([]);
   const [loadingUser, setLoadingUser] = useState(true);
   const [user, setUser] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -134,7 +133,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleJoinTeam = async () => {
+  const handleJoinTeam = async (project) => {
 
     if (!user) {
 
@@ -143,15 +142,28 @@ export default function Dashboard() {
       return;
     }
 
-    try {
+    // CHECK IF ALREADY APPLIED
+    const alreadyApplied = applications.find(
+      (app) => app._id === project._id
+    );
 
-      alert("✅ Request sent to join the team!");
+    if (alreadyApplied) {
 
-    } catch (error) {
+      alert("⚠️ Already applied to this team!");
 
-      console.log(error);
-
+      return;
     }
+
+    // CREATE APPLICATION OBJECT
+    const newApplication = {
+      ...project,
+      status: "Pending",
+    };
+
+    // ADD TO APPLICATIONS
+    setApplications((prev) => [...prev, newApplication]);
+
+    alert("✅ Request sent to join the team!");
   };
   if (loadingUser) {
 
@@ -220,14 +232,31 @@ export default function Dashboard() {
         <div className="flex border-b bg-white rounded-lg overflow-hidden w-full mb-8 p-2 text-lg font-semibold">
           {["Browse Projects", "Browse Rooms", "My Rooms", "Applications"].map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 text-center py-2 transition
-                ${activeTab === tab ? "border-b-2 border-black font-semibold" : "text-gray-500"}
-              `}
-            >
-              {tab}
-            </button>
+  key={tab}
+  onClick={() => setActiveTab(tab)}
+  className={`flex-1 text-center py-2 transition relative
+    ${activeTab === tab
+      ? "border-b-2 border-black font-semibold"
+      : "text-gray-500"}
+  `}
+>
+
+  <div className="flex items-center justify-center gap-2">
+
+    <span>{tab}</span>
+
+    {/* APPLICATION COUNT BADGE */}
+    {tab === "Applications" && applications.length > 0 && (
+
+      <span className="bg-red-500 text-white text-xs font-bold min-w-[22px] h-[22px] px-2 rounded-full flex items-center justify-center">
+        {applications.length}
+      </span>
+
+    )}
+
+  </div>
+
+</button>
           ))}
         </div>
 
@@ -292,7 +321,7 @@ export default function Dashboard() {
                 {/* BUTTONS */}
                 <div className="flex gap-2 mt-auto w-full">
                   <button
-                    onClick={handleJoinTeam}
+                    onClick={() => handleJoinTeam(proj)}
                     className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
                   >
                     <UserPlusIcon size={16} /> Join Team
@@ -324,11 +353,90 @@ export default function Dashboard() {
             ))}
           </div>
         )}
+        {activeTab !== "Browse Projects" &&
+          activeTab !== "Applications" && (
+            <div className="bg-white rounded-xl shadow p-10 text-center text-gray-500">
+              Nothing is posted yet.
+            </div>
+          )}
 
         {/* EMPTY STATE FOR OTHER TABS */}
-        {activeTab !== "Browse Projects" && (
-          <div className="bg-white rounded-xl shadow p-10 text-center text-gray-500">
-            Nothing is posted yet.
+        {activeTab === "Applications" && (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {applications.length > 0 ? (
+
+              applications.map((app, idx) => (
+
+                <div
+                  key={idx}
+                  className="bg-white p-6 rounded-lg shadow-md"
+                >
+
+                  <h2 className="text-lg font-bold mb-2">
+                    {app.title}
+                  </h2>
+
+                  <p className="text-gray-600 mb-4">
+                    {app.description}
+                  </p>
+
+                  {app.tags?.length > 0 && (
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+
+                      {app.tags.map((tech, index) => (
+
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold"
+                        >
+                          {tech}
+                        </span>
+
+                      ))}
+
+                    </div>
+
+                  )}
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+
+                    <span className="px-2 py-1 rounded-full text-xs bg-yellow-100">
+                      {app.level}
+                    </span>
+
+                    <span className="px-2 py-1 rounded-full text-xs bg-gray-200">
+                      {app.type}
+                    </span>
+
+                  </div>
+
+                  <div className="flex justify-between items-center">
+
+                    <span className="text-sm text-gray-500">
+                      👤 {app.poster}
+                    </span>
+
+                    <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">
+                      {app.status}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              ))
+
+            ) : (
+
+              <div className="bg-white rounded-xl shadow p-10 text-center text-gray-500 col-span-full">
+                No applications yet.
+              </div>
+
+            )}
+
           </div>
         )}
       </div>
@@ -448,7 +556,7 @@ export default function Dashboard() {
                 Contact Team
               </button>
               <button
-                onClick={handleJoinTeam}
+                onClick={() => handleJoinTeam(selectedBrowseProject)}
                 className="flex-1 min-w-0 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-1"
               >
                 <UserPlusIcon size={16} /> Join Team
