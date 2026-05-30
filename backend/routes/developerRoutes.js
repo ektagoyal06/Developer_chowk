@@ -293,3 +293,4 @@ router.post("/logout", (req, res) => {
    EXPORT ROUTER
 ========================================================= */
 
+export default router;
